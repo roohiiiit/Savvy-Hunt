@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Schedule - Savvy Hunt</title>
+    
+    <!-- 1. Load Tailwind & Supabase -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- 2. Failsafe CSS -->
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f3f4f6; /* Light Gray */
+            color: #000000; /* Black Text */
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #f97316;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+        }
+        .status-live { color: red; font-weight: bold; border: 1px solid red; padding: 2px 8px; border-radius: 10px; }
+        .status-soon { color: #b45309; font-weight: bold; background: #fef3c7; padding: 2px 8px; border-radius: 10px; }
+        .status-done { color: gray; }
+        .back-btn {
+            display: inline-block;
+            background: #000000;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1 class="text-2xl font-bold">📅 Full Event Schedule</h1>
+        <a href="index.html" style="color: #fbbf24; text-decoration: underline;">&larr; Back to Live Page</a>
+    </div>
+
+    <div class="container">
+        <!-- Status Message Container -->
+        <div id="status-message" style="text-align: center; padding: 20px;">
+            <p style="font-size: 1.2em; color: #666;">Loading events from database...</p>
+        </div>
+
+        <!-- Grid for Events -->
+        <div id="schedule-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Events will appear here -->
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="index.html" class="back-btn">Return to Home</a>
+        </div>
+    </div>
+
+    <script>
+        // --- DEBUG CHECK ---
+        setTimeout(() => {
+            const list = document.getElementById('schedule-list');
+            if(list.children.length === 0 && document.getElementById('status-message').innerText.includes('Loading')) {
+                alert("Trouble connecting to Supabase. \n\n1. Check your internet connection.\n2. Ensure you aren't opening this file directly from a zipped folder.");
+            }
+        }, 5000);
+
+        // --- SUPABASE SETUP ---
+        const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const grid = document.getElementById('schedule-list');
+        const msg = document.getElementById('status-message');
+
+        async function loadSchedule() {
+            console.log("Fetching schedule...");
+            
+            const { data, error } = await supabase
+                .from('live_events')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error(error);
+                msg.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                return;
+            }
+
+            if (data.length === 0) {
+                msg.innerHTML = `<p>No events found in the database yet.</p>`;
+                return;
+            }
+
+            // Clear loading message
+            msg.innerHTML = '';
+            grid.innerHTML = '';
+
+            data.forEach(event => {
+                let badge = '';
+                if(event.status === 'Live') badge = `<span class="status-live">LIVE 🔴</span>`;
+                else if(event.status === 'Soon') badge = `<span class="status-soon">Soon 🟡</span>`;
+                else badge = `<span class="status-done">Finished ⚫</span>`;
+
+                // UPDATED CARD: Category instead of Progress
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <h3 style="margin: 0; font-size: 1.25rem; font-weight: bold;">${event.name}</h3>
+                        ${badge}
+                    </div>
+                    <p style="color: #555; margin: 5px 0;">📍 ${event.location}</p>
+                    <p style="color: #555; margin: 5px 0;">👥 ${event.teams} Teams</p>
+                    
+                    <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #888; font-size: 0.9rem;">Category</span>
+                        <span style="background: #f3f4f6; color: #374151; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem;">
+                            ${event.category || 'General'}
+                        </span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        loadSchedule();
+        
+        supabase.channel('schedule').on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, loadSchedule).subscribe();
+    </script>
+</body>
+</html>
