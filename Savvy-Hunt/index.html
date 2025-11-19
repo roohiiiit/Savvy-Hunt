@@ -64,7 +64,7 @@
                 <a href="#live-events" class="btn-gradient text-white font-bold py-4 px-10 rounded-full text-lg shadow-xl">
                     See What's Happening LIVE
                 </a>
-                <a href="#" class="btn-outline text-white font-bold py-4 px-10 rounded-full text-lg shadow-xl">
+                <a href="scoreboard.html" class="btn-outline text-white font-bold py-4 px-10 rounded-full text-lg shadow-xl">
                     View the Full Scoreboard
                 </a>
             </div>
@@ -111,85 +111,70 @@
             </div>
 
             <div class="max-w-3xl mx-auto space-y-4">
-                <!-- Rank 1 -->
-                <div class="bg-orange-50 p-4 md:p-6 rounded-2xl flex items-center border border-orange-200 shadow-sm">
-                    <div class="text-3xl font-black text-orange-500 w-12 text-center">1</div>
-                    <div class="w-12 h-12 rounded-full bg-orange-200 flex items-center justify-center text-2xl mr-4">🏆</div>
-                    <div class="flex-1">
-                        <h3 class="text-xl font-bold text-gray-900">Northwood High</h3>
-                        <p class="text-orange-600 font-bold">1,520 points</p>
-                    </div>
-                </div>
-
-                <!-- Rank 2 -->
-                <div class="bg-white p-4 md:p-6 rounded-2xl flex items-center border border-gray-100 hover:bg-gray-50 transition-colors">
-                    <div class="text-3xl font-bold text-gray-400 w-12 text-center">2</div>
-                    <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-2xl mr-4">⚡</div>
-                    <div class="flex-1">
-                        <h3 class="text-xl font-bold text-gray-900">Riverdale Academy</h3>
-                        <p class="text-gray-500 font-medium">1,480 points</p>
-                    </div>
-                </div>
-
-                <!-- Rank 3 -->
-                <div class="bg-white p-4 md:p-6 rounded-2xl flex items-center border border-gray-100 hover:bg-gray-50 transition-colors">
-                    <div class="text-3xl font-bold text-gray-400 w-12 text-center">3</div>
-                    <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center text-2xl mr-4">🌟</div>
-                    <div class="flex-1">
-                        <h3 class="text-xl font-bold text-gray-900">Maple Creek Secondary</h3>
-                        <p class="text-gray-500 font-medium">1,300 points</p>
-                    </div>
-                </div>
+            <div id="top-3-container" class="max-w-3xl mx-auto space-y-4">
+                <p class="text-center text-gray-400 py-6 animate-pulse">Loading leaderboard...</p>
             </div>
 
              <div class="text-center mt-8">
-                 <a href="#" class="btn-teal font-bold py-4 px-8 rounded-full text-lg shadow-lg inline-block">
+                 <a href="scoreboard.html" class="btn-teal font-bold py-4 px-8 rounded-full text-lg shadow-lg inline-block">
                    See the Full Scoreboard
                 </a>
              </div>
         </section>
 
         <!-- SNAPSHOTS SECTION -->
-        <section class="mb-32 px-4">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <h2 class="text-4xl md:text-6xl font-extrabold mb-6">
-                    Savvy Hunt <span class="text-gray-400">Snapshots</span> 📸
-                </h2>
-                <p class="text-xl text-gray-600">
-                   See the competition as it happens! We're uploading photos and video highlights from all the events.
-                </p>
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Image 1 -->
-                <div class="group relative rounded-3xl overflow-hidden shadow-lg cursor-pointer h-[300px]">
-                    <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-0 left-0 p-6">
-                        <h3 class="text-white text-lg font-bold">Team celebrates!</h3>
-                    </div>
-                </div>
+<section class="mb-32 px-4">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+        <h2 class="text-4xl md:text-6xl font-extrabold mb-4">
+            Savvy Hunt <span class="text-gray-400">Snapshots</span> 📸
+        </h2>
+        <p class="text-xl text-gray-600">
+            See the competition as it happens! We’re uploading photos and highlights from all the events.
+        </p>
 
-                <!-- Image 2 -->
-                <div class="group relative rounded-3xl overflow-hidden shadow-lg cursor-pointer h-[300px]">
-                    <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors"></div>
-                    <div class="absolute bottom-0 left-0 p-6">
-                         <span class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded mb-2 inline-block">LIVE</span>
-                        <h3 class="text-white text-lg font-bold">Ceremony Highlights</h3>
-                    </div>
-                </div>
+        <!-- Button -->
+        <a href="snapshots.html" 
+           class="mt-8 inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition">
+            View photos
+        </a>
+    </div>
 
-                <!-- Image 3 -->
-                <div class="group relative rounded-3xl overflow-hidden shadow-lg cursor-pointer h-[300px]">
-                    <img src="https://images.unsplash.com/photo-1577896334614-501227471a34?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-0 left-0 p-6">
-                        <h3 class="text-white text-lg font-bold">Planning the route</h3>
-                    </div>
-                </div>
+    <!-- PREVIEW GRID -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Image 1 -->
+        <div class="group relative rounded-3xl overflow-hidden shadow-lg h-[300px]">
+            <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop"
+                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+            <div class="absolute bottom-0 left-0 p-6">
+                <h3 class="text-white text-lg font-bold">Team celebrates!</h3>
             </div>
-        </section>
+        </div>
+
+        <!-- Image 2 -->
+        <div class="group relative rounded-3xl overflow-hidden shadow-lg h-[300px]">
+            <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=800&auto=format&fit=crop"
+                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            <div class="absolute inset-0 bg-black/40"></div>
+            <div class="absolute bottom-0 left-0 p-6">
+                <span class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded mb-1 inline-block">LIVE</span>
+                <h3 class="text-white text-lg font-bold">Ceremony Highlights</h3>
+            </div>
+        </div>
+
+        <!-- Image 3 -->
+        <div class="group relative rounded-3xl overflow-hidden shadow-lg h-[300px]">
+            <img src="https://images.unsplash.com/photo-1577896334614-501227471a34?q=80&w=800&auto=format&fit=crop"
+                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+            <div class="absolute bottom-0 left-0 p-6">
+                <h3 class="text-white text-lg font-bold">Planning the route</h3>
+            </div>
+        </div>
+
+    </div>
+</section>
 
         <!-- ABOUT SECTION -->
         <section class="mb-32 px-4">
@@ -312,6 +297,55 @@
         }
 
         fetchEvents();
-    </script>
+
+    
+    async function loadTopThree() {
+        const container = document.getElementById("top-3-container");
+
+        const { data, error } = await supabase
+            .from("scoreboard")
+            .select("*")
+            .order("total", { ascending: false })
+            .limit(3);
+
+        if (error || !data) {
+            container.innerHTML = `<p class="text-center text-red-500">Error loading leaderboard.</p>`;
+            return;
+        }
+
+        container.innerHTML = "";
+
+        data.forEach((row, index) => {
+            const colors = [
+                { bg: "bg-orange-50", border: "border-orange-200", icon: "🏆", pointsColor: "text-orange-600" },
+                { bg: "bg-blue-50", border: "border-blue-200", icon: "⚡", pointsColor: "text-blue-600" },
+                { bg: "bg-yellow-50", border: "border-yellow-200", icon: "🌟", pointsColor: "text-yellow-600" },
+            ];
+
+            const c = colors[index];
+
+            container.innerHTML += `
+                <div class="${c.bg} p-4 md:p-6 rounded-2xl flex items-center border ${c.border} shadow-sm">
+                    <div class="text-3xl font-black text-gray-700 w-12 text-center">${index + 1}</div>
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl mr-4">${c.icon}</div>
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900">${row.name}</h3>
+                        <p class="${c.pointsColor} font-bold">${row.total.toLocaleString()} points</p>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // Load on page start
+    loadTopThree();
+
+    // Auto-refresh on database changes
+    supabase
+        .channel("realtime-top3")
+        .on("postgres_changes", { event: "*", schema: "public", table: "scoreboard" }, loadTopThree)
+        .subscribe();
+</script>
+
 </body>
 </html>
