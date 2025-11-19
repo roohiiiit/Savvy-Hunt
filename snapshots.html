@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SavvyHunt Snapshots</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: #fff7f0;
+      color: #111;
+    }
+
+    /* Header matching main website style */
+    .header-section {
+      padding: 80px 40px;
+      background: linear-gradient(135deg, #ff7a00 0%, #ff9d42 100%);
+      color: white;
+      text-align: left;
+    }
+    .header-section h1 {
+      font-size: 64px;
+      font-weight: 700;
+      margin: 0;
+    }
+    .header-section p {
+      font-size: 20px;
+      max-width: 600px;
+      margin-top: 10px;
+      opacity: 0.9;
+    }
+
+    /* Masonry Grid */
+    .gallery {
+      column-count: 3;
+      column-gap: 25px;
+      padding: 40px;
+    }
+
+    .item {
+      break-inside: avoid;
+      margin-bottom: 25px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      overflow: hidden;
+      border: 2px solid #ffb06b;
+    }
+
+    .item img, .item video {
+      width: 100%;
+      display: block;
+      border-bottom: 2px solid #ffb06b;
+    }
+
+    @media (max-width: 900px) {
+      .gallery {
+        column-count: 2;
+      }
+    }
+    @media (max-width: 600px) {
+      .gallery {
+        column-count: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER - Matches Main Website -->
+  <section class="header-section">
+    <h1>Savvy Hunt Snapshots</h1>
+    <p>Relive the best moments! Explore all images and video highlights captured during Savvy Hunt.</p>
+  </section>
+
+  <!-- GALLERY (READ ONLY) -->
+  <div class="gallery" id="gallery"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://updkjbvelzlleowheeyq.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark";
+    const BUCKET = "snapshots";
+
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function loadGallery() {
+      const { data, error } = await supabase.storage.from(BUCKET).list();
+      if (error) return;
+
+      const galleryDiv = document.getElementById("gallery");
+      galleryDiv.innerHTML = "";
+
+      data.forEach(async (file) => {
+        const { data: urlData } = await supabase.storage
+          .from(BUCKET)
+          .getPublicUrl(file.name);
+
+        const url = urlData.publicUrl;
+
+        const card = document.createElement("div");
+        card.className = "item";
+
+        if (file.name.match(/.(mp4|mov|avi)$/i)) {
+          card.innerHTML = `<video src="${url}" controls></video>`;
+        } else {
+          card.innerHTML = `<img src="${url}" loading="lazy" />`;
+        }
+
+        galleryDiv.appendChild(card);
+      });
+    }
+
+    loadGallery();
+  </script>
+</body>
+</html>

@@ -9,8 +9,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel+="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="snapshots.js"></script>
+
 
     <!-- 3. Configure Tailwind -->
     <script>
@@ -174,46 +177,58 @@
         </section>
 
         <!-- SNAPSHOTS SECTION -->
-        <section class="mb-32 px-4">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <h2 class="text-4xl md:text-6xl font-extrabold mb-6">
-                    Savvy Hunt <span class="text-gray-400">Snapshots</span> 📸
-                </h2>
-                <p class="text-xl text-gray-600">
-                   See the competition as it happens! We're uploading photos and video highlights from all the events.
-                </p>
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Image 1 -->
-                <div class="group relative rounded-3xl overflow-hidden shadow-lg cursor-pointer h-[300px]">
-                    <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-0 left-0 p-6">
-                        <h3 class="text-white text-lg font-bold">Team celebrates!</h3>
-                    </div>
-                </div>
+<section class="mb-32 px-4">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+        <h2 class="text-4xl md:text-6xl font-extrabold mb-4">
+            Savvy Hunt <span class="text-gray-400">Snapshots</span> 📸
+        </h2>
+        <p class="text-xl text-gray-600">
+            See the competition as it happens! We’re uploading photos and highlights from all the events.
+        </p>
 
-                <!-- Image 2 -->
-                <div class="group relative rounded-3xl overflow-hidden shadow-lg cursor-pointer h-[300px]">
-                    <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors"></div>
-                    <div class="absolute bottom-0 left-0 p-6">
-                         <span class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded mb-2 inline-block">LIVE</span>
-                        <h3 class="text-white text-lg font-bold">Ceremony Highlights</h3>
-                    </div>
-                </div>
+        <!-- Button -->
+        <a href="snapshots.html" 
+           class="mt-8 inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition">
+            View photos
+        </a>
+    </div>
 
-                <!-- Image 3 -->
-                <div class="group relative rounded-3xl overflow-hidden shadow-lg cursor-pointer h-[300px]">
-                    <img src="https://images.unsplash.com/photo-1577896334614-501227471a34?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-0 left-0 p-6">
-                        <h3 class="text-white text-lg font-bold">Planning the route</h3>
-                    </div>
-                </div>
+    <!-- PREVIEW GRID -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Image 1 -->
+        <div class="group relative rounded-3xl overflow-hidden shadow-lg h-[300px]">
+            <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop"
+                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+            <div class="absolute bottom-0 left-0 p-6">
+                <h3 class="text-white text-lg font-bold">Team celebrates!</h3>
             </div>
-        </section>
+        </div>
+
+        <!-- Image 2 -->
+        <div class="group relative rounded-3xl overflow-hidden shadow-lg h-[300px]">
+            <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=800&auto=format&fit=crop"
+                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            <div class="absolute inset-0 bg-black/40"></div>
+            <div class="absolute bottom-0 left-0 p-6">
+                <span class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded mb-1 inline-block">LIVE</span>
+                <h3 class="text-white text-lg font-bold">Ceremony Highlights</h3>
+            </div>
+        </div>
+
+        <!-- Image 3 -->
+        <div class="group relative rounded-3xl overflow-hidden shadow-lg h-[300px]">
+            <img src="https://images.unsplash.com/photo-1577896334614-501227471a34?q=80&w=800&auto=format&fit=crop"
+                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+            <div class="absolute bottom-0 left-0 p-6">
+                <h3 class="text-white text-lg font-bold">Planning the route</h3>
+            </div>
+        </div>
+
+    </div>
+</section>
 
         <!-- ABOUT SECTION -->
         <section class="mb-32 px-4">
