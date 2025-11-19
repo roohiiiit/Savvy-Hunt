@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savvy Hunt - Live Event</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Retaining your exact styles */
+        .btn-gradient { background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); color: white !important; transition: transform 0.2s, box-shadow 0.2s; }
+        .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(234, 88, 12, 0.3); }
+        .btn-outline { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); transition: all 0.3s ease; }
+        .btn-outline:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
+        .card { background: white; border-radius: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased bg-[#FFFBF5]">
+
+    <!-- HERO SECTION -->
+    <section 
+        style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('bg.png'); background-color: #1f2937; background-size: cover; background-position: center;" 
+        class="relative min-h-[85vh] flex items-center justify-center text-white text-center rounded-b-[3rem] overflow-hidden shadow-2xl pb-32"
+    >
+        <div class="relative z-10 p-6 max-w-5xl">
+            <h1 class="text-6xl md:text-8xl font-black mb-6 drop-shadow-lg tracking-tight leading-tight">
+                Welcome to the <br />
+                <span class="text-orange-400">Savvy Hunt!</span>
+            </h1>
+            <p class="text-2xl md:text-3xl font-bold mb-4 drop-shadow-md">
+                The ultimate school showdown is happening NOW!
+            </p>
+            <p class="text-lg md:text-xl max-w-2xl mx-auto mb-12 text-gray-100 drop-shadow-md font-medium">
+                Watch the competition unfold in real-time as schools battle for the championship.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                <a href="#live-events" class="btn-gradient text-white font-bold py-4 px-10 rounded-full text-lg shadow-xl">
+                    See What's Happening LIVE
+                </a>
+                <a href="#" class="btn-outline text-white font-bold py-4 px-10 rounded-full text-lg shadow-xl">
+                    View the Full Scoreboard
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <div class="max-w-7xl mx-auto p-6 md:p-12 relative -mt-12 md:-mt-24 z-20">
+        
+        <!-- STATUS SECTION -->
+        <section id="live-events" class="text-center mb-32 px-4">
+            <div class="inline-flex items-center bg-white/90 backdrop-blur shadow-lg text-red-600 font-bold py-3 px-6 rounded-full mb-8 text-lg border border-red-100">
+                <span class="status-dot bg-red-600 mr-3"></span> LIVE NOW: The Hunt Is On!
+            </div>
+            
+            <h2 class="text-4xl md:text-6xl font-extrabold mb-4 text-gray-900">Real-Time Event Status</h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-16">
+                Don't miss a second of the action. Here's what's happening right now across campus.
+            </p>
+
+            <!-- DYNAMIC EVENTS GRID -->
+            <div id="events-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Loading State -->
+                <div class="col-span-3 py-12 bg-white rounded-3xl border border-gray-100">
+                    <p class="text-gray-500 animate-pulse">Connecting to live feed...</p>
+                </div>
+            </div>
+            
+            <!-- Link to Full Schedule -->
+            <a href="schedule.html" class="btn-gradient text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg inline-flex items-center mt-16">
+                 Go to the Full Event Schedule →
+            </a>
+        </section>
+
+        <!-- LEADERBOARD SECTION -->
+        <section class="card p-8 md:p-16 mb-32 bg-white border border-gray-100">
+             <div class="text-center max-w-3xl mx-auto mb-12">
+                <h2 class="text-4xl md:text-5xl font-extrabold mb-4">
+                    Who's Leading <span class="text-orange-500">the Pack?</span>
+                </h2>
+                <p class="text-gray-500 font-medium">
+                    Last updated: <span class="text-gray-800 font-bold">2 minutes ago</span>
+                </p>
+            </div>
+
+            <div class="max-w-3xl mx-auto space-y-4">
+                <!-- Rank 1 -->
+                <div class="bg-orange-50 p-4 md:p-6 rounded-2xl flex items-center border border-orange-200 shadow-sm">
+                    <div class="text-3xl font-black text-orange-500 w-12 text-center">1</div>
+                    <div class="w-12 h-12 rounded-full bg-orange-200 flex items-center justify-center text-2xl mr-4">🏆</div>
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900">Northwood High</h3>
+                        <p class="text-orange-600 font-bold">1,520 points</p>
+                    </div>
+                </div>
+
+                <!-- Rank 2 -->
+                <div class="bg-white p-4 md:p-6 rounded-2xl flex items-center border border-gray-100 hover:bg-gray-50 transition-colors">
+                    <div class="text-3xl font-bold text-gray-400 w-12 text-center">2</div>
+                    <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-2xl mr-4">⚡</div>
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900">Riverdale Academy</h3>
+                        <p class="text-gray-500 font-medium">1,480 points</p>
+                    </div>
+                </div>
+
+                <!-- Rank 3 -->
+                <div class="bg-white p-4 md:p-6 rounded-2xl flex items-center border border-gray-100 hover:bg-gray-50 transition-colors">
+                    <div class="text-3xl font-bold text-gray-400 w-12 text-center">3</div>
+                    <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center text-2xl mr-4">🌟</div>
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-gray-900">Maple Creek Secondary</h3>
+                        <p class="text-gray-500 font-medium">1,300 points</p>
+                    </div>
+                </div>
+            </div>
+
+             <div class="text-center mt-8">
+                 <a href="#" class="btn-teal font-bold py-4 px-8 rounded-full text-lg shadow-lg inline-block">
+                   See the Full Scoreboard
+                </a>
+             </div>
+        </section>
+
+        <!-- SNAPSHOTS SECTION -->
+        <section class="mb-32 px-4">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-4xl md:text-6xl font-extrabold mb-6">
+                    Savvy Hunt <span class="text-gray-400">Snapshots</span> 📸
+                </h2>
+                <p class="text-xl text-gray-600">
+                   See the competition as it happens! We're uploading photos and video highlights from all the events.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Image 1 -->
+                <div class="group relative rounded-3xl overflow-hidden shadow-lg cursor-pointer h-[300px]">
+                    <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        <h3 class="text-white text-lg font-bold">Team celebrates!</h3>
+                    </div>
+                </div>
+
+                <!-- Image 2 -->
+                <div class="group relative rounded-3xl overflow-hidden shadow-lg cursor-pointer h-[300px]">
+                    <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                         <span class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded mb-2 inline-block">LIVE</span>
+                        <h3 class="text-white text-lg font-bold">Ceremony Highlights</h3>
+                    </div>
+                </div>
+
+                <!-- Image 3 -->
+                <div class="group relative rounded-3xl overflow-hidden shadow-lg cursor-pointer h-[300px]">
+                    <img src="https://images.unsplash.com/photo-1577896334614-501227471a34?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        <h3 class="text-white text-lg font-bold">Planning the route</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABOUT SECTION -->
+        <section class="mb-32 px-4">
+             <div class="bg-white rounded-[3rem] p-8 md:p-16 lg:flex lg:items-center lg:gap-16 shadow-xl">
+                <div class="lg:w-1/2">
+                    <h2 class="text-4xl md:text-6xl font-extrabold mb-8 text-gray-900">
+                        What is the <span class="text-orange-500">Savvy Hunt?</span>
+                    </h2>
+                    <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+                        We're more than just a game. The Savvy Hunt is a student-organized competition designed to build school spirit, challenge creative minds, and promote teamwork across our entire district.
+                    </p>
+                    
+                    <div class="flex items-center gap-4 mb-8">
+                         <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-2xl text-orange-600">🧡</div>
+                         <p class="font-bold text-gray-700">Thank you for being part of this amazing event!</p>
+                    </div>
+
+                    <a href="#" class="btn-teal font-bold py-4 px-8 rounded-full text-lg shadow-lg inline-block">
+                        Learn More About Our Mission
+                    </a>
+                </div>
+                <div class="lg:w-1/2 mt-12 lg:mt-0">
+                    <div class="bg-orange-50 rounded-[2rem] p-10 border border-orange-100 relative">
+                        <h3 class="text-2xl font-bold mb-4 text-gray-900">Organized by Students, For Students</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            Proudly organized by the Student Council and Tech Club. Our mission is to create memorable experiences that celebrate creativity, collaboration, and school pride.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="bg-gray-900 text-gray-400 pt-20 pb-10 -mt-24 relative z-10" style="border-top-left-radius: 3rem; border-top-right-radius: 3rem;">
+        <div class="max-w-7xl mx-auto px-8 text-center">
+            <h3 class="text-2xl font-bold text-white mb-2">Savvy Hunt <span class="text-orange-500">2025</span></h3>
+            <p class="text-sm text-gray-500">&copy; 2025 Savvy Hunt. A project by the District Student Council.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- 1. SUPABASE CONFIGURATION ---
+        const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const grid = document.getElementById('events-grid');
+
+        // --- 2. FETCH DATA ---
+        async function fetchEvents() {
+            const { data, error } = await supabase
+                .from('live_events')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(3);
+
+            if (error) {
+                console.error('Error:', error);
+                grid.innerHTML = '<div class="col-span-3 text-red-400 py-10">Error loading data.</div>';
+                return;
+            }
+            renderEvents(data);
+        }
+
+        // --- 3. REALTIME LISTENER ---
+        supabase
+            .channel('public-channel')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, (payload) => {
+                fetchEvents();
+            })
+            .subscribe();
+
+        // --- 4. RENDER FUNCTION ---
+        function renderEvents(events) {
+            grid.innerHTML = '';
+
+            if (!events || events.length === 0) {
+                grid.innerHTML = `<div class="col-span-3 text-gray-500 py-10">No live events right now.</div>`;
+                return;
+            }
+
+            events.forEach(data => {
+                let statusBadge = '';
+                let cardOpacity = '';
+                
+                if (data.status === 'Live') {
+                    statusBadge = `<span class="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide flex items-center">Live 🔴</span>`;
+                } else if (data.status === 'Soon') {
+                    statusBadge = `<span class="bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Soon 🟡</span>`;
+                    cardOpacity = 'bg-gray-50 opacity-90';
+                } else {
+                    statusBadge = `<span class="bg-gray-100 text-gray-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Finished ⚫</span>`;
+                    cardOpacity = 'opacity-60';
+                }
+
+                // UPDATED CARD HTML: Replaced Progress Bar with Category Tag
+                const cardHTML = `
+                    <div class="card p-8 text-left ${cardOpacity} flex flex-col justify-between h-full">
+                        <div>
+                            <div class="flex justify-between items-start mb-6">
+                                <h3 class="text-2xl font-bold leading-tight">${data.name}</h3>
+                                ${statusBadge}
+                            </div>
+                            <div class="text-gray-500 space-y-3 mb-8">
+                                <p class="flex items-center"><span class="w-6 text-center mr-2">📍</span> ${data.location}</p>
+                                <p class="flex items-center"><span class="w-6 text-center mr-2">👥</span> ${data.teams} Teams</p>
+                            </div>
+                        </div>
+                        <div class="border-t pt-4 mt-2 flex justify-between items-center text-sm text-gray-400">
+                            <span>Category:</span>
+                            <span class="font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                                ${data.category || 'General'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHTML;
+            });
+        }
+
+        fetchEvents();
+    </script>
+</body>
+</html>
