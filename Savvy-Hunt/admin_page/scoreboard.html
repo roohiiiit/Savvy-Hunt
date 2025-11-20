@@ -16,6 +16,25 @@
         input { width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .btn-recalc { background: #3b82f6; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8em; }
+
+        /* Corrected Scrollbar Code */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #FFF3E6;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #F97316, #EA580C);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #EA580C, #C2410C);
+        }
     </style>
 </head>
 
