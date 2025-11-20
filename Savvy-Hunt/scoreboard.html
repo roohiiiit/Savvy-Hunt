@@ -1,211 +1,642 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8" />
   <title>Savvy Hunt Scoreboard</title>
 
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
   <style>
+  /* ---------------------------
+    Base / layout
+  --------------------------- */
+  * {
+    box-sizing: border-box; /* Fixes padding issues */
+  }
 
-    body {
-      font-family: "Poppins", "Inter", "Segoe UI", sans-serif;
-      margin: 0;
-      padding: 0;
-      padding-top: 80px;
-      background: #f9fafb;
-    }
+  body {
+    font-family: "Poppins", "Inter", "Segoe UI", sans-serif;
+    margin: 0;
+    padding: 0;
+    padding-top: 90px; /* Adjusted for navbar */
+    background: #f9fafb;
+    -webkit-font-smoothing: antialiased;
+    color: #1f2937;
+  }
 
-    .navbar {
+  /* ============================
+    NAVBAR
+  ============================ */
+  .navbar {
       width: 100%;
-      height: 80px;
-      padding: 15px 30px;
-      background: #1f2937;
+      background: #0f1e2c;
+      padding: 10px 40px;
+      min-height: 80px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0px 3px 10px rgba(0,0,0,0.15);
       position: fixed;
       top: 0;
       left: 0;
-      z-index: 9999;
-      box-sizing: border-box;
-    }
+      z-index: 10000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
 
-    .nav-title {
-      font-size: 30px;
-      font-weight: 700;
-      color: #f97316;
-      letter-spacing: 1px;
-    }
+  .nav-left h1 {
+      color: #ff6a00;
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin: 0;
+  }
 
-    .nav-btn {
-      background: #f97316;
-      padding: 10px 20px;
-      border-radius: 10px;
+  /* Fixed Home Button */
+  .nav-right {
+      flex-shrink: 0; /* Prevents button from being crushed */
+  }
+
+  .home-btn {
+      background: #ff6a00;
       color: white;
-      font-weight: 600;
-      text-decoration: none;
+      padding: 12px 25px;
+      border-radius: 30px; /* Softer round look */
+      font-weight: 700;
+      text-decoration: none; /* Removes underline */
+      font-size: 15px;
+      white-space: nowrap; /* Prevents text wrapping */
+      display: inline-block;
+      transition: transform 0.2s ease, background 0.2s ease;
+      box-shadow: 0 4px 10px rgba(255, 106, 0, 0.3);
+  }
+
+  .home-btn:hover {
+      transform: translateY(-2px);
+      background: #e65f00;
+      box-shadow: 0 6px 15px rgba(255, 106, 0, 0.4);
+  }
+
+  /* ============================
+    SWITCHER BAR (The Toggle)
+  ============================ */
+  .switcher-bar {
       display: flex;
-      align-items: center;
-      gap: 6px;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px auto;
+      padding: 6px;
+      background: #e5e7eb;
+      border-radius: 50px;
+      width: fit-content;
+      max-width: 95%;
+  }
+
+  .switch-btn {
+      background: transparent;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-weight: 700;
+      color: #6b7280;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.3s;
+  }
+
+  .switch-btn.active {
+      background: white;
+      color: #ff6a00;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  /* ============================
+    SCOREBOARD CONTAINER
+  ============================ */
+  .scoreboard-container {
+    max-width: 1100px;
+    margin: 20px auto 40px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0px 6px 25px rgba(0,0,0,0.08);
+    border-top: 6px solid #f97316;
+    width: 95%; /* Responsive width */
+  }
+
+  .scoreboard-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #1f2937;
+    text-align: center;
+    margin-bottom: 25px;
+    line-height: 1.2;
+  }
+
+  /* ============================
+    TABLE (main leaderboard)
+  ============================ */
+  .table-wrapper {
+      width: 100%;
+      overflow-x: auto; /* Horizontal scroll on mobile */
+      -webkit-overflow-scrolling: touch;
+      border-radius: 12px;
+      padding-bottom: 5px; /* Space for scrollbar */
+  }
+
+  .scoreboard-table {
+    width: 100%;
+    min-width: 900px; /* Force width so it doesn't crush */
+    border-collapse: collapse;
+    overflow: hidden;
+  }
+
+  .scoreboard-table thead tr {
+    background: #435b6b;
+    color: white;
+  }
+
+  .scoreboard-table th {
+    padding: 16px 12px;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid #f97316;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .scoreboard-table td {
+    padding: 14px 12px;
+    text-align: center;
+    font-size: 1rem;
+    color: #1f2937;
+    border-bottom: 1px solid #eee;
+  }
+  
+  /* Name column left align */
+  .scoreboard-table td:nth-child(2) {
+      text-align: left;
+      font-weight: 600;
+  }
+
+  .scoreboard-rank {
+    font-weight: 700;
+    color: #f97316;
+    font-size: 1.2rem;
+  }
+
+  .scoreboard-total {
+    font-weight: 800;
+    background: #f5cba7;
+    color: #1f2937;
+    border-radius: 8px;
+    padding: 8px;
+  }
+
+  /* ============================
+    CATEGORY BUTTONS
+  ============================ */
+  .category-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+  }
+
+  .cat-btn {
+    background: #374151;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: 0.25s;
+    flex-grow: 1; /* Fill space on mobile */
+    max-width: 150px;
+  }
+
+  .cat-btn.active {
+    background: #f97316;
+    box-shadow: 0px 4px 12px rgba(249,115,22,0.45);
+  }
+
+  .cat-table {
+    font-size: 1rem;
+    text-align: center;
+    padding: 10px 0;
+    color: #6b7280;
+  }
+
+  /* ============================
+    TOP-3 CARDS
+  ============================ */
+  .top3-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+    width: 100%;
+  }
+
+  .pod {
+    width: 100%; /* Fluid width */
+    border-radius: 14px;
+    background: white;
+    padding: 16px;
+    box-shadow: 0 4px 15px rgba(17,24,39,0.06);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid #f0f0f0;
+    transition: 0.18s;
+  }
+
+  .pod:hover {
+    transform: translateY(-4px);
+  }
+
+  .pod .badge {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 20px;
+    color: white;
+  }
+
+  .pod .meta { 
+      text-align: left; 
+      flex-grow: 1;
+      overflow: hidden;
+  }
+
+  .pod h4 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pod p {
+    margin: 4px 0 0 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+
+  .gold { background: linear-gradient(180deg,#FDE68A,#F59E0B); }
+  .silver { background: linear-gradient(180deg,#E6EEF9,#93C5FD); }
+  .bronze { background: linear-gradient(180deg,#FFDDCC,#F97316); }
+
+  .score-pill {
+    margin-left: auto;
+    background: #fff7ed;
+    color: #c2410c;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 0.95rem;
+  }
+
+  /* ============================
+    MOBILE FIXES
+  ============================ */
+  @media (max-width: 768px) {
+    /* Navbar adjustments */
+    .navbar {
+        padding: 10px 20px;
+        height: auto;
+        min-height: 70px;
     }
 
-    .nav-btn:hover {
-      background: #fb923c;
-      box-shadow: 0px 4px 12px rgba(249,115,22,0.4);
+    .nav-left h1 {
+        font-size: 18px; /* Smaller title */
+    }
+    
+    .home-btn {
+        padding: 8px 16px;
+        font-size: 13px;
     }
 
+    body {
+        padding-top: 80px;
+    }
+
+    /* Container adjustments */
     .scoreboard-container {
-      max-width: 1100px;
-      margin: 40px auto;
-      background: #ffffff;
-      padding: 25px;
-      border-radius: 20px;
-      box-shadow: 0px 6px 25px rgba(0,0,0,0.08);
-      border-top: 6px solid #f97316;
+        padding: 15px;
+        margin-top: 10px;
+        border-radius: 15px;
     }
 
     .scoreboard-title {
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: #1f2937;
-      text-align: center;
-      margin-bottom: 25px;
+        font-size: 1.5rem;
     }
 
-    .scoreboard-table {
-      width: 100%;
-      border-collapse: collapse;
-      overflow: hidden;
-      border-radius: 12px;
+    /* Switcher adjustments */
+    .switcher-bar {
+        width: 90%;
+        margin: 10px auto 20px auto;
     }
-
-    .scoreboard-table thead tr {
-      background: #435b6b;
-      color: white;
+    
+    .switch-btn {
+        padding: 8px 12px;
+        font-size: 12px;
     }
-
-    .scoreboard-table th {
-      padding: 14px 10px;
-      font-size: 1rem;
-      text-transform: uppercase;
-      border-bottom: 2px solid #f97316;
+    
+    /* Table adjustments */
+    .scoreboard-table th, .scoreboard-table td {
+        font-size: 0.85rem;
+        padding: 10px 8px;
     }
-
-    .scoreboard-table td {
-      padding: 12px 10px;
-      text-align: center;
-      font-size: 1rem;
-      color: #1f2937;
-    }
-
+    
     .scoreboard-rank {
-      font-weight: 700;
-      color: #f97316;
-      font-size: 1.2rem;
+        font-size: 1rem;
     }
+  }
 
-    .scoreboard-total {
-      font-weight: 800;
-      background: #f5cba7;
-      color: #1f2937;
-      border-radius: 8px;
-      padding: 8px;
-    }
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #f1f1f1; }
+  ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #f97316; }
 
-    ::-webkit-scrollbar {
-      width: 10px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: #FFF3E6;
-      border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: linear-gradient(180deg, #F97316, #EA580C);
-      border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(180deg, #EA580C, #C2410C);
-    }
   </style>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 
 <body>
 
-<nav class="navbar">
-  <span class="nav-title">SAVVY HUNT LIVE SCOREBOARD</span>
-  <a href="index.html" class="nav-btn">🏠 Home</a>
-</nav>
+  <nav class="navbar">
+      <div class="nav-left">
+          <h1>SAVVY HUNT LIVE<br>SCOREBOARD</h1>
+      </div>
 
-<div class="scoreboard-container">
+      <div class="nav-right">
+          <a href="index.html" class="home-btn">Home</a>
+      </div>
+  </nav>
 
-  <h1 class="scoreboard-title">SAVVY HUNT LEADERBOARD</h1>
+  <div class="switcher-bar" role="tablist" aria-label="View switcher">
+    <button class="switch-btn active" onclick="switchSection(event,'school')" role="tab" aria-selected="true">🏫 School-wise Results</button>
+    <button class="switch-btn" onclick="switchSection(event,'category')" role="tab" aria-selected="false">📊 Category-wise Results</button>
+  </div>
 
-  <table id="scoreTable" class="scoreboard-table">
-    <thead>
-      <tr>
-        <th>Rank</th>
-        <th>Name</th>
-        <th>Cat 1</th>
-        <th>Cat 2</th>
-        <th>Cat 3</th>
-        <th>Cat 4</th>
-        <th>Cat 5</th>
-        <th>Common Cat</th>   <!-- NEW COLUMN -->
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <div id="schoolSection" class="scoreboard-container" aria-live="polite">
+    <h1 class="scoreboard-title">SAVVY HUNT LEADERBOARD</h1>
+      <div class="table-wrapper">
+        <table id="scoreTable" class="scoreboard-table" aria-describedby="leaderboard-desc">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Name of Institution</th>
+              <th>Cat 1</th>
+              <th>Cat 2</th>
+              <th>Cat 3</th>
+              <th>Cat 4</th>
+              <th>Cat 5</th>
+              <th>Common Cat</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    <p id="leaderboard-desc" style="display:none;">Main leaderboard ordered by total points</p>
+  </div>
 
-</div>
+  <div id="categorySection" style="display:none;">
+    <div class="scoreboard-container" aria-live="polite">
+      <h1 class="scoreboard-title">CATEGORY-WISE RESULTS</h1>
 
-<script>
-const db = supabase.createClient(
-  "https://updkjbvelzlleowheeyq.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark"
-);
+      <div class="category-buttons" role="tablist">
+        <button class="cat-btn active" onclick="showCategoryTable(event,'cat1')">Category I</button>
+        <button class="cat-btn" onclick="showCategoryTable(event,'cat2')">Category II</button>
+        <button class="cat-btn" onclick="showCategoryTable(event,'cat3')">Category III</button>
+        <button class="cat-btn" onclick="showCategoryTable(event,'cat4')">Category IV</button>
+        <button class="cat-btn" onclick="showCategoryTable(event,'cat5')">Category V</button>
+        <button class="cat-btn" onclick="showCategoryTable(event,'common')">Common Category</button>
+      </div>
 
-async function loadScoreboard() {
-  const { data } = await db
-    .from("scoreboard")
-    .select("*")
-    .order("total", { ascending: false });
+      <div id="cat1" class="cat-table" aria-hidden="false">
+        <div class="top3-grid" id="cat1-list">Loading...</div>
+      </div>
 
-  const tbody = document.querySelector("#scoreTable tbody");
-  tbody.innerHTML = "";
+      <div id="cat2" class="cat-table" style="display:none;">
+        <div class="top3-grid" id="cat2-list">Loading...</div>
+      </div>
 
-  data.forEach((row, index) => {
-    tbody.innerHTML += `
-      <tr>
-        <td class="scoreboard-rank">${index + 1}</td>
-        <td>${row.name}</td>
-        <td>${row.cat1}</td>
-        <td>${row.cat2}</td>
-        <td>${row.cat3}</td>
-        <td>${row.cat4}</td>
-        <td>${row.cat5}</td>
-        <td>${row.common_cat}</td>   <!-- NEW -->
-        <td class="scoreboard-total">${row.total}</td>
-      </tr>
-    `;
-  });
-}
+      <div id="cat3" class="cat-table" style="display:none;">
+        <div class="top3-grid" id="cat3-list">Loading...</div>
+      </div>
 
-loadScoreboard();
+      <div id="cat4" class="cat-table" style="display:none;">
+        <div class="top3-grid" id="cat4-list">Loading...</div>
+      </div>
 
-db
-  .channel("realtime-scoreboard")
-  .on(
-    "postgres_changes",
-    { event: "*", schema: "public", table: "scoreboard" },
-    () => loadScoreboard()
-  )
-  .subscribe();
-</script>
+      <div id="cat5" class="cat-table" style="display:none;">
+        <div class="top3-grid" id="cat5-list">Loading...</div>
+      </div>
 
+      <div id="common" class="cat-table" style="display:none;">
+        <div class="top3-grid" id="common-list">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /************************************************************************
+     * Supabase / Initialization
+     ************************************************************************/
+    const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
+
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    /************************************************************************
+     * UI helpers
+     ************************************************************************/
+    function switchSection(evt, section) {
+      document.querySelectorAll('.switch-btn').forEach(b => b.classList.remove('active'));
+      evt.currentTarget.classList.add('active');
+
+      document.getElementById('schoolSection').style.display = section === 'school' ? 'block' : 'none';
+      document.getElementById('categorySection').style.display = section === 'category' ? 'block' : 'none';
+
+      if (section === 'category') {
+        showCategoryTable({ currentTarget: document.querySelector('.cat-btn') }, 'cat1');
+      }
+    }
+
+    function showCategoryTable(evt, id) {
+      const targetBtn = evt?.currentTarget || evt?.target || null;
+
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      if (targetBtn) targetBtn.classList.add('active');
+      else document.querySelector('.cat-btn')?.classList.add('active');
+
+      document.querySelectorAll('.cat-table').forEach(t => t.style.display = 'none');
+      const container = document.getElementById(id);
+      if (!container) return;
+      container.style.display = 'block';
+
+      const columnMap = {
+        'cat1': 'cat1',
+        'cat2': 'cat2',
+        'cat3': 'cat3',
+        'cat4': 'cat4',
+        'cat5': 'cat5',
+        'common': 'common_cat'
+      };
+      const col = columnMap[id] || 'cat1';
+      loadCategoryTop3(id + '-list', col);
+    }
+
+    /************************************************************************
+     * Main leaderboard loader
+     ************************************************************************/
+    async function loadScoreboard() {
+      const { data, error } = await db
+        .from('scoreboard')
+        .select('*')
+        .order('total', { ascending: false });
+
+      const tbody = document.querySelector('#scoreTable tbody');
+      tbody.innerHTML = '';
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:red;">Error loading scoreboard: ${error.message}</td></tr>`;
+        return;
+      }
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#6b7280;">No teams yet.</td></tr>`;
+        return;
+      }
+
+      data.forEach((row, index) => {
+        tbody.insertAdjacentHTML('beforeend', `
+          <tr>
+            <td class="scoreboard-rank">${index + 1}</td>
+            <td>${escapeHtml(row.name || '')}</td>
+            <td>${Number(row.cat1 || 0)}</td>
+            <td>${Number(row.cat2 || 0)}</td>
+            <td>${Number(row.cat3 || 0)}</td>
+            <td>${Number(row.cat4 || 0)}</td>
+            <td>${Number(row.cat5 || 0)}</td>
+            <td>${Number(row.common_cat || 0)}</td>
+            <td class="scoreboard-total">${Number(row.total || 0)}</td>
+          </tr>
+        `);
+      });
+    }
+
+    /************************************************************************
+     * Category top-3 loader
+     ************************************************************************/
+    async function loadCategoryTop3(tableListId, columnName) {
+      const el = document.getElementById(tableListId);
+      if (!el) return;
+      el.innerHTML = '<div style="color:#6b7280">Loading...</div>';
+
+      const { data, error } = await db.from('scoreboard').select('*');
+
+      if (error) {
+        el.innerHTML = `<div style="color:red">Error loading: ${escapeHtml(error.message)}</div>`;
+        return;
+      }
+      if (!data || data.length === 0) {
+        el.innerHTML = `<div style="color:#6b7280">No teams yet.</div>`;
+        return;
+      }
+
+      const sorted = data.slice().sort((a, b) => (Number(b[columnName] || 0) - Number(a[columnName] || 0)));
+      const top3 = sorted.slice(0, 3);
+
+      const styleMap = [
+        { cls: 'gold', emoji: '🥇', label: '1' },
+        { cls: 'silver', emoji: '🥈', label: '2' },
+        { cls: 'bronze', emoji: '🥉', label: '3' }
+      ];
+
+      el.innerHTML = '';
+      top3.forEach((row, idx) => {
+        const s = styleMap[idx] || { cls: 'silver', emoji: `#${idx+1}`, label: String(idx+1) };
+        const scoreDisplay = Number(row[columnName] || 0).toLocaleString();
+
+        el.insertAdjacentHTML('beforeend', `
+          <div class="pod" role="article" aria-label="Rank ${idx+1} - ${escapeHtml(row.name || '')}">
+            <div class="badge ${s.cls}" title="Rank ${idx+1}">${s.emoji}</div>
+            <div class="meta">
+              <h4>${escapeHtml(row.name || '—')}</h4>
+              <p style="margin-top:6px;color:#9CA3AF;font-weight:600">Rank ${idx+1}</p>
+            </div>
+            <div class="score-pill" aria-hidden="true">${scoreDisplay}</div>
+          </div>
+        `);
+      });
+
+      if (top3.length < 3) {
+        for (let i = top3.length; i < 3; i++) {
+          const s = styleMap[i] || { cls: 'silver', emoji: `#${i+1}`, label: String(i+1) };
+          el.insertAdjacentHTML('beforeend', `
+            <div class="pod" style="opacity:0.6">
+              <div class="badge ${s.cls}">${s.emoji}</div>
+              <div class="meta">
+                <h4>—</h4>
+                <p style="margin-top:6px;color:#9CA3AF">Rank ${i+1}</p>
+              </div>
+              <div class="score-pill">0</div>
+            </div>
+          `);
+        }
+      }
+    }
+
+    /************************************************************************
+     * Utility
+     ************************************************************************/
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    /************************************************************************
+     * Realtime
+     ************************************************************************/
+    function setupRealtime() {
+      db
+        .channel('realtime-scoreboard')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'scoreboard' }, payload => {
+          loadScoreboard();
+          const visibleCats = Array.from(document.querySelectorAll('.cat-table'))
+            .filter(div => div.style.display !== 'none');
+
+          visibleCats.forEach(div => {
+            const id = div.id;
+            const columnMap = {
+              'cat1': 'cat1', 'cat2': 'cat2', 'cat3': 'cat3', 'cat4': 'cat4', 'cat5': 'cat5', 'common': 'common_cat'
+            };
+            const col = columnMap[id] || 'cat1';
+            loadCategoryTop3(id + '-list', col);
+          });
+        })
+        .subscribe();
+    } 
+
+    loadScoreboard();
+    setupRealtime();
+    loadCategoryTop3('cat1-list', 'cat1');
+
+  </script>
 </body>
 </html>
