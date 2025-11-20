@@ -6,8 +6,8 @@
     <title>Manage Scoreboard - Savvy Hunt</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
-        /* SAFE MODE STYLES */
         body { font-family: sans-serif; background-color: #f3f4f6; padding: 20px; }
         .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -16,8 +16,28 @@
         input { width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .btn-recalc { background: #3b82f6; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8em; }
+
+        /* Corrected Scrollbar Code */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #FFF3E6;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #F97316, #EA580C);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #EA580C, #C2410C);
+        }
     </style>
 </head>
+
 <body>
 
     <div class="container">
@@ -34,42 +54,48 @@
                         <th>Cat 1</th>
                         <th>Cat 2</th>
                         <th>Cat 3</th>
+                        <th>Cat 4</th>
+                        <th>Cat 5</th>
                         <th>Total</th>
                         <th>Action</th>
                     </tr>
                 </thead>
+
                 <tbody id="score-table">
-                    <tr><td colspan="6" style="text-align:center; color: gray;">Loading data...</td></tr>
+                    <tr><td colspan="8" style="text-align:center; color: gray;">Loading data...</td></tr>
                 </tbody>
             </table>
         </div>
-        <p style="margin-top: 10px; font-size: 0.9em; color: #666;">* Edit numbers and click outside or press Enter to save. Click 'Recalc' to update total.</p>
+
+        <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+            * Edit numbers and click outside or press Enter to save.  
+              Click 'Recalc' to update total.
+        </p>
     </div>
 
     <script>
-        // --- CHECK FOR SUPABASE ---
-        if (typeof window.supabase === 'undefined') {
-            document.body.innerHTML = '<h2 style="color:red; text-align:center; margin-top:50px;">Error: Scripts blocked. Check internet.</h2>';
-            throw new Error("Supabase not loaded");
-        }
-
         const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
+
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function loadScores() {
-            const { data, error } = await db.from('scoreboard').select('*').order('total', { ascending: false });
+            const { data, error } = await db
+                .from('scoreboard')
+                .select('*')
+                .order('total', { ascending: false });
+
             const table = document.getElementById('score-table');
             
             if (error) {
-                table.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">Error: ${error.message}</td></tr>`;
+                table.innerHTML = `<tr><td colspan="8" style="color:red; text-align:center;">Error loading: ${error.message}</td></tr>`;
                 return;
             }
-            
+
             table.innerHTML = '';
-            
-            if(!data || data.length === 0) {
-                table.innerHTML = '<tr><td colspan="6" style="text-align:center;">No teams found in database.</td></tr>';
+
+            if (!data || data.length === 0) {
+                table.innerHTML = '<tr><td colspan="8" style="text-align:center;">No teams found.</td></tr>';
                 return;
             }
 
@@ -77,10 +103,17 @@
                 table.innerHTML += `
                     <tr>
                         <td style="font-weight:bold;">${row.name}</td>
+
                         <td><input type="number" value="${row.cat1 || 0}" onchange="updateScore(${row.id}, 'cat1', this.value)"></td>
                         <td><input type="number" value="${row.cat2 || 0}" onchange="updateScore(${row.id}, 'cat2', this.value)"></td>
                         <td><input type="number" value="${row.cat3 || 0}" onchange="updateScore(${row.id}, 'cat3', this.value)"></td>
-                        <td style="font-weight:bold; color: #2563eb;" id="total-${row.id}">${row.total}</td>
+                        <td><input type="number" value="${row.cat4 || 0}" onchange="updateScore(${row.id}, 'cat4', this.value)"></td>
+                        <td><input type="number" value="${row.cat5 || 0}" onchange="updateScore(${row.id}, 'cat5', this.value)"></td>
+
+                        <td style="font-weight:bold; color:#2563eb;" id="total-${row.id}">
+                            ${row.total}
+                        </td>
+
                         <td><button onclick="recalc(${row.id})" class="btn-recalc">Recalc</button></td>
                     </tr>
                 `;
@@ -88,18 +121,33 @@
         }
 
         window.updateScore = async (id, col, val) => {
-            const { error } = await db.from('scoreboard').update({ [col]: Number(val) }).eq('id', id);
-            if(error) alert("Save failed: " + error.message);
+            const { error } = await db.from('scoreboard')
+                .update({ [col]: Number(val) })
+                .eq('id', id);
+
+            if (error) alert("Save failed: " + error.message);
         };
 
         window.recalc = async (id) => {
-            const { data } = await db.from('scoreboard').select('*').eq('id', id).single();
-            const total = (data.cat1 || 0) + (data.cat2 || 0) + (data.cat3 || 0);
+            const { data } = await db.from('scoreboard')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            const total =
+                (data.cat1 || 0) +
+                (data.cat2 || 0) +
+                (data.cat3 || 0) +
+                (data.cat4 || 0) +
+                (data.cat5 || 0);
+
             await db.from('scoreboard').update({ total }).eq('id', id);
+
             document.getElementById(`total-${id}`).innerText = total;
         };
 
         loadScores();
     </script>
+
 </body>
 </html>
