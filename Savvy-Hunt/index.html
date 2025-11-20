@@ -27,6 +27,24 @@
     </script>
 
     <style>
+        /* --- ANIMATION STYLES (Replicating BlurText) --- */
+        /* The initial state of the words */
+        .blur-word {
+            display: inline-block;
+            opacity: 0;
+            filter: blur(10px);
+            transform: translateY(-20px); /* direction="top" */
+            transition: all 0.8s cubic-bezier(0.2, 0.65, 0.3, 0.9); /* Smooth easing */
+            margin-right: 0.2em; /* Spacing between words */
+        }
+        
+        /* The active state (after JS triggers it) */
+        .blur-word.visible {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateY(0);
+        }
+
         /* Retaining your exact styles */
         .btn-gradient { background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); color: white !important; transition: transform 0.2s, box-shadow 0.2s; }
         .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(234, 88, 12, 0.3); }
@@ -50,10 +68,16 @@
         class="relative min-h-[85vh] flex items-center justify-center text-white text-center rounded-b-[3rem] overflow-hidden shadow-2xl pb-32"
     >
         <div class="relative z-10 p-6 max-w-5xl">
-            <h1 class="text-6xl md:text-8xl font-black mb-6 drop-shadow-lg tracking-tight leading-tight">
-                Welcome to the <br />
-                <span class="text-orange-400">Savvy Hunt!</span>
+            
+            <!-- 
+                UPDATED TITLE FOR ANIMATION 
+                I added the id="hero-title" so our script can find it.
+                The content is empty here because the script below will fill it with the animated words.
+            -->
+            <h1 id="hero-title" class="text-6xl md:text-8xl font-black mb-6 drop-shadow-lg tracking-tight leading-tight min-h-[160px]">
+                <!-- Text is injected by JS below to handle the animation -->
             </h1>
+
             <p class="text-2xl md:text-3xl font-bold mb-4 drop-shadow-md">
                 The ultimate school showdown is happening NOW!
             </p>
@@ -232,14 +256,65 @@
     </footer>
 
     <script>
-        // --- 1. SUPABASE CONFIGURATION ---
+        // --- ANIMATION SCRIPT (Vanilla JS BlurText) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const titleContainer = document.getElementById('hero-title');
+            // The text we want to animate
+            const phrases = [
+                { text: "Welcome to the", color: "text-white" },
+                { break: true },
+                { text: "Savvy Hunt!", color: "text-orange-400" }
+            ];
+            
+            let delayCounter = 150; // Base delay
+
+            phrases.forEach(phrase => {
+                if (phrase.break) {
+                    titleContainer.appendChild(document.createElement('br'));
+                } else {
+                    // Split phrase into words
+                    const words = phrase.text.split(' ');
+                    const spanWrapper = document.createElement('span');
+                    if (phrase.color) spanWrapper.className = phrase.color;
+
+                    words.forEach((word, index) => {
+                        const wordSpan = document.createElement('span');
+                        wordSpan.textContent = word + '\u00A0'; // Add space
+                        wordSpan.className = 'blur-word';
+                        wordSpan.style.transitionDelay = `${delayCounter}ms`;
+                        spanWrapper.appendChild(wordSpan);
+                        
+                        // Increase delay for next word
+                        delayCounter += 150;
+                    });
+                    titleContainer.appendChild(spanWrapper);
+                }
+            });
+
+            // Trigger Animation after a brief moment
+            setTimeout(() => {
+                const animatedWords = document.querySelectorAll('.blur-word');
+                animatedWords.forEach(span => span.classList.add('visible'));
+                
+                // Call the completion handler after last animation ends
+                const totalDuration = delayCounter + 800; // Total delay + transition time
+                setTimeout(handleAnimationComplete, totalDuration);
+            }, 100);
+        });
+
+        const handleAnimationComplete = () => {
+            console.log('Animation completed!');
+        };
+
+
+        // --- SUPABASE CONFIGURATION ---
         const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const grid = document.getElementById('events-grid');
 
-        // --- 2. FETCH DATA ---
+        // --- FETCH DATA ---
         async function fetchEvents() {
             const { data, error } = await supabase
                 .from('live_events')
@@ -255,7 +330,7 @@
             renderEvents(data);
         }
 
-        // --- 3. REALTIME LISTENER ---
+        // --- REALTIME LISTENER ---
         supabase
             .channel('public-channel')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, (payload) => {
@@ -263,7 +338,7 @@
             })
             .subscribe();
 
-        // --- 4. RENDER FUNCTION ---
+        // --- RENDER FUNCTION ---
         function renderEvents(events) {
             grid.innerHTML = '';
 
@@ -286,7 +361,6 @@
                     cardOpacity = 'opacity-60';
                 }
 
-                // UPDATED CARD HTML: Replaced Progress Bar with Category Tag
                 const cardHTML = `
                     <div class="card p-8 text-left ${cardOpacity} flex flex-col justify-between h-full">
                         <div>
