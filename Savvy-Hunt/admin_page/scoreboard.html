@@ -9,7 +9,7 @@
 
     <style>
         body { font-family: sans-serif; background-color: #f3f4f6; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .container { max-width: 1100px; margin: 0 auto; background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
         th { background-color: #f9fafb; }
@@ -17,21 +17,13 @@
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .btn-recalc { background: #3b82f6; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8em; }
 
-        /* Corrected Scrollbar Code */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #FFF3E6;
-            border-radius: 10px;
-        }
-
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #FFF3E6; border-radius: 10px; }
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, #F97316, #EA580C);
             border-radius: 10px;
         }
-
         ::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(180deg, #EA580C, #C2410C);
         }
@@ -56,13 +48,14 @@
                         <th>Cat 3</th>
                         <th>Cat 4</th>
                         <th>Cat 5</th>
+                        <th>Common Cat</th>
                         <th>Total</th>
                         <th>Action</th>
                     </tr>
                 </thead>
 
                 <tbody id="score-table">
-                    <tr><td colspan="8" style="text-align:center; color: gray;">Loading data...</td></tr>
+                    <tr><td colspan="9" style="text-align:center; color: gray;">Loading data...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -88,14 +81,14 @@
             const table = document.getElementById('score-table');
             
             if (error) {
-                table.innerHTML = `<tr><td colspan="8" style="color:red; text-align:center;">Error loading: ${error.message}</td></tr>`;
+                table.innerHTML = `<tr><td colspan="9" style="color:red; text-align:center;">Error loading: ${error.message}</td></tr>`;
                 return;
             }
 
             table.innerHTML = '';
 
             if (!data || data.length === 0) {
-                table.innerHTML = '<tr><td colspan="8" style="text-align:center;">No teams found.</td></tr>';
+                table.innerHTML = '<tr><td colspan="9" style="text-align:center;">No teams found.</td></tr>';
                 return;
             }
 
@@ -109,6 +102,8 @@
                         <td><input type="number" value="${row.cat3 || 0}" onchange="updateScore(${row.id}, 'cat3', this.value)"></td>
                         <td><input type="number" value="${row.cat4 || 0}" onchange="updateScore(${row.id}, 'cat4', this.value)"></td>
                         <td><input type="number" value="${row.cat5 || 0}" onchange="updateScore(${row.id}, 'cat5', this.value)"></td>
+
+                        <td><input type="number" value="${row.common_cat || 0}" onchange="updateScore(${row.id}, 'common_cat', this.value)"></td>
 
                         <td style="font-weight:bold; color:#2563eb;" id="total-${row.id}">
                             ${row.total}
@@ -139,7 +134,8 @@
                 (data.cat2 || 0) +
                 (data.cat3 || 0) +
                 (data.cat4 || 0) +
-                (data.cat5 || 0);
+                (data.cat5 || 0) +
+                (data.common_cat || 0);
 
             await db.from('scoreboard').update({ total }).eq('id', id);
 

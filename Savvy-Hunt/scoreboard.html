@@ -9,14 +9,13 @@
       font-family: "Poppins", "Inter", "Segoe UI", sans-serif;
       margin: 0;
       padding: 0;
-      padding-top: 80px;   /* space for navbar */
+      padding-top: 80px;
       background: #f9fafb;
     }
 
-    /* NAVBAR */
     .navbar {
       width: 100%;
-      height: 80px; /* <<< FIXED HEIGHT */
+      height: 80px;
       padding: 15px 30px;
       background: #1f2937;
       display: flex;
@@ -47,7 +46,6 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      box-sizing: border-box;
     }
 
     .nav-btn:hover {
@@ -55,7 +53,6 @@
       box-shadow: 0px 4px 12px rgba(249,115,22,0.4);
     }
 
-    /* MAIN SCOREBOARD CONTAINER */
     .scoreboard-container {
       max-width: 1100px;
       margin: 40px auto;
@@ -66,7 +63,6 @@
       border-top: 6px solid #f97316;
     }
 
-    /* TITLE */
     .scoreboard-title {
       font-size: 2.2rem;
       font-weight: 800;
@@ -75,7 +71,6 @@
       margin-bottom: 25px;
     }
 
-    /* TABLE */
     .scoreboard-table {
       width: 100%;
       border-collapse: collapse;
@@ -91,19 +86,8 @@
     .scoreboard-table th {
       padding: 14px 10px;
       font-size: 1rem;
-      letter-spacing: 0.5px;
       text-transform: uppercase;
       border-bottom: 2px solid #f97316;
-    }
-
-    .scoreboard-table tbody tr {
-      background: #f9fafb;
-      transition: 0.2s ease-in-out;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .scoreboard-table tbody tr:hover {
-      background: #fff7ed;
     }
 
     .scoreboard-table td {
@@ -127,36 +111,23 @@
       padding: 8px;
     }
 
-    @media (max-width: 768px) {
-      .scoreboard-table th,
-      .scoreboard-table td {
-        font-size: 0.85rem;
-        padding: 8px;
-      }
-
-      .scoreboard-title {
-        font-size: 1.7rem;
-      }
-    }
-
-        ::-webkit-scrollbar {
-        width: 10px;
+    ::-webkit-scrollbar {
+      width: 10px;
     }
 
     ::-webkit-scrollbar-track {
-        background: #FFF3E6;
-        border-radius: 10px;
+      background: #FFF3E6;
+      border-radius: 10px;
     }
 
     ::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, #F97316, #EA580C);
-        border-radius: 10px;
+      background: linear-gradient(180deg, #F97316, #EA580C);
+      border-radius: 10px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(180deg, #EA580C, #C2410C);
+      background: linear-gradient(180deg, #EA580C, #C2410C);
     }
-
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -164,17 +135,11 @@
 
 <body>
 
-<!-- FIXED NAVBAR -->
 <nav class="navbar">
-  <div class="nav-left">
-    <span class="nav-title">SAVVY HUNT LIVE SCOREBOARD</span>
-  </div>
-  <div class="nav-right">
-    <a href="index.html" class="nav-btn">🏠 Home</a>
-  </div>
+  <span class="nav-title">SAVVY HUNT LIVE SCOREBOARD</span>
+  <a href="index.html" class="nav-btn">🏠 Home</a>
 </nav>
 
-<!-- SCOREBOARD -->
 <div class="scoreboard-container">
 
   <h1 class="scoreboard-title">SAVVY HUNT LEADERBOARD</h1>
@@ -183,12 +148,13 @@
     <thead>
       <tr>
         <th>Rank</th>
-        <th>Name of Institution</th>
+        <th>Name</th>
         <th>Cat 1</th>
         <th>Cat 2</th>
         <th>Cat 3</th>
         <th>Cat 4</th>
         <th>Cat 5</th>
+        <th>Common Cat</th>   <!-- NEW COLUMN -->
         <th>Total</th>
       </tr>
     </thead>
@@ -222,6 +188,7 @@ async function loadScoreboard() {
         <td>${row.cat3}</td>
         <td>${row.cat4}</td>
         <td>${row.cat5}</td>
+        <td>${row.common_cat}</td>   <!-- NEW -->
         <td class="scoreboard-total">${row.total}</td>
       </tr>
     `;
