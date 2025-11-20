@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savvy Hunt Snapshots</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        
+        /* --- PINTEREST MASONRY LAYOUT --- */
+        
+        .masonry-grid {
+            /* MOBILE DEFAULT: 2 Columns (Pinterest Style) */
+            column-count: 2;
+            column-gap: 10px; /* Tighter gap for phones */
+        }
+
+        /* Tablet: 3 Columns */
+        @media (min-width: 768px) {
+            .masonry-grid {
+                column-count: 3;
+                column-gap: 20px;
+            }
+        }
+        
+        /* Laptop/Desktop: 4 Columns */
+        @media (min-width: 1280px) {
+            .masonry-grid {
+                column-count: 4;
+            }
+        }
+
+        /* The Image Card */
+        .pin-card {
+            /* Essential to prevent images from splitting between columns */
+            break-inside: avoid;
+            -webkit-column-break-inside: avoid;
+            
+            margin-bottom: 10px; /* Bottom spacing matching the gap */
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            width: 100%;
+            display: inline-block; /* Helps with alignment in columns */
+        }
+
+        @media (min-width: 768px) {
+            .pin-card {
+                margin-bottom: 20px;
+                border-radius: 16px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+        }
+        
+        .pin-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animate-gradient-bg {
+            background: linear-gradient(-45deg, #ea580c, #c2410c, #f59e0b, #ea580c);
+            background-size: 400% 400%;
+            animation: gradient-flow 15s ease infinite;
+        }
+
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        /* Loading Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #e5e7eb 25%, #d1d5db 50%, #e5e7eb 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 12px;
+            width: 100%;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <div class="relative animate-gradient-bg py-20 px-4 text-center shadow-2xl mb-12 overflow-hidden">
+    
+    <div class="absolute inset-0 opacity-10" 
+         style="background-image: radial-gradient(#fff 1.5px, transparent 1.5px); background-size: 24px 24px;">
+    </div>
+
+    <div class="relative z-10 flex flex-col items-center">
+        
+        <a href="index.html" 
+           class="glass-btn text-white font-bold text-sm px-6 py-2.5 rounded-full mb-8 inline-flex items-center gap-2">
+           <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+           Back to Home
+        </a>
+
+        <h1 class="text-5xl md:text-7xl font-black text-white mb-4 drop-shadow-md tracking-tight">
+            Snapshots
+            <span class="inline-block" style="animation: float 3s ease-in-out infinite;">📸</span>
+        </h1>
+        
+        <p class="text-xl md:text-2xl text-orange-50 font-medium max-w-xl leading-relaxed opacity-90">
+            Capturing the <span class="border-b-2 border-yellow-400 border-dashed pb-1">best moments</span> of the Savvy Hunt live!
+        </p>
+
+    </div>
+
+    <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-none rotate-180">
+        <svg class="relative block w-[calc(100%+1.3px)] h-[40px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="#f3f4f6"></path>
+        </svg>
+    </div>
+</div>
+
+    <div class="max-w-7xl mx-auto px-2 pb-20"> <div id="loading" class="masonry-grid">
+            <div class="skeleton h-64"></div>
+            <div class="skeleton h-40"></div>
+            <div class="skeleton h-80"></div>
+            <div class="skeleton h-52"></div>
+            <div class="skeleton h-60"></div>
+            <div class="skeleton h-44"></div>
+        </div>
+
+        <div id="gallery" class="masonry-grid hidden"></div>
+
+        <div id="error-msg" class="hidden text-center py-20 text-gray-500">
+            <p>Could not load images. <a href="#" id="fallback-link" class="text-blue-500 underline">View directly on Drive</a></p>
+        </div>
+
+    </div>
+
+    <script>
+        // ⚠️ PASTE YOUR APPS SCRIPT WEB APP URL HERE ⚠️
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyt_Fk-PC0tvKwYCIU61MnLx-GqdgCLK4PtFanm4drTDnWgzxdL2I1wD99ufV5_-g-N/exec';
+
+        const gallery = document.getElementById('gallery');
+        const loading = document.getElementById('loading');
+        const errorMsg = document.getElementById('error-msg');
+
+        async function fetchImages() {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+
+                if (!data || data.length === 0) {
+                    loading.classList.add('hidden');
+                    errorMsg.innerHTML = "<p>No photos found yet.</p>";
+                    errorMsg.classList.remove('hidden');
+                    return;
+                }
+                renderImages(data);
+            } catch (error) {
+                console.error('Error:', error);
+                loading.classList.add('hidden');
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        function renderImages(images) {
+            loading.classList.add('hidden');
+            gallery.classList.remove('hidden');
+
+            images.forEach(img => {
+                const card = document.createElement('div');
+                // Added 'relative' and 'group' for positioning
+                card.className = 'pin-card group relative';
+                
+                // Direct download link
+                const downloadLink = `https://drive.google.com/uc?export=download&id=${img.id}`;
+
+                card.innerHTML = `
+                    <img src="${img.url}" alt="Snapshot" class="pin-image w-full h-auto block" loading="lazy">
+                    
+                    <div class="absolute bottom-0 left-0 right-0 p-4 flex justify-end gap-3 z-20
+                                bg-gradient-to-t from-black/60 to-transparent
+                                transition-opacity duration-300
+                                opacity-100 
+                                md:opacity-0 md:group-hover:opacity-100">
+                        
+                        <a href="${img.url}" target="_blank" 
+                           class="bg-white text-gray-900 p-3 rounded-full shadow-lg hover:scale-110 transition flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </a>
+
+                        <a href="${downloadLink}" 
+                           class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 hover:scale-110 transition flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                        </a>
+
+                    </div>
+                `;
+                gallery.appendChild(card);
+            });
+        }
+
+        fetchImages();
+    </script>
+</body>
+</html>
