@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizing Committee - Savvy Hunt</title>
+    
+    <!-- Fonts & Tailwind -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFBF5;
+            color: #1f2937;
+        }
+        
+        /* Card Hover Effect */
+        .team-card {
+            background: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #f3f4f6;
+        }
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: #fed7aa; /* Light orange border on hover */
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <!-- NAVIGATION -->
+    <nav class="p-4 md:p-6 flex justify-between items-center max-w-7xl mx-auto">
+        <a href="index.html" class="text-xl md:text-2xl font-black tracking-tighter text-gray-900">
+            Savvy Hunt <span class="text-orange-500">2025</span>
+        </a>
+        <a href="index.html" class="text-xs md:text-sm font-bold text-gray-500 hover:text-orange-500 transition">
+            &larr; Back to Home
+        </a>
+    </nav>
+
+    <!-- HERO HEADER -->
+    <header class="text-center py-10 md:py-16 px-4">
+        <h1 class="text-4xl md:text-7xl font-black mb-4 md:mb-6 text-gray-900">
+            Meet the <span class="text-orange-500">Team</span>
+        </h1>
+        <p class="text-base md:text-xl text-gray-500 max-w-2xl mx-auto">
+            The dedicated students and faculty behind Savvy Hunt 2025.
+        </p>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 md:px-6 pb-32 space-y-16 md:space-y-32">
+
+        <!-- SECTION 1: LEAD DEVELOPERS -->
+        <section>
+            <div class="flex items-center gap-3 mb-6 md:mb-10">
+                <div class="h-1 w-8 md:w-12 bg-orange-500 rounded-full"></div>
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800">Lead Developers</h2>
+            </div>
+            
+            <!-- Changed to grid-cols-2 on mobile (small screens) to reduce length -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
+                <!-- Raihan Shiras -->
+                <div class="team-card rounded-2xl overflow-hidden p-3 md:p-6 text-center group">
+                    <div class="aspect-square rounded-xl overflow-hidden mb-3 bg-gray-100 mx-auto w-full max-w-[300px]">
+                        <img src="assests/raihan.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <h3 class="text-base md:text-xl font-bold text-gray-900 leading-tight">Raihan Shiras</h3>
+                    <p class="text-[10px] md:text-sm text-orange-500 font-medium uppercase tracking-wide mt-1">Lead Developer</p>
+                </div>
+
+                <!-- Rohit Fernantez -->
+                <div class="team-card rounded-2xl overflow-hidden p-3 md:p-6 text-center group">
+                    <div class="aspect-square rounded-xl overflow-hidden mb-3 bg-gray-100 mx-auto w-full max-w-[300px]">
+                        <img src="assests/rohit.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <h3 class="text-base md:text-xl font-bold text-gray-900 leading-tight">Rohit Fernantez</h3>
+                    <p class="text-[10px] md:text-sm text-orange-500 font-medium uppercase tracking-wide mt-1">Lead Developer</p>
+                </div>
+
+                <!-- Melvin Biju -->
+                <div class="team-card rounded-2xl overflow-hidden p-3 md:p-6 text-center group">
+                    <div class="aspect-square rounded-xl overflow-hidden mb-3 bg-gray-100 mx-auto w-full max-w-[300px]">
+                        <img src="assests/melvin.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <h3 class="text-base md:text-xl font-bold text-gray-900 leading-tight">Melvin Biju</h3>
+                    <p class="text-[10px] md:text-sm text-orange-500 font-medium uppercase tracking-wide mt-1">Lead Developer</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 1.5: STUDENT COORDINATORS -->
+        <section>
+            <div class="flex items-center gap-3 mb-6 md:mb-10">
+                <div class="h-1 w-8 md:w-12 bg-teal-500 rounded-full"></div>
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800">Student Coordinators</h2>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
+                <!-- Basil Imthiyas Adams -->
+                <div class="team-card rounded-2xl overflow-hidden p-3 md:p-6 text-center group border-t-4 border-teal-500">
+                    <div class="aspect-square rounded-full overflow-hidden mb-3 bg-gray-100 w-20 h-20 md:w-32 md:h-32 mx-auto border-4 border-white shadow-md">
+                        <img src="assests/basil.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold text-gray-900 leading-tight">Basil Imthiyas Adams</h3>
+                    <p class="text-[10px] md:text-xs text-teal-600 font-bold uppercase tracking-widest mt-1">Coordinator</p>
+                </div>
+
+                <!-- Febin Baiju -->
+                <div class="team-card rounded-2xl overflow-hidden p-3 md:p-6 text-center group border-t-4 border-teal-500">
+                    <div class="aspect-square rounded-full overflow-hidden mb-3 bg-gray-100 w-20 h-20 md:w-32 md:h-32 mx-auto border-4 border-white shadow-md">
+                        <img src="https://placehold.co/300x300/e2e8f0/94a3b8?text=Febin" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold text-gray-900 leading-tight">Febin Baiju</h3>
+                    <p class="text-[10px] md:text-xs text-teal-600 font-bold uppercase tracking-widest mt-1">Coordinator</p>
+                </div>
+
+                <!-- Jaison K.K -->
+                <div class="team-card rounded-2xl overflow-hidden p-3 md:p-6 text-center group border-t-4 border-teal-500">
+                    <div class="aspect-square rounded-full overflow-hidden mb-3 bg-gray-100 w-20 h-20 md:w-32 md:h-32 mx-auto border-4 border-white shadow-md">
+                        <img src="https://placehold.co/300x300/e2e8f0/94a3b8?text=Jaison" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold text-gray-900 leading-tight">Jaison K.K</h3>
+                    <p class="text-[10px] md:text-xs text-teal-600 font-bold uppercase tracking-widest mt-1">Coordinator</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: SCHOOL LEADERSHIP -->
+        <section>
+            <div class="flex items-center gap-3 mb-6 md:mb-10">
+                <div class="h-1 w-8 md:w-12 bg-blue-500 rounded-full"></div>
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800">School Leadership</h2>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+                <!-- 1. President -->
+                <div class="team-card p-4 md:p-8 rounded-2xl text-center border-t-4 border-blue-500">
+                    <div class="w-20 h-20 md:w-32 md:h-32 mx-auto rounded-full bg-gray-200 mb-3 md:mb-6 overflow-hidden border-4 border-white shadow-lg">
+                        <img src="assests/alfa.jpg" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold text-gray-900 mb-1 leading-tight">Mrs. ALFA MARY</h3>
+                    <p class="text-blue-600 font-bold uppercase text-[10px] md:text-xs tracking-widest">President</p>
+                </div>
+
+                <!-- 2. School Chairman -->
+                <div class="team-card p-4 md:p-8 rounded-2xl text-center border-t-4 border-blue-500 transform lg:-translate-y-4">
+                    <div class="w-20 h-20 md:w-32 md:h-32 mx-auto rounded-full bg-gray-200 mb-3 md:mb-6 overflow-hidden border-4 border-white shadow-lg">
+                        <img src="assests/chairman.jpg" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold text-gray-900 mb-1 leading-tight">Sir Dr. GEEVARGHESE YOHANNAN</h3>
+                    <p class="text-blue-600 font-bold uppercase text-[10px] md:text-xs tracking-widest">School Chairman</p>
+                </div>
+
+                <!-- 3. Principal -->
+                <div class="team-card p-4 md:p-8 rounded-2xl text-center border-t-4 border-blue-500 transform lg:-translate-y-4">
+                    <div class="w-20 h-20 md:w-32 md:h-32 mx-auto rounded-full bg-gray-200 mb-3 md:mb-6 overflow-hidden border-4 border-white shadow-lg">
+                        <img src="assests/julie.jpg" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold text-gray-900 mb-1 leading-tight">Mrs. JULIE KOSHY</h3>
+                    <p class="text-blue-600 font-bold uppercase text-[10px] md:text-xs tracking-widest">Principal</p>
+                </div>
+
+                <!-- 4. Vice President -->
+                <div class="team-card p-4 md:p-8 rounded-2xl text-center border-t-4 border-blue-500">
+                    <div class="w-20 h-20 md:w-32 md:h-32 mx-auto rounded-full bg-gray-200 mb-3 md:mb-6 overflow-hidden border-4 border-white shadow-lg">
+                        <img src="assests/jessy.jpg" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold text-gray-900 mb-1 leading-tight">Mrs. JESSY VINU</h3>
+                    <p class="text-blue-600 font-bold uppercase text-[10px] md:text-xs tracking-widest">Vice Principal</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: JURY & FACULTY COORDINATORS -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16">
+            
+            <!-- Jury of Appeal -->
+            <section>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="h-1 w-8 bg-purple-500 rounded-full"></div>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">Jury of Appeal</h2>
+                </div>
+                <div class="bg-white rounded-2xl p-4 md:p-8 border border-purple-100 shadow-sm">
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-4 p-3 hover:bg-purple-50 rounded-lg transition">
+                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">1</div>
+                            <p class="font-bold text-lg text-gray-800">Mrs. Julie Koshy</p>
+                        </li>
+                        <li class="flex items-center gap-4 p-3 hover:bg-purple-50 rounded-lg transition">
+                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">2</div>
+                            <p class="font-bold text-lg text-gray-800">Mrs. Krishna P Nair</p>
+                        </li>
+                        <li class="flex items-center gap-4 p-3 hover:bg-purple-50 rounded-lg transition">
+                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">3</div>
+                            <p class="font-bold text-lg text-gray-800">Mrs. Beena Jacob</p>
+                        </li>
+                        <li class="flex items-center gap-4 p-3 hover:bg-purple-50 rounded-lg transition">
+                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">4</div>
+                            <p class="font-bold text-lg text-gray-800">Mrs. Uma V</p>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Event Coordinators (Faculty) -->
+            <section>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="h-1 w-8 bg-green-500 rounded-full"></div>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">Faculty Event Coordinators</h2>
+                </div>
+                <div class="bg-white rounded-2xl p-4 md:p-8 border border-green-100 shadow-sm">
+                    <div class="grid grid-cols-2 gap-3 md:gap-4">
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
+                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">1</div>
+                            <p class="font-bold text-xs md:text-base text-gray-800">Mrs. Jessy Vinu</p>
+                        </div>
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
+                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">2</div>
+                            <p class="font-bold text-xs md:text-base text-gray-800">Mrs. Nisha Pillai</p>
+                        </div>
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
+                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">3</div>
+                            <p class="font-bold text-xs md:text-base text-gray-800">Rachel Thomas</p>
+                        </div>
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
+                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">4</div>
+                            <p class="font-bold text-xs md:text-base text-gray-800">Mrs. Soumya R</p>
+                        </div>
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
+                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">5</div>
+                            <p class="font-bold text-xs md:text-base text-gray-800">Mrs. Radhamaniamma</p>
+                        </div>
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
+                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">6</div>
+                            <p class="font-bold text-xs md:text-base text-gray-800">Mr Daniel V Mathew</p>
+                        </div>
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
+                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">7</div>
+                            <p class="font-bold text-xs md:text-base text-gray-800">Mrs. Preetha G S</p>
+                        </div>
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
+                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">8</div>
+                            <p class="font-bold text-xs md:text-base text-gray-800">Mrs. Devu R Unnithan</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <footer class="bg-gray-900 text-gray-400 py-8 md:py-12 text-center text-sm">
+        <p>&copy; 2025 Savvy Hunt. Organized by the Student Council.</p>
+    </footer>
+
+</body>
+</html>

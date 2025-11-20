@@ -47,7 +47,9 @@
         .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(234, 88, 12, 0.3); }
         .btn-outline { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); transition: all 0.3s ease; }
         .btn-outline:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
-        
+        .btn-teal { background-color: #14B8A6; color: white; transition: all 0.3s; }
+        .btn-teal:hover { background-color: #0D9488; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(20, 184, 166, 0.3); }
+
         /* --- CARD STYLES --- */
         .card { background: white; border-radius: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
@@ -64,142 +66,148 @@
 
     <!-- HERO SECTION -->
     <section 
-        style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('bg.png'); background-color: #1f2937; background-size: cover; background-position: center;" 
-        class="relative min-h-[85vh] flex items-center justify-center text-white text-center rounded-b-[3rem] overflow-hidden shadow-2xl pb-32"
+        style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('assests/bg.png'); background-color: #1f2937; background-size: cover; background-position: center;" 
+        class="relative min-h-[85vh] flex items-center justify-center text-white text-center rounded-b-[3rem] overflow-hidden shadow-2xl pb-16 md:pb-32"
     >
-        <div class="relative z-10 p-6 max-w-5xl">
+        <div class="relative z-10 p-4 md:p-6 max-w-5xl">
             
-            <!-- ANIMATED TITLE -->
-            <h1 id="hero-title" class="text-6xl md:text-8xl font-black mb-6 drop-shadow-lg tracking-tight leading-tight min-h-[160px]">
+            <!-- ANIMATED TITLE (Smaller font on mobile) -->
+            <h1 id="hero-title" class="text-4xl md:text-8xl font-black mb-4 md:mb-6 drop-shadow-lg tracking-tight leading-tight min-h-[120px] md:min-h-[160px]">
                 <!-- Text injected by JS -->
             </h1>
 
-            <p class="text-2xl md:text-3xl font-bold mb-4 drop-shadow-md">
+            <p class="text-lg md:text-3xl font-bold mb-4 drop-shadow-md">
                 The ultimate school showdown is happening NOW!
             </p>
-            <p class="text-lg md:text-xl max-w-2xl mx-auto mb-12 text-gray-100 drop-shadow-md font-medium">
+            <p class="text-base md:text-xl max-w-2xl mx-auto mb-8 md:mb-12 text-gray-100 drop-shadow-md font-medium">
                 Watch the competition unfold in real-time as schools battle for the championship.
             </p>
-            <div class="flex flex-col sm:flex-row gap-6 justify-center">
-                <a href="#live-events" class="btn-gradient text-white font-bold py-4 px-10 rounded-full text-lg shadow-xl">
+            <div class="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
+                <a href="#live-events" class="btn-gradient text-white font-bold py-3 px-6 md:py-4 md:px-10 rounded-full text-base md:text-lg shadow-xl">
                     See What's Happening LIVE
                 </a>
-                <a href="scoreboard.html" class="btn-outline text-white font-bold py-4 px-10 rounded-full text-lg shadow-xl">
+                <a href="scoreboard.html" class="btn-outline text-white font-bold py-3 px-6 md:py-4 md:px-10 rounded-full text-base md:text-lg shadow-xl">
                     View the Full Scoreboard
                 </a>
             </div>
         </div>
     </section>
 
-    <!-- MAIN CONTENT -->
-    <div class="max-w-7xl mx-auto p-6 md:p-12 relative -mt-12 md:-mt-24 z-20">
+    <!-- MAIN CONTENT (Adjusted margins for mobile) -->
+    <div class="max-w-7xl mx-auto p-4 md:p-12 relative -mt-16 md:-mt-24 z-20">
         
         <!-- STATUS SECTION -->
-        <section id="live-events" class="text-center mb-32 px-4">
-            <div class="inline-flex items-center bg-white/90 backdrop-blur shadow-lg text-red-600 font-bold py-3 px-6 rounded-full mb-8 text-lg border border-red-100">
-                <span class="status-dot bg-red-600 mr-3"></span> LIVE NOW: The Hunt Is On!
+        <section id="live-events" class="text-center mb-16 md:mb-32 px-2 md:px-4">
+            <div class="inline-flex items-center bg-white/90 backdrop-blur shadow-lg text-red-600 font-bold py-2 px-4 md:py-3 md:px-6 rounded-full mb-6 md:mb-8 text-sm md:text-lg border border-red-100">
+                <span class="status-dot bg-red-600 mr-2 md:mr-3"></span> LIVE NOW: The Hunt Is On!
             </div>
             
-            <h2 class="text-4xl md:text-6xl font-extrabold mb-4 text-gray-900">Real-Time Event Status</h2>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-16">
+            <h2 class="text-3xl md:text-6xl font-extrabold mb-4 text-gray-900">Real-Time Event Status</h2>
+            <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto mb-10 md:mb-16">
                 Don't miss a second of the action. Here's what's happening right now across campus.
             </p>
 
             <!-- DYNAMIC EVENTS GRID -->
-            <div id="events-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div id="events-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                 <!-- Loading State -->
-                <div class="col-span-3 py-12 bg-white rounded-3xl border border-gray-100">
+                <div class="col-span-1 md:col-span-3 py-12 bg-white rounded-3xl border border-gray-100">
                     <p class="text-gray-500 animate-pulse">Connecting to live feed...</p>
                 </div>
             </div>
             
-            <a href="schedule.html" class="btn-gradient text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg inline-flex items-center mt-16">
+            <a href="schedule.html" class="btn-gradient text-white font-bold py-3 px-8 md:py-4 md:px-10 rounded-full text-base md:text-lg shadow-lg inline-flex items-center mt-10 md:mt-16">
                  Go to the Full Event Schedule →
             </a>
         </section>
 
         <!-- LEADERBOARD SECTION -->
-        <section class="card p-8 md:p-16 mb-32 bg-white border border-gray-100">
-             <div class="text-center max-w-3xl mx-auto mb-12">
-                <h2 class="text-4xl md:text-5xl font-extrabold mb-4">
+        <section class="card p-6 md:p-16 mb-16 md:mb-32 bg-white border border-gray-100">
+             <div class="text-center max-w-3xl mx-auto mb-8 md:mb-12">
+                <h2 class="text-3xl md:text-5xl font-extrabold mb-2 md:mb-4">
                     Who's Leading <span class="text-orange-500">the Pack?</span>
                 </h2>
-                <p class="text-gray-500 font-medium">
+                <p class="text-gray-500 font-medium text-sm md:text-base">
                     Last updated: <span class="text-gray-800 font-bold">2 minutes ago</span>
                 </p>
             </div>
 
             <!-- DYNAMIC LEADERBOARD -->
-            <div id="top-3-container" class="max-w-3xl mx-auto space-y-4">
+            <div id="top-3-container" class="max-w-3xl mx-auto space-y-3 md:space-y-4">
                 <p class="text-center text-gray-400 py-6 animate-pulse">Loading leaderboard...</p>
             </div>
 
              <div class="text-center mt-8">
-                 <a href="scoreboard.html" class="btn-teal font-bold py-4 px-8 rounded-full text-lg shadow-lg inline-block">
+                 <a href="scoreboard.html" class="btn-teal font-bold py-3 px-6 md:py-4 md:px-8 rounded-full text-base md:text-lg shadow-lg inline-block">
                    See the Full Scoreboard
                 </a>
              </div>
         </section>
 
-        <!-- SNAPSHOTS SECTION -->
-        <section class="mb-32 px-4">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <h2 class="text-4xl md:text-6xl font-extrabold mb-6">
+        <!-- SNAPSHOTS SECTION (Forced Grid on Mobile) -->
+        <section class="mb-16 md:mb-32 px-2 md:px-4">
+            <div class="text-center max-w-3xl mx-auto mb-10 md:mb-16">
+                <h2 class="text-3xl md:text-6xl font-extrabold mb-4 md:mb-6">
                     Savvy Hunt <span class="text-gray-400">Snapshots</span> 📸
                 </h2>
-                <p class="text-xl text-gray-600">
+                <p class="text-base md:text-xl text-gray-600">
                    See the competition as it happens! We're uploading photos and highlights.
                 </p>
                 <!-- View Photos Button -->
-                <a href="snapshots.html" class="mt-8 inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition">
+                <a href="snapshots.html" class="mt-6 md:mt-8 inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 md:py-3 md:px-8 rounded-full shadow-lg transition text-sm md:text-base">
                     View photos
                 </a>
             </div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="group relative rounded-3xl overflow-hidden shadow-lg h-[300px]">
+            <!-- CHANGED: grid-cols-2 on mobile to avoid long scroll -->
+            <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+                <div class="group relative rounded-2xl md:rounded-3xl overflow-hidden shadow-lg h-[180px] md:h-[300px]">
                     <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute bottom-0 left-0 p-6 bg-gradient-to-t from-black/70 to-transparent w-full">
-                        <h3 class="text-white text-lg font-bold">Team celebrates!</h3>
+                    <div class="absolute bottom-0 left-0 p-3 md:p-6 bg-gradient-to-t from-black/70 to-transparent w-full">
+                        <h3 class="text-white text-sm md:text-lg font-bold">Team celebrates!</h3>
                     </div>
                 </div>
-                <div class="group relative rounded-3xl overflow-hidden shadow-lg h-[300px]">
+                <div class="group relative rounded-2xl md:rounded-3xl overflow-hidden shadow-lg h-[180px] md:h-[300px]">
                     <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute bottom-0 left-0 p-6 bg-gradient-to-t from-black/70 to-transparent w-full">
-                         <span class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded mb-2 inline-block">LIVE</span>
-                        <h3 class="text-white text-lg font-bold">Ceremony Highlights</h3>
+                    <div class="absolute bottom-0 left-0 p-3 md:p-6 bg-gradient-to-t from-black/70 to-transparent w-full">
+                         <span class="bg-red-600 text-white text-[10px] md:text-xs font-bold px-2 py-0.5 rounded mb-1 inline-block">LIVE</span>
+                        <h3 class="text-white text-sm md:text-lg font-bold">Ceremony Highlights</h3>
                     </div>
                 </div>
-                <div class="group relative rounded-3xl overflow-hidden shadow-lg h-[300px]">
+                <div class="group relative rounded-2xl md:rounded-3xl overflow-hidden shadow-lg h-[180px] md:h-[300px] col-span-2 md:col-span-1">
                     <img src="https://images.unsplash.com/photo-1577896334614-501227471a34?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute bottom-0 left-0 p-6 bg-gradient-to-t from-black/70 to-transparent w-full">
-                        <h3 class="text-white text-lg font-bold">Planning the route</h3>
+                    <div class="absolute bottom-0 left-0 p-3 md:p-6 bg-gradient-to-t from-black/70 to-transparent w-full">
+                        <h3 class="text-white text-sm md:text-lg font-bold">Planning the route</h3>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- ABOUT SECTION -->
-        <section class="mb-32 px-4">
-             <div class="bg-white rounded-[3rem] p-8 md:p-16 lg:flex lg:items-center lg:gap-16 shadow-xl">
+        <section class="mb-16 md:mb-32 px-2 md:px-4">
+             <div class="bg-white rounded-[2rem] md:rounded-[3rem] p-6 md:p-16 lg:flex lg:items-center lg:gap-16 shadow-xl">
                 <div class="lg:w-1/2">
-                    <h2 class="text-4xl md:text-6xl font-extrabold mb-8 text-gray-900">
+                    <h2 class="text-3xl md:text-6xl font-extrabold mb-4 md:mb-8 text-gray-900">
                         What is the <span class="text-orange-500">Savvy Hunt?</span>
                     </h2>
-                    <p class="text-lg text-gray-600 mb-6 leading-relaxed">
-                        This is more than just a game. The Savvy Hunt is a student-organized competition designed to build school spirit, encourage teamwork, and challenge participants skills through a series of exciting events and activities.    
+                    <p class="text-base md:text-lg text-gray-600 mb-6 leading-relaxed">
+                        We're more than just a game. The Savvy Hunt is a student-organized competition designed to build school spirit.
                     </p>
                     <div class="flex items-center gap-4 mb-8">
-                         <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-2xl text-orange-600">🌟</div>
-                         <p class="font-bold text-gray-700">Thank you for being part of this event!</p>
+                         <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-orange-100 flex items-center justify-center text-xl md:text-2xl text-orange-600">🌟</div>
+                         <p class="font-bold text-gray-700 text-sm md:text-base">Thank you for being part of this event!</p>
                     </div>
-                    <a href="#" class="btn-teal font-bold py-4 px-8 rounded-full text-lg shadow-lg inline-block">
-                        Know More About Us
+                    
+                    <a href="about.html" class="btn-teal font-bold py-3 px-6 md:py-4 md:px-8 rounded-full text-base md:text-lg shadow-lg inline-block w-full md:w-auto text-center">
+                        Learn More About Our Mission
                     </a>
+                    
                 </div>
-                <div class="lg:w-1/2 mt-12 lg:mt-0">
-                    <div class="bg-orange-50 rounded-[2rem] p-10 border border-orange-100 relative">
-                        <h3 class="text-2xl font-bold mb-4 text-gray-900">Organized by Students of Media Club </h3>
+                <div class="lg:w-1/2 mt-8 md:mt-12 lg:mt-0">
+                    <div class="bg-orange-50 rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-10 border border-orange-100 relative">
+                        <h3 class="text-xl md:text-2xl font-bold mb-2 md:mb-4 text-gray-900">Organized by Students</h3>
+                        <p class="text-sm md:text-base text-gray-600 leading-relaxed">
+                            Proudly organized by the Student Council and Tech Club.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -207,10 +215,10 @@
 
     </div>
 
-    <footer class="bg-gray-900 text-gray-400 pt-20 pb-10 -mt-24 relative z-10" style="border-top-left-radius: 3rem; border-top-right-radius: 3rem;">
+    <footer class="bg-gray-900 text-gray-400 pt-16 md:pt-20 pb-8 md:pb-10 -mt-24 relative z-10" style="border-top-left-radius: 2rem; border-top-right-radius: 2rem;">
         <div class="max-w-7xl mx-auto px-8 text-center">
-            <h3 class="text-2xl font-bold text-white mb-2">Savvy Hunt <span class="text-orange-500">2025</span></h3>
-            <p class="text-sm text-gray-500">&copy; 2025 Savvy Hunt. A project by the District Student Council.</p>
+            <h3 class="text-xl md:text-2xl font-bold text-white mb-2">Savvy Hunt <span class="text-orange-500">2025</span></h3>
+            <p class="text-xs md:text-sm text-gray-500">&copy; 2025 Savvy Hunt. A project by the District Student Council.</p>
         </div>
     </footer>
 
@@ -277,7 +285,7 @@
         function renderEvents(events) {
             grid.innerHTML = '';
             if (!events || events.length === 0) {
-                grid.innerHTML = `<div class="col-span-3 text-gray-500 py-10">No live events right now.</div>`;
+                grid.innerHTML = `<div class="col-span-1 md:col-span-3 text-gray-500 py-10">No live events right now.</div>`;
                 return;
             }
 
@@ -291,27 +299,26 @@
                     contentHTML = `
                         <div class="flex flex-col h-full justify-between">
                             <div class="text-center w-full">
-                                <h3 class="text-2xl font-bold mb-2 text-gray-800">${data.name}</h3>
-                                <span class="bg-black text-white text-xs font-bold px-3 py-1 rounded-full mb-4 inline-block">🏁 RESULTS PUBLISHED</span>
+                                <h3 class="text-xl md:text-2xl font-bold mb-2 text-gray-800">${data.name}</h3>
+                                <span class="bg-black text-white text-[10px] md:text-xs font-bold px-3 py-1 rounded-full mb-4 inline-block">⭐ RESULTS PUBLISHED</span>
                                 
-                                <div class="space-y-3 text-left bg-white p-4 rounded-xl shadow-sm w-full mb-4">
+                                <div class="space-y-3 text-left bg-white p-3 md:p-4 rounded-xl shadow-sm w-full mb-4">
                                     <div class="flex items-center border-b pb-2">
-                                        <span class="text-2xl mr-3">🥇</span> 
-                                        <span class="font-bold text-gray-800">${data.winner_1 || 'TBA'}</span>
+                                        <span class="text-xl md:text-2xl mr-3">🥇</span> 
+                                        <span class="font-bold text-gray-800 text-sm md:text-base">${data.winner_1 || 'TBA'}</span>
                                     </div>
                                     <div class="flex items-center border-b pb-2">
-                                        <span class="text-xl mr-3">🥈</span> 
-                                        <span class="font-medium text-gray-600">${data.winner_2 || '-'}</span>
+                                        <span class="text-lg md:text-xl mr-3">🥈</span> 
+                                        <span class="font-medium text-gray-600 text-sm md:text-base">${data.winner_2 || '-'}</span>
                                     </div>
                                     <div class="flex items-center">
-                                        <span class="text-lg mr-3">🥉</span> 
-                                        <span class="font-medium text-gray-600">${data.winner_3 || '-'}</span>
+                                        <span class="text-base md:text-lg mr-3">🥉</span> 
+                                        <span class="font-medium text-gray-600 text-sm md:text-base">${data.winner_3 || '-'}</span>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- ADDED CATEGORY HERE -->
-                            <div class="border-t border-yellow-200 pt-4 mt-auto flex justify-between items-center text-sm text-gray-500 w-full">
+                            
+                            <div class="border-t border-yellow-200 pt-4 mt-auto flex justify-between items-center text-xs md:text-sm text-gray-500 w-full">
                                 <span>Category:</span>
                                 <span class="font-bold text-gray-700 bg-white border border-gray-200 px-3 py-1 rounded-full">
                                     ${data.category || 'General'}
@@ -325,25 +332,25 @@
                     let cardOpacity = '';
                     
                     if (data.status === 'Live') {
-                        statusBadge = `<span class="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide flex items-center">Live 🔴</span>`;
+                        statusBadge = `<span class="bg-red-100 text-red-600 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide flex items-center">Live 🔴</span>`;
                     } else if (data.status === 'Soon') {
-                        statusBadge = `<span class="bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Soon 🟡</span>`;
+                        statusBadge = `<span class="bg-yellow-100 text-yellow-700 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Soon 🟡</span>`;
                         cardOpacity = 'bg-gray-50 opacity-90';
                     } else {
-                        statusBadge = `<span class="bg-gray-100 text-gray-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Finished ⚫</span>`;
+                        statusBadge = `<span class="bg-gray-100 text-gray-600 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Finished ⚫</span>`;
                         cardOpacity = 'opacity-60';
                     }
 
                     contentHTML = `
                         <div class="flex justify-between items-start mb-6 w-full">
-                            <h3 class="text-2xl font-bold leading-tight">${data.name}</h3>
+                            <h3 class="text-xl md:text-2xl font-bold leading-tight pr-2">${data.name}</h3>
                             ${statusBadge}
                         </div>
-                        <div class="text-gray-500 space-y-3 mb-8 w-full">
+                        <div class="text-gray-500 space-y-3 mb-8 w-full text-sm md:text-base">
                             <p class="flex items-center"><span class="w-6 text-center mr-2">📍</span> ${data.location}</p>
                             <p class="flex items-center"><span class="w-6 text-center mr-2">👥</span> ${data.teams} Teams</p>
                         </div>
-                        <div class="border-t pt-4 mt-auto flex justify-between items-center text-sm text-gray-400 w-full">
+                        <div class="border-t pt-4 mt-auto flex justify-between items-center text-xs md:text-sm text-gray-400 w-full">
                             <span>Category:</span>
                             <span class="font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
                                 ${data.category || 'General'}
@@ -354,7 +361,7 @@
                 }
 
                 const cardHTML = `
-                    <div class="card p-8 text-left flex flex-col justify-between h-full ${cardStyle}">
+                    <div class="card p-5 md:p-8 text-left flex flex-col justify-between h-full ${cardStyle}">
                         ${contentHTML}
                     </div>
                 `;
@@ -394,11 +401,11 @@
 
                 scoreContainer.innerHTML += `
                     <div class="${c.bg} p-4 md:p-6 rounded-2xl flex items-center border ${c.border} shadow-sm">
-                        <div class="text-3xl font-black text-gray-700 w-12 text-center">${index + 1}</div>
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl mr-4">${c.icon}</div>
+                        <div class="text-2xl md:text-3xl font-black text-gray-700 w-10 md:w-12 text-center">${index + 1}</div>
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xl md:text-2xl mr-3 md:mr-4">${c.icon}</div>
                         <div class="flex-1">
-                            <h3 class="text-xl font-bold text-gray-900">${row.name}</h3>
-                            <p class="${c.pointsColor} font-bold">${row.total.toLocaleString()} points</p>
+                            <h3 class="text-lg md:text-xl font-bold text-gray-900">${row.name}</h3>
+                            <p class="${c.pointsColor} font-bold text-sm md:text-base">${row.total.toLocaleString()} points</p>
                         </div>
                     </div>
                 `;
