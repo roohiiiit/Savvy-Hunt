@@ -27,14 +27,32 @@
     </script>
 
     <style>
-        /* Retaining your exact styles */
+        /* --- ANIMATION STYLES (BlurText) --- */
+        .blur-word {
+            display: inline-block;
+            opacity: 0;
+            filter: blur(10px);
+            transform: translateY(-20px);
+            transition: all 0.8s cubic-bezier(0.2, 0.65, 0.3, 0.9);
+            margin-right: 0.2em;
+        }
+        .blur-word.visible {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateY(0);
+        }
+
+        /* --- STANDARD BUTTONS --- */
         .btn-gradient { background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); color: white !important; transition: transform 0.2s, box-shadow 0.2s; }
         .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(234, 88, 12, 0.3); }
         .btn-outline { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); transition: all 0.3s ease; }
         .btn-outline:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
+        
+        /* --- CARD STYLES --- */
         .card { background: white; border-radius: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
         .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+        
         @keyframes pulse {
             0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
             70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
@@ -50,10 +68,12 @@
         class="relative min-h-[85vh] flex items-center justify-center text-white text-center rounded-b-[3rem] overflow-hidden shadow-2xl pb-32"
     >
         <div class="relative z-10 p-6 max-w-5xl">
-            <h1 class="text-6xl md:text-8xl font-black mb-6 drop-shadow-lg tracking-tight leading-tight">
-                Welcome to the <br />
-                <span class="text-orange-400">Savvy Hunt!</span>
+            
+            <!-- ANIMATED TITLE -->
+            <h1 id="hero-title" class="text-6xl md:text-8xl font-black mb-6 drop-shadow-lg tracking-tight leading-tight min-h-[160px]">
+                <!-- Text injected by JS -->
             </h1>
+
             <p class="text-2xl md:text-3xl font-bold mb-4 drop-shadow-md">
                 The ultimate school showdown is happening NOW!
             </p>
@@ -93,7 +113,6 @@
                 </div>
             </div>
             
-            <!-- Link to Full Schedule -->
             <a href="schedule.html" class="btn-gradient text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg inline-flex items-center mt-16">
                  Go to the Full Event Schedule →
             </a>
@@ -110,7 +129,7 @@
                 </p>
             </div>
 
-            <div class="max-w-3xl mx-auto space-y-4">
+            <!-- DYNAMIC LEADERBOARD -->
             <div id="top-3-container" class="max-w-3xl mx-auto space-y-4">
                 <p class="text-center text-gray-400 py-6 animate-pulse">Loading leaderboard...</p>
             </div>
@@ -162,24 +181,19 @@
                         What is the <span class="text-orange-500">Savvy Hunt?</span>
                     </h2>
                     <p class="text-lg text-gray-600 mb-6 leading-relaxed">
-                        We're more than just a game. The Savvy Hunt is a student-organized competition designed to build school spirit, challenge creative minds, and promote teamwork across our entire district.
+                        This is more than just a game. The Savvy Hunt is a student-organized competition designed to build school spirit, encourage teamwork, and challenge participants skills through a series of exciting events and activities.    
                     </p>
-                    
                     <div class="flex items-center gap-4 mb-8">
-                         <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-2xl text-orange-600">🧡</div>
-                         <p class="font-bold text-gray-700">Thank you for being part of this amazing event!</p>
+                         <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-2xl text-orange-600">🌟</div>
+                         <p class="font-bold text-gray-700">Thank you for being part of this event!</p>
                     </div>
-
                     <a href="#" class="btn-teal font-bold py-4 px-8 rounded-full text-lg shadow-lg inline-block">
-                        Learn More About Our Mission
+                        Know More About Us
                     </a>
                 </div>
                 <div class="lg:w-1/2 mt-12 lg:mt-0">
                     <div class="bg-orange-50 rounded-[2rem] p-10 border border-orange-100 relative">
-                        <h3 class="text-2xl font-bold mb-4 text-gray-900">Organized by Students, For Students</h3>
-                        <p class="text-gray-600 leading-relaxed">
-                            Proudly organized by the Student Council and Tech Club. Our mission is to create memorable experiences that celebrate creativity, collaboration, and school pride.
-                        </p>
+                        <h3 class="text-2xl font-bold mb-4 text-gray-900">Organized by Students of Media Club </h3>
                     </div>
                 </div>
             </div>
@@ -194,15 +208,52 @@
         </div>
     </footer>
 
+    <!-- SCRIPTS -->
     <script>
-        // --- 1. SUPABASE CONFIGURATION ---
+        // --- 1. BLUR TEXT ANIMATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const titleContainer = document.getElementById('hero-title');
+            const phrases = [
+                { text: "Welcome to the", color: "text-white" },
+                { break: true },
+                { text: "Savvy Hunt!", color: "text-orange-400" }
+            ];
+            let delayCounter = 150;
+
+            phrases.forEach(phrase => {
+                if (phrase.break) {
+                    titleContainer.appendChild(document.createElement('br'));
+                } else {
+                    const words = phrase.text.split(' ');
+                    const spanWrapper = document.createElement('span');
+                    if (phrase.color) spanWrapper.className = phrase.color;
+
+                    words.forEach((word) => {
+                        const wordSpan = document.createElement('span');
+                        wordSpan.textContent = word + '\u00A0';
+                        wordSpan.className = 'blur-word';
+                        wordSpan.style.transitionDelay = `${delayCounter}ms`;
+                        spanWrapper.appendChild(wordSpan);
+                        delayCounter += 150;
+                    });
+                    titleContainer.appendChild(spanWrapper);
+                }
+            });
+
+            setTimeout(() => {
+                const animatedWords = document.querySelectorAll('.blur-word');
+                animatedWords.forEach(span => span.classList.add('visible'));
+            }, 100);
+        });
+
+        // --- 2. SUPABASE SETUP ---
         const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const grid = document.getElementById('events-grid');
 
-        // --- 2. FETCH DATA ---
+        // --- 3. LIVE EVENTS LOGIC ---
         async function fetchEvents() {
             const { data, error } = await supabase
                 .from('live_events')
@@ -211,119 +262,153 @@
                 .limit(3);
 
             if (error) {
-                console.error('Error:', error);
                 grid.innerHTML = '<div class="col-span-3 text-red-400 py-10">Error loading data.</div>';
                 return;
             }
             renderEvents(data);
         }
 
-        // --- 3. REALTIME LISTENER ---
-        supabase
-            .channel('public-channel')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, (payload) => {
-                fetchEvents();
-            })
-            .subscribe();
-
-        // --- 4. RENDER FUNCTION ---
         function renderEvents(events) {
             grid.innerHTML = '';
-
             if (!events || events.length === 0) {
                 grid.innerHTML = `<div class="col-span-3 text-gray-500 py-10">No live events right now.</div>`;
                 return;
             }
 
             events.forEach(data => {
-                let statusBadge = '';
-                let cardOpacity = '';
-                
-                if (data.status === 'Live') {
-                    statusBadge = `<span class="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide flex items-center">Live 🔴</span>`;
-                } else if (data.status === 'Soon') {
-                    statusBadge = `<span class="bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Soon 🟡</span>`;
-                    cardOpacity = 'bg-gray-50 opacity-90';
-                } else {
-                    statusBadge = `<span class="bg-gray-100 text-gray-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Finished ⚫</span>`;
-                    cardOpacity = 'opacity-60';
-                }
+                let contentHTML = '';
+                let cardStyle = '';
 
-                // UPDATED CARD HTML: Replaced Progress Bar with Category Tag
-                const cardHTML = `
-                    <div class="card p-8 text-left ${cardOpacity} flex flex-col justify-between h-full">
-                        <div>
-                            <div class="flex justify-between items-start mb-6">
-                                <h3 class="text-2xl font-bold leading-tight">${data.name}</h3>
-                                ${statusBadge}
+                // Check for Results Published Status
+                if (data.status === 'Results Published') {
+                    cardStyle = 'border-2 border-yellow-400 bg-yellow-50';
+                    contentHTML = `
+                        <div class="flex flex-col h-full justify-between">
+                            <div class="text-center w-full">
+                                <h3 class="text-2xl font-bold mb-2 text-gray-800">${data.name}</h3>
+                                <span class="bg-black text-white text-xs font-bold px-3 py-1 rounded-full mb-4 inline-block">🏁 RESULTS PUBLISHED</span>
+                                
+                                <div class="space-y-3 text-left bg-white p-4 rounded-xl shadow-sm w-full mb-4">
+                                    <div class="flex items-center border-b pb-2">
+                                        <span class="text-2xl mr-3">🥇</span> 
+                                        <span class="font-bold text-gray-800">${data.winner_1 || 'TBA'}</span>
+                                    </div>
+                                    <div class="flex items-center border-b pb-2">
+                                        <span class="text-xl mr-3">🥈</span> 
+                                        <span class="font-medium text-gray-600">${data.winner_2 || '-'}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="text-lg mr-3">🥉</span> 
+                                        <span class="font-medium text-gray-600">${data.winner_3 || '-'}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="text-gray-500 space-y-3 mb-8">
-                                <p class="flex items-center"><span class="w-6 text-center mr-2">📍</span> ${data.location}</p>
-                                <p class="flex items-center"><span class="w-6 text-center mr-2">👥</span> ${data.teams} Teams</p>
+
+                            <!-- ADDED CATEGORY HERE -->
+                            <div class="border-t border-yellow-200 pt-4 mt-auto flex justify-between items-center text-sm text-gray-500 w-full">
+                                <span>Category:</span>
+                                <span class="font-bold text-gray-700 bg-white border border-gray-200 px-3 py-1 rounded-full">
+                                    ${data.category || 'General'}
+                                </span>
                             </div>
                         </div>
-                        <div class="border-t pt-4 mt-2 flex justify-between items-center text-sm text-gray-400">
+                    `;
+                } else {
+                    // Standard Event Status
+                    let statusBadge = '';
+                    let cardOpacity = '';
+                    
+                    if (data.status === 'Live') {
+                        statusBadge = `<span class="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide flex items-center">Live 🔴</span>`;
+                    } else if (data.status === 'Soon') {
+                        statusBadge = `<span class="bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Soon 🟡</span>`;
+                        cardOpacity = 'bg-gray-50 opacity-90';
+                    } else {
+                        statusBadge = `<span class="bg-gray-100 text-gray-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Finished ⚫</span>`;
+                        cardOpacity = 'opacity-60';
+                    }
+
+                    contentHTML = `
+                        <div class="flex justify-between items-start mb-6 w-full">
+                            <h3 class="text-2xl font-bold leading-tight">${data.name}</h3>
+                            ${statusBadge}
+                        </div>
+                        <div class="text-gray-500 space-y-3 mb-8 w-full">
+                            <p class="flex items-center"><span class="w-6 text-center mr-2">📍</span> ${data.location}</p>
+                            <p class="flex items-center"><span class="w-6 text-center mr-2">👥</span> ${data.teams} Teams</p>
+                        </div>
+                        <div class="border-t pt-4 mt-auto flex justify-between items-center text-sm text-gray-400 w-full">
                             <span>Category:</span>
                             <span class="font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
                                 ${data.category || 'General'}
                             </span>
                         </div>
+                    `;
+                    if(cardOpacity) cardStyle += ' ' + cardOpacity;
+                }
+
+                const cardHTML = `
+                    <div class="card p-8 text-left flex flex-col justify-between h-full ${cardStyle}">
+                        ${contentHTML}
                     </div>
                 `;
                 grid.innerHTML += cardHTML;
             });
         }
 
-        fetchEvents();
+        // --- 4. SCOREBOARD LOGIC ---
+        const scoreContainer = document.getElementById("top-3-container");
 
-    
-    async function loadTopThree() {
-        const container = document.getElementById("top-3-container");
+        async function loadTopThree() {
+            const { data, error } = await supabase
+                .from("scoreboard")
+                .select("*")
+                .order("total", { ascending: false })
+                .limit(3);
 
-        const { data, error } = await supabase
-            .from("scoreboard")
-            .select("*")
-            .order("total", { ascending: false })
-            .limit(3);
+            if (error) {
+                scoreContainer.innerHTML = `<p class="text-center text-red-500">Error loading leaderboard.</p>`;
+                return;
+            }
 
-        if (error || !data) {
-            container.innerHTML = `<p class="text-center text-red-500">Error loading leaderboard.</p>`;
-            return;
+            if (!data || data.length === 0) {
+                scoreContainer.innerHTML = `<p class="text-center text-gray-400">No scores yet.</p>`;
+                return;
+            }
+
+            scoreContainer.innerHTML = "";
+
+            data.forEach((row, index) => {
+                const colors = [
+                    { bg: "bg-orange-50", border: "border-orange-200", icon: "🏆", pointsColor: "text-orange-600" },
+                    { bg: "bg-blue-50", border: "border-blue-200", icon: "⚡", pointsColor: "text-blue-600" },
+                    { bg: "bg-yellow-50", border: "border-yellow-200", icon: "🌟", pointsColor: "text-yellow-600" },
+                ];
+                const c = colors[index] || { bg: "bg-white", border: "border-gray-200", icon: `#${index + 1}`, pointsColor: "text-gray-600" };
+
+                scoreContainer.innerHTML += `
+                    <div class="${c.bg} p-4 md:p-6 rounded-2xl flex items-center border ${c.border} shadow-sm">
+                        <div class="text-3xl font-black text-gray-700 w-12 text-center">${index + 1}</div>
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl mr-4">${c.icon}</div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-gray-900">${row.name}</h3>
+                            <p class="${c.pointsColor} font-bold">${row.total.toLocaleString()} points</p>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        container.innerHTML = "";
+        // --- 5. INITIALIZE ---
+        fetchEvents();
+        loadTopThree();
 
-        data.forEach((row, index) => {
-            const colors = [
-                { bg: "bg-orange-50", border: "border-orange-200", icon: "🏆", pointsColor: "text-orange-600" },
-                { bg: "bg-blue-50", border: "border-blue-200", icon: "⚡", pointsColor: "text-blue-600" },
-                { bg: "bg-yellow-50", border: "border-yellow-200", icon: "🌟", pointsColor: "text-yellow-600" },
-            ];
+        // Realtime Subscriptions
+        supabase.channel("public-channel")
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, fetchEvents)
+            .on("postgres_changes", { event: "*", schema: "public", table: "scoreboard" }, loadTopThree)
+            .subscribe();
 
-            const c = colors[index];
-
-            container.innerHTML += `
-                <div class="${c.bg} p-4 md:p-6 rounded-2xl flex items-center border ${c.border} shadow-sm">
-                    <div class="text-3xl font-black text-gray-700 w-12 text-center">${index + 1}</div>
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl mr-4">${c.icon}</div>
-                    <div class="flex-1">
-                        <h3 class="text-xl font-bold text-gray-900">${row.name}</h3>
-                        <p class="${c.pointsColor} font-bold">${row.total.toLocaleString()} points</p>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    // Load on page start
-    loadTopThree();
-
-    // Auto-refresh on database changes
-    supabase
-        .channel("realtime-top3")
-        .on("postgres_changes", { event: "*", schema: "public", table: "scoreboard" }, loadTopThree)
-        .subscribe();
-</script>
-
+    </script>
 </body>
 </html>

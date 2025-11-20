@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting to Gallery...</title>
+    
+    <meta http-equiv="refresh" content="0; url=https://drive.google.com/drive/folders/1rb1TuedcIMvP8_wst0VBeIjenopEO-w9?usp=sharing">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body { font-family: sans-serif; }</style>
+</head>
+<body class="bg-gray-100 h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="bg-white p-8 rounded-xl shadow-lg text-center max-w-md">
+        <div class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-6"></div>
+        
+        <h1 class="text-xl font-bold text-gray-800 mb-2">Opening Google Drive...</h1>
+        <p class="text-gray-500 mb-6">You are being redirected to the photo gallery manager.</p>
+
+        <a href="https://drive.google.com/drive/folders/1rb1TuedcIMvP8_wst0VBeIjenopEO-w9?usp=sharing" 
+           class="inline-block bg-blue-600 text-white font-bold py-3 px-6 rounded-full hover:bg-blue-700 transition">
+            Click here if not redirected
+        </a>
+    </div>
+
+    <script>
+        // Double-check redirect via JavaScript
+        
+        const driveLink = "https://drive.google.com/drive/folders/1rb1TuedcIMvP8_wst0VBeIjenopEO-w9?usp=sharing";
+        
+        setTimeout(() => {
+            window.location.href = driveLink;
+        }, 1000); // Small delay to show the message
+    </script>
+
+</body>
+</html>
