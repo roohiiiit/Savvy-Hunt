@@ -12,14 +12,14 @@
     Base / layout
   --------------------------- */
   * {
-    box-sizing: border-box; /* Fixes padding issues */
+    box-sizing: border-box;
   }
 
   body {
     font-family: "Poppins", "Inter", "Segoe UI", sans-serif;
     margin: 0;
     padding: 0;
-    padding-top: 90px; /* Adjusted for navbar */
+    padding-top: 90px;
     background: #f9fafb;
     -webkit-font-smoothing: antialiased;
     color: #1f2937;
@@ -51,20 +51,19 @@
       margin: 0;
   }
 
-  /* Fixed Home Button */
   .nav-right {
-      flex-shrink: 0; /* Prevents button from being crushed */
+      flex-shrink: 0;
   }
 
   .home-btn {
       background: #ff6a00;
       color: white;
       padding: 12px 25px;
-      border-radius: 30px; /* Softer round look */
+      border-radius: 30px;
       font-weight: 700;
-      text-decoration: none; /* Removes underline */
+      text-decoration: none;
       font-size: 15px;
-      white-space: nowrap; /* Prevents text wrapping */
+      white-space: nowrap;
       display: inline-block;
       transition: transform 0.2s ease, background 0.2s ease;
       box-shadow: 0 4px 10px rgba(255, 106, 0, 0.3);
@@ -77,7 +76,7 @@
   }
 
   /* ============================
-    SWITCHER BAR (The Toggle)
+    SWITCHER BAR
   ============================ */
   .switcher-bar {
       display: flex;
@@ -120,7 +119,7 @@
     border-radius: 20px;
     box-shadow: 0px 6px 25px rgba(0,0,0,0.08);
     border-top: 6px solid #f97316;
-    width: 95%; /* Responsive width */
+    width: 95%;
   }
 
   .scoreboard-title {
@@ -133,19 +132,19 @@
   }
 
   /* ============================
-    TABLE (main leaderboard)
+    TABLE
   ============================ */
   .table-wrapper {
       width: 100%;
-      overflow-x: auto; /* Horizontal scroll on mobile */
+      overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       border-radius: 12px;
-      padding-bottom: 5px; /* Space for scrollbar */
+      padding-bottom: 5px;
   }
 
   .scoreboard-table {
     width: 100%;
-    min-width: 900px; /* Force width so it doesn't crush */
+    min-width: 900px;
     border-collapse: collapse;
     overflow: hidden;
   }
@@ -172,7 +171,6 @@
     border-bottom: 1px solid #eee;
   }
   
-  /* Name column left align */
   .scoreboard-table td:nth-child(2) {
       text-align: left;
       font-weight: 600;
@@ -213,7 +211,7 @@
     font-weight: 600;
     font-size: 0.9rem;
     transition: 0.25s;
-    flex-grow: 1; /* Fill space on mobile */
+    flex-grow: 1;
     max-width: 150px;
   }
 
@@ -230,7 +228,7 @@
   }
 
   /* ============================
-    TOP-3 CARDS
+    TOP-3 CARDS & ANIMATION
   ============================ */
   .top3-grid {
     display: grid;
@@ -239,21 +237,47 @@
     width: 100%;
   }
 
+  /* The Card Container */
   .pod {
-    width: 100%; /* Fluid width */
+    width: 100%;
     border-radius: 14px;
-    background: white;
+    /* Changed background to slight gradient so white shine is visible */
+    background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
     padding: 16px;
     box-shadow: 0 4px 15px rgba(17,24,39,0.06);
     display: flex;
     gap: 12px;
     align-items: center;
-    border: 1px solid #f0f0f0;
+    border: 1px solid #e5e7eb;
     transition: 0.18s;
+    position: relative; 
+    overflow: hidden;   
   }
 
   .pod:hover {
     transform: translateY(-4px);
+  }
+
+  /* SHINY ANIMATION EFFECT */
+  .pod::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    /* Brighter gradient */
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    animation: sheen 5s infinite ease-in-out;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  @keyframes sheen {
+    0% { left: -100%; }
+    20% { left: 200%; } /* Swipes across fast */
+    100% { left: 100%; } /* Pause */
   }
 
   .pod .badge {
@@ -267,12 +291,16 @@
     font-weight: 800;
     font-size: 20px;
     color: white;
+    position: relative;
+    z-index: 5; /* Above shine */
   }
 
   .pod .meta { 
       text-align: left; 
       flex-grow: 1;
       overflow: hidden;
+      position: relative;
+      z-index: 5; /* Above shine */
   }
 
   .pod h4 {
@@ -302,13 +330,14 @@
     border-radius: 10px;
     font-weight: 800;
     font-size: 0.95rem;
+    position: relative;
+    z-index: 5; /* Above shine */
   }
 
   /* ============================
     MOBILE FIXES
   ============================ */
   @media (max-width: 768px) {
-    /* Navbar adjustments */
     .navbar {
         padding: 10px 20px;
         height: auto;
@@ -316,7 +345,7 @@
     }
 
     .nav-left h1 {
-        font-size: 18px; /* Smaller title */
+        font-size: 18px;
     }
     
     .home-btn {
@@ -328,7 +357,6 @@
         padding-top: 80px;
     }
 
-    /* Container adjustments */
     .scoreboard-container {
         padding: 15px;
         margin-top: 10px;
@@ -339,7 +367,6 @@
         font-size: 1.5rem;
     }
 
-    /* Switcher adjustments */
     .switcher-bar {
         width: 90%;
         margin: 10px auto 20px auto;
@@ -350,7 +377,6 @@
         font-size: 12px;
     }
     
-    /* Table adjustments */
     .scoreboard-table th, .scoreboard-table td {
         font-size: 0.85rem;
         padding: 10px 8px;
