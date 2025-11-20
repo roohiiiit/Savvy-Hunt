@@ -1,424 +1,668 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Savvy Hunt - Live Event</title>
+  <meta charset="utf-8" />
+  <title>Savvy Hunt Scoreboard</title>
+
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <style>
+  /* ---------------------------
+    Base / layout
+  --------------------------- */
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Poppins", "Inter", "Segoe UI", sans-serif;
+    margin: 0;
+    padding: 0;
+    padding-top: 90px;
+    background: #f9fafb;
+    -webkit-font-smoothing: antialiased;
+    color: #1f2937;
+  }
+
+  /* ============================
+    NAVBAR
+  ============================ */
+  .navbar {
+      width: 100%;
+      background: #0f1e2c;
+      padding: 10px 40px;
+      min-height: 80px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 10000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+
+  .nav-left h1 {
+      color: #ff6a00;
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin: 0;
+  }
+
+  .nav-right {
+      flex-shrink: 0;
+  }
+
+  .home-btn {
+      background: #ff6a00;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 30px;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 15px;
+      white-space: nowrap;
+      display: inline-block;
+      transition: transform 0.2s ease, background 0.2s ease;
+      box-shadow: 0 4px 10px rgba(255, 106, 0, 0.3);
+  }
+
+  .home-btn:hover {
+      transform: translateY(-2px);
+      background: #e65f00;
+      box-shadow: 0 6px 15px rgba(255, 106, 0, 0.4);
+  }
+
+  /* ============================
+    SWITCHER BAR
+  ============================ */
+  .switcher-bar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px auto;
+      padding: 6px;
+      background: #e5e7eb;
+      border-radius: 50px;
+      width: fit-content;
+      max-width: 95%;
+  }
+
+  .switch-btn {
+      background: transparent;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-weight: 700;
+      color: #6b7280;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.3s;
+  }
+
+  .switch-btn.active {
+      background: white;
+      color: #ff6a00;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  /* ============================
+    SCOREBOARD CONTAINER
+  ============================ */
+  .scoreboard-container {
+    max-width: 1100px;
+    margin: 20px auto 40px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0px 6px 25px rgba(0,0,0,0.08);
+    border-top: 6px solid #f97316;
+    width: 95%;
+  }
+
+  .scoreboard-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #1f2937;
+    text-align: center;
+    margin-bottom: 25px;
+    line-height: 1.2;
+  }
+
+  /* ============================
+    TABLE
+  ============================ */
+  .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 12px;
+      padding-bottom: 5px;
+  }
+
+  .scoreboard-table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
+    overflow: hidden;
+  }
+
+  .scoreboard-table thead tr {
+    background: #435b6b;
+    color: white;
+  }
+
+  .scoreboard-table th {
+    padding: 16px 12px;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid #f97316;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .scoreboard-table td {
+    padding: 14px 12px;
+    text-align: center;
+    font-size: 1rem;
+    color: #1f2937;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .scoreboard-table td:nth-child(2) {
+      text-align: left;
+      font-weight: 600;
+  }
+
+  .scoreboard-rank {
+    font-weight: 700;
+    color: #f97316;
+    font-size: 1.2rem;
+  }
+
+  .scoreboard-total {
+    font-weight: 800;
+    background: #f5cba7;
+    color: #1f2937;
+    border-radius: 8px;
+    padding: 8px;
+  }
+
+  /* ============================
+    CATEGORY BUTTONS
+  ============================ */
+  .category-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+  }
+
+  .cat-btn {
+    background: #374151;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: 0.25s;
+    flex-grow: 1;
+    max-width: 150px;
+  }
+
+  .cat-btn.active {
+    background: #f97316;
+    box-shadow: 0px 4px 12px rgba(249,115,22,0.45);
+  }
+
+  .cat-table {
+    font-size: 1rem;
+    text-align: center;
+    padding: 10px 0;
+    color: #6b7280;
+  }
+
+  /* ============================
+    TOP-3 CARDS & ANIMATION
+  ============================ */
+  .top3-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+    width: 100%;
+  }
+
+  /* The Card Container */
+  .pod {
+    width: 100%;
+    border-radius: 14px;
+    /* Changed background to slight gradient so white shine is visible */
+    background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
+    padding: 16px;
+    box-shadow: 0 4px 15px rgba(17,24,39,0.06);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid #e5e7eb;
+    transition: 0.18s;
+    position: relative; 
+    overflow: hidden;   
+  }
+
+  .pod:hover {
+    transform: translateY(-4px);
+  }
+
+  /* SHINY ANIMATION EFFECT */
+  .pod::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    /* Brighter gradient */
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    animation: sheen 3s infinite ease-in-out;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  @keyframes sheen {
+    0% { left: -100%; }
+    20% { left: 200%; } /* Swipes across fast */
+    100% { left: 200%; } /* Pause */
+  }
+
+  .pod .badge {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 20px;
+    color: white;
+    position: relative;
+    z-index: 5; /* Above shine */
+  }
+
+  .pod .meta { 
+      text-align: left; 
+      flex-grow: 1;
+      overflow: hidden;
+      position: relative;
+      z-index: 5; /* Above shine */
+  }
+
+  .pod h4 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pod p {
+    margin: 4px 0 0 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+
+  .gold { background: linear-gradient(180deg,#FDE68A,#F59E0B); }
+  .silver { background: linear-gradient(180deg,#E6EEF9,#93C5FD); }
+  .bronze { background: linear-gradient(180deg,#FFDDCC,#F97316); }
+
+  .score-pill {
+    margin-left: auto;
+    background: #fff7ed;
+    color: #c2410c;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 5; /* Above shine */
+  }
+
+  /* ============================
+    MOBILE FIXES
+  ============================ */
+  @media (max-width: 768px) {
+    .navbar {
+        padding: 10px 20px;
+        height: auto;
+        min-height: 70px;
+    }
+
+    .nav-left h1 {
+        font-size: 18px;
+    }
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    .home-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+
+    body {
+        padding-top: 80px;
+    }
+
+    .scoreboard-container {
+        padding: 15px;
+        margin-top: 10px;
+        border-radius: 15px;
+    }
+
+    .scoreboard-title {
+        font-size: 1.5rem;
+    }
+
+    .switcher-bar {
+        width: 90%;
+        margin: 10px auto 20px auto;
+    }
     
-    <link rel="stylesheet" href="style.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    .switch-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    .scoreboard-table th, .scoreboard-table td {
+        font-size: 0.85rem;
+        padding: 10px 8px;
+    }
+    
+    .scoreboard-rank {
+        font-size: 1rem;
+    }
+  }
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #f1f1f1; }
+  ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #f97316; }
 
-    <style>
-        /* --- ANIMATION STYLES (BlurText) --- */
-        .blur-word {
-            display: inline-block;
-            opacity: 0;
-            filter: blur(10px);
-            transform: translateY(-20px);
-            transition: all 0.8s cubic-bezier(0.2, 0.65, 0.3, 0.9);
-            margin-right: 0.2em;
-        }
-        .blur-word.visible {
-            opacity: 1;
-            filter: blur(0);
-            transform: translateY(0);
-        }
+  </style>
 
-        /* --- STANDARD BUTTONS --- */
-        .btn-gradient { background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); color: white !important; transition: transform 0.2s, box-shadow 0.2s; }
-        .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(234, 88, 12, 0.3); }
-        .btn-outline { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); transition: all 0.3s ease; }
-        .btn-outline:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
-        .btn-teal { background-color: #14B8A6; color: white; transition: all 0.3s; }
-        .btn-teal:hover { background-color: #0D9488; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(20, 184, 166, 0.3); }
-
-        /* --- CARD STYLES --- */
-        .card { background: white; border-radius: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
-        
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-    </style>
 </head>
-<body class="text-gray-800 antialiased bg-[#FFFBF5]">
 
-    <!-- HERO SECTION -->
-    <section 
-        style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('assests/bg.png'); background-color: #1f2937; background-size: cover; background-position: center;" 
-        class="relative min-h-[85vh] flex items-center justify-center text-white text-center rounded-b-[3rem] overflow-hidden shadow-2xl pb-16 md:pb-32"
-    >
-        <div class="relative z-10 p-4 md:p-6 max-w-5xl">
-            
-            <!-- ANIMATED TITLE (Smaller font on mobile) -->
-            <h1 id="hero-title" class="text-4xl md:text-8xl font-black mb-4 md:mb-6 drop-shadow-lg tracking-tight leading-tight min-h-[120px] md:min-h-[160px]">
-                <!-- Text injected by JS -->
-            </h1>
+<body>
 
-            <p class="text-lg md:text-3xl font-bold mb-4 drop-shadow-md">
-                The ultimate school showdown is happening NOW!
-            </p>
-            <p class="text-base md:text-xl max-w-2xl mx-auto mb-8 md:mb-12 text-gray-100 drop-shadow-md font-medium">
-                Watch the competition unfold in real-time as schools battle for the championship.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
-                <a href="#live-events" class="btn-gradient text-white font-bold py-3 px-6 md:py-4 md:px-10 rounded-full text-base md:text-lg shadow-xl">
-                    See What's Happening LIVE
-                </a>
-                <a href="scoreboard.html" class="btn-outline text-white font-bold py-3 px-6 md:py-4 md:px-10 rounded-full text-base md:text-lg shadow-xl">
-                    View the Full Scoreboard
-                </a>
-            </div>
-        </div>
-    </section>
+  <nav class="navbar">
+      <div class="nav-left">
+          <h1>SAVVY HUNT LIVE<br>SCOREBOARD</h1>
+      </div>
 
-    <!-- MAIN CONTENT (Adjusted margins for mobile) -->
-    <div class="max-w-7xl mx-auto p-4 md:p-12 relative -mt-16 md:-mt-24 z-20">
-        
-        <!-- STATUS SECTION -->
-        <section id="live-events" class="text-center mb-16 md:mb-32 px-2 md:px-4">
-            <div class="inline-flex items-center bg-white/90 backdrop-blur shadow-lg text-red-600 font-bold py-2 px-4 md:py-3 md:px-6 rounded-full mb-6 md:mb-8 text-sm md:text-lg border border-red-100">
-                <span class="status-dot bg-red-600 mr-2 md:mr-3"></span> LIVE NOW: The Hunt Is On!
-            </div>
-            
-            <h2 class="text-3xl md:text-6xl font-extrabold mb-4 text-gray-900">Real-Time Event Status</h2>
-            <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto mb-10 md:mb-16">
-                Don't miss a second of the action. Here's what's happening right now across campus.
-            </p>
+      <div class="nav-right">
+          <a href="index.html" class="home-btn">Home</a>
+      </div>
+  </nav>
 
-            <!-- DYNAMIC EVENTS GRID -->
-            <div id="events-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
-                <!-- Loading State -->
-                <div class="col-span-1 md:col-span-3 py-12 bg-white rounded-3xl border border-gray-100">
-                    <p class="text-gray-500 animate-pulse">Connecting to live feed...</p>
-                </div>
-            </div>
-            
-            <a href="schedule.html" class="btn-gradient text-white font-bold py-3 px-8 md:py-4 md:px-10 rounded-full text-base md:text-lg shadow-lg inline-flex items-center mt-10 md:mt-16">
-                 Go to the Full Event Schedule →
-            </a>
-        </section>
+  <div class="switcher-bar" role="tablist" aria-label="View switcher">
+    <button class="switch-btn active" onclick="switchSection(event,'school')" role="tab" aria-selected="true">🏫 School-wise Results</button>
+    <button class="switch-btn" onclick="switchSection(event,'category')" role="tab" aria-selected="false">📊 Category-wise Results</button>
+  </div>
 
-        <!-- LEADERBOARD SECTION -->
-        <section class="card p-6 md:p-16 mb-16 md:mb-32 bg-white border border-gray-100">
-             <div class="text-center max-w-3xl mx-auto mb-8 md:mb-12">
-                <h2 class="text-3xl md:text-5xl font-extrabold mb-2 md:mb-4">
-                    Who's Leading <span class="text-orange-500">the Pack?</span>
-                </h2>
-                <p class="text-gray-500 font-medium text-sm md:text-base">
-                    Last updated: <span class="text-gray-800 font-bold">2 minutes ago</span>
-                </p>
-            </div>
+  <div id="schoolSection" class="scoreboard-container" aria-live="polite">
+    <h1 class="scoreboard-title">SAVVY HUNT LEADERBOARD</h1>
+      <div class="table-wrapper">
+        <table id="scoreTable" class="scoreboard-table" aria-describedby="leaderboard-desc">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Name of Institution</th>
+              <th>Cat 1</th>
+              <th>Cat 2</th>
+              <th>Cat 3</th>
+              <th>Cat 4</th>
+              <th>Cat 5</th>
+              <th>Common Cat</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    <p id="leaderboard-desc" style="display:none;">Main leaderboard ordered by total points</p>
+  </div>
 
-            <!-- DYNAMIC LEADERBOARD -->
-            <div id="top-3-container" class="max-w-3xl mx-auto space-y-3 md:space-y-4">
-                <p class="text-center text-gray-400 py-6 animate-pulse">Loading leaderboard...</p>
-            </div>
+  <div id="categorySection" style="display:none;">
+    <div class="scoreboard-container" aria-live="polite">
+      <h1 class="scoreboard-title">CATEGORY-WISE RESULTS</h1>
 
-             <div class="text-center mt-8">
-                 <a href="scoreboard.html" class="btn-teal font-bold py-3 px-6 md:py-4 md:px-8 rounded-full text-base md:text-lg shadow-lg inline-block">
-                   See the Full Scoreboard
-                </a>
-             </div>
-        </section>
+      <div class="category-buttons" role="tablist">
+        <button class="cat-btn active" onclick="showCategoryTable(event,'cat1')">Category I</button>
+        <button class="cat-btn" onclick="showCategoryTable(event,'cat2')">Category II</button>
+        <button class="cat-btn" onclick="showCategoryTable(event,'cat3')">Category III</button>
+        <button class="cat-btn" onclick="showCategoryTable(event,'cat4')">Category IV</button>
+        <button class="cat-btn" onclick="showCategoryTable(event,'cat5')">Category V</button>
+        <button class="cat-btn" onclick="showCategoryTable(event,'common')">Common Category</button>
+      </div>
 
-        <!-- SNAPSHOTS SECTION (Forced Grid on Mobile) -->
-        <section class="mb-16 md:mb-32 px-2 md:px-4">
-            <div class="text-center max-w-3xl mx-auto mb-10 md:mb-16">
-                <h2 class="text-3xl md:text-6xl font-extrabold mb-4 md:mb-6">
-                    Savvy Hunt <span class="text-gray-400">Snapshots</span> 📸
-                </h2>
-                <p class="text-base md:text-xl text-gray-600">
-                   See the competition as it happens! We're uploading photos and highlights.
-                </p>
-                <!-- View Photos Button -->
-                <a href="snapshots.html" class="mt-6 md:mt-8 inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 md:py-3 md:px-8 rounded-full shadow-lg transition text-sm md:text-base">
-                    View photos
-                </a>
-            </div>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 opacity-90">
-        <div class="rounded-3xl overflow-hidden h-64 shadow-lg border-4 border-white transform rotate-[-2deg]">
-            <img src="assests/group2.jpg" class="w-full h-full object-cover">
-        </div>
-        <div class="rounded-3xl overflow-hidden h-64 shadow-lg border-4 border-white transform translate-y-[-10px] z-10">
-            <img src="assests/group1.jpg" class="w-full h-full object-cover">
-        </div>
-        <div class="rounded-3xl overflow-hidden h-64 shadow-lg border-4 border-white transform rotate-[2deg]">
-            <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600&auto=format&fit=crop&q=60" class="w-full h-full object-cover">
-        </div>
+      <div id="cat1" class="cat-table" aria-hidden="false">
+        <div class="top3-grid" id="cat1-list">Loading...</div>
+      </div>
+
+      <div id="cat2" class="cat-table" style="display:none;">
+        <div class="top3-grid" id="cat2-list">Loading...</div>
+      </div>
+
+      <div id="cat3" class="cat-table" style="display:none;">
+        <div class="top3-grid" id="cat3-list">Loading...</div>
+      </div>
+
+      <div id="cat4" class="cat-table" style="display:none;">
+        <div class="top3-grid" id="cat4-list">Loading...</div>
+      </div>
+
+      <div id="cat5" class="cat-table" style="display:none;">
+        <div class="top3-grid" id="cat5-list">Loading...</div>
+      </div>
+
+      <div id="common" class="cat-table" style="display:none;">
+        <div class="top3-grid" id="common-list">Loading...</div>
+      </div>
     </div>
-</section>
-        <!-- ABOUT SECTION -->
-        <section class="mb-16 md:mb-32 px-2 md:px-4">
-             <div class="bg-white rounded-[2rem] md:rounded-[3rem] p-6 md:p-16 lg:flex lg:items-center lg:gap-16 shadow-xl">
-                <div class="lg:w-1/2">
-                    <h2 class="text-3xl md:text-6xl font-extrabold mb-4 md:mb-8 text-gray-900">
-                        What is the <span class="text-orange-500">Savvy Hunt?</span>
-                    </h2>
-                    <p class="text-base md:text-lg text-gray-600 mb-6 leading-relaxed">
-                        We're more than just a game. The Savvy Hunt is a student-organized competition designed to build school spirit.
-                    </p>
-                    <div class="flex items-center gap-4 mb-8">
-                         <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-orange-100 flex items-center justify-center text-xl md:text-2xl text-orange-600">🌟</div>
-                         <p class="font-bold text-gray-700 text-sm md:text-base">Thank you for being part of this event!</p>
-                    </div>
-                    
-                    <a href="about.html" class="btn-teal font-bold py-3 px-6 md:py-4 md:px-8 rounded-full text-base md:text-lg shadow-lg inline-block w-full md:w-auto text-center">
-                        Learn More About Our Mission
-                    </a>
-                    
-                </div>
-                <div class="lg:w-1/2 mt-8 md:mt-12 lg:mt-0">
-                    <div class="bg-orange-50 rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-10 border border-orange-100 relative">
-                        <h3 class="text-xl md:text-2xl font-bold mb-2 md:mb-4 text-gray-900">Organized by Students</h3>
-                        <p class="text-sm md:text-base text-gray-600 leading-relaxed">
-                            Proudly organized by the Student Council and Tech Club.
-                        </p>
-                    </div>
-                </div>
+  </div>
+
+  <script>
+    /************************************************************************
+     * Supabase / Initialization
+     ************************************************************************/
+    const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
+
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    /************************************************************************
+     * UI helpers
+     ************************************************************************/
+    function switchSection(evt, section) {
+      document.querySelectorAll('.switch-btn').forEach(b => b.classList.remove('active'));
+      evt.currentTarget.classList.add('active');
+
+      document.getElementById('schoolSection').style.display = section === 'school' ? 'block' : 'none';
+      document.getElementById('categorySection').style.display = section === 'category' ? 'block' : 'none';
+
+      if (section === 'category') {
+        showCategoryTable({ currentTarget: document.querySelector('.cat-btn') }, 'cat1');
+      }
+    }
+
+    function showCategoryTable(evt, id) {
+      const targetBtn = evt?.currentTarget || evt?.target || null;
+
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      if (targetBtn) targetBtn.classList.add('active');
+      else document.querySelector('.cat-btn')?.classList.add('active');
+
+      document.querySelectorAll('.cat-table').forEach(t => t.style.display = 'none');
+      const container = document.getElementById(id);
+      if (!container) return;
+      container.style.display = 'block';
+
+      const columnMap = {
+        'cat1': 'cat1',
+        'cat2': 'cat2',
+        'cat3': 'cat3',
+        'cat4': 'cat4',
+        'cat5': 'cat5',
+        'common': 'common_cat'
+      };
+      const col = columnMap[id] || 'cat1';
+      loadCategoryTop3(id + '-list', col);
+    }
+
+    /************************************************************************
+     * Main leaderboard loader
+     ************************************************************************/
+    async function loadScoreboard() {
+      const { data, error } = await db
+        .from('scoreboard')
+        .select('*')
+        .order('total', { ascending: false });
+
+      const tbody = document.querySelector('#scoreTable tbody');
+      tbody.innerHTML = '';
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:red;">Error loading scoreboard: ${error.message}</td></tr>`;
+        return;
+      }
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#6b7280;">No teams yet.</td></tr>`;
+        return;
+      }
+
+      data.forEach((row, index) => {
+        tbody.insertAdjacentHTML('beforeend', `
+          <tr>
+            <td class="scoreboard-rank">${index + 1}</td>
+            <td>${escapeHtml(row.name || '')}</td>
+            <td>${Number(row.cat1 || 0)}</td>
+            <td>${Number(row.cat2 || 0)}</td>
+            <td>${Number(row.cat3 || 0)}</td>
+            <td>${Number(row.cat4 || 0)}</td>
+            <td>${Number(row.cat5 || 0)}</td>
+            <td>${Number(row.common_cat || 0)}</td>
+            <td class="scoreboard-total">${Number(row.total || 0)}</td>
+          </tr>
+        `);
+      });
+    }
+
+    /************************************************************************
+     * Category top-3 loader
+     ************************************************************************/
+    async function loadCategoryTop3(tableListId, columnName) {
+      const el = document.getElementById(tableListId);
+      if (!el) return;
+      el.innerHTML = '<div style="color:#6b7280">Loading...</div>';
+
+      const { data, error } = await db.from('scoreboard').select('*');
+
+      if (error) {
+        el.innerHTML = `<div style="color:red">Error loading: ${escapeHtml(error.message)}</div>`;
+        return;
+      }
+      if (!data || data.length === 0) {
+        el.innerHTML = `<div style="color:#6b7280">No teams yet.</div>`;
+        return;
+      }
+
+      const sorted = data.slice().sort((a, b) => (Number(b[columnName] || 0) - Number(a[columnName] || 0)));
+      const top3 = sorted.slice(0, 3);
+
+      const styleMap = [
+        { cls: 'gold', emoji: '🥇', label: '1' },
+        { cls: 'silver', emoji: '🥈', label: '2' },
+        { cls: 'bronze', emoji: '🥉', label: '3' }
+      ];
+
+      el.innerHTML = '';
+      top3.forEach((row, idx) => {
+        const s = styleMap[idx] || { cls: 'silver', emoji: `#${idx+1}`, label: String(idx+1) };
+        const scoreDisplay = Number(row[columnName] || 0).toLocaleString();
+
+        el.insertAdjacentHTML('beforeend', `
+          <div class="pod" role="article" aria-label="Rank ${idx+1} - ${escapeHtml(row.name || '')}">
+            <div class="badge ${s.cls}" title="Rank ${idx+1}">${s.emoji}</div>
+            <div class="meta">
+              <h4>${escapeHtml(row.name || '—')}</h4>
+              <p style="margin-top:6px;color:#9CA3AF;font-weight:600">Rank ${idx+1}</p>
             </div>
-        </section>
+            <div class="score-pill" aria-hidden="true">${scoreDisplay}</div>
+          </div>
+        `);
+      });
 
-    </div>
-
-    <footer class="bg-gray-900 text-gray-400 pt-16 md:pt-20 pb-8 md:pb-10 -mt-24 relative z-10" style="border-top-left-radius: 2rem; border-top-right-radius: 2rem;">
-        <div class="max-w-7xl mx-auto px-8 text-center">
-            <h3 class="text-xl md:text-2xl font-bold text-white mb-2">Savvy Hunt <span class="text-orange-500">2025</span></h3>
-            <p class="text-xs md:text-sm text-gray-500">&copy; 2025 Savvy Hunt. A project by the District Student Council.</p>
-                <a href="admin_page/login.html" class="text-gray-800 hover:text-orange-500 text-xs opacity-30 hover:opacity-100 transition-opacity" title="Admin Login">
-        🔐
-    </a>
-        </div>
-
-    </footer>
-
-    <!-- SCRIPTS -->
-    <script>
-        // --- 1. BLUR TEXT ANIMATION ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const titleContainer = document.getElementById('hero-title');
-            const phrases = [
-                { text: "Welcome to the", color: "text-white" },
-                { break: true },
-                { text: "Savvy Hunt!", color: "text-orange-400" }
-            ];
-            let delayCounter = 150;
-
-            phrases.forEach(phrase => {
-                if (phrase.break) {
-                    titleContainer.appendChild(document.createElement('br'));
-                } else {
-                    const words = phrase.text.split(' ');
-                    const spanWrapper = document.createElement('span');
-                    if (phrase.color) spanWrapper.className = phrase.color;
-
-                    words.forEach((word) => {
-                        const wordSpan = document.createElement('span');
-                        wordSpan.textContent = word + '\u00A0';
-                        wordSpan.className = 'blur-word';
-                        wordSpan.style.transitionDelay = `${delayCounter}ms`;
-                        spanWrapper.appendChild(wordSpan);
-                        delayCounter += 150;
-                    });
-                    titleContainer.appendChild(spanWrapper);
-                }
-            });
-
-            setTimeout(() => {
-                const animatedWords = document.querySelectorAll('.blur-word');
-                animatedWords.forEach(span => span.classList.add('visible'));
-            }, 100);
-        });
-
-        // --- 2. SUPABASE SETUP ---
-        const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
-
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const grid = document.getElementById('events-grid');
-
-        // --- 3. LIVE EVENTS LOGIC ---
-        async function fetchEvents() {
-            const { data, error } = await supabase
-                .from('live_events')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(3);
-
-            if (error) {
-                grid.innerHTML = '<div class="col-span-3 text-red-400 py-10">Error loading data.</div>';
-                return;
-            }
-            renderEvents(data);
+      if (top3.length < 3) {
+        for (let i = top3.length; i < 3; i++) {
+          const s = styleMap[i] || { cls: 'silver', emoji: `#${i+1}`, label: String(i+1) };
+          el.insertAdjacentHTML('beforeend', `
+            <div class="pod" style="opacity:0.6">
+              <div class="badge ${s.cls}">${s.emoji}</div>
+              <div class="meta">
+                <h4>—</h4>
+                <p style="margin-top:6px;color:#9CA3AF">Rank ${i+1}</p>
+              </div>
+              <div class="score-pill">0</div>
+            </div>
+          `);
         }
+      }
+    }
 
-        function renderEvents(events) {
-            grid.innerHTML = '';
-            if (!events || events.length === 0) {
-                grid.innerHTML = `<div class="col-span-1 md:col-span-3 text-gray-500 py-10">No live events right now.</div>`;
-                return;
-            }
+    /************************************************************************
+     * Utility
+     ************************************************************************/
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
 
-            events.forEach(data => {
-                let contentHTML = '';   
-                let cardStyle = '';
+    /************************************************************************
+     * Realtime
+     ************************************************************************/
+    function setupRealtime() {
+      db
+        .channel('realtime-scoreboard')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'scoreboard' }, payload => {
+          loadScoreboard();
+          const visibleCats = Array.from(document.querySelectorAll('.cat-table'))
+            .filter(div => div.style.display !== 'none');
 
-                // Check for Results Published Status
-                // Check for Results Published Status
-            if (data.status === 'Results Published') {
-                cardStyle = 'border-2 border-yellow-400 bg-yellow-50';
-                contentHTML = `
-                    <div class="flex flex-col h-full justify-between">
-                        <div class="text-center w-full">
-                            <h3 class="text-2xl font-bold mb-2 text-gray-800">${data.name}</h3>
-                            <span class="bg-black text-white text-xs font-bold px-3 py-1 rounded-full mb-4 inline-block">⭐ RESULTS PUBLISHED</span>
-                            
-                            <div class="space-y-3 text-left bg-white p-4 rounded-xl shadow-sm w-full mb-4">
-                                <div class="flex items-center border-b pb-2">
-                                    <span class="text-2xl mr-3">🥇</span> 
-                                    <!-- STUDENT NAME HERE -->
-                                    <span class="font-bold text-gray-800">${data.student_1 || 'TBA'}</span>
-                                </div>
-                                <div class="flex items-center border-b pb-2">
-                                    <span class="text-xl mr-3">🥈</span> 
-                                    <!-- STUDENT NAME HERE -->
-                                    <span class="font-medium text-gray-600">${data.student_2 || '-'}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <span class="text-lg mr-3">🥉</span> 
-                                    <!-- STUDENT NAME HERE -->
-                                    <span class="font-medium text-gray-600">${data.student_3 || '-'}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- CATEGORY AT BOTTOM -->
-                        <div class="border-t border-yellow-200 pt-4 mt-auto flex justify-between items-center text-sm text-gray-500 w-full">
-                            <span>Category:</span>
-                            <span class="font-bold text-gray-700 bg-white border border-gray-200 px-3 py-1 rounded-full">
-                                ${data.category || 'General'}
-                            </span>
-                        </div>
-                    </div>
-                `;
-            
-                } else {
-                    // Standard Event Status
-                    let statusBadge = '';
-                    let cardOpacity = '';
-                    
-                    if (data.status === 'Live') {
-                        statusBadge = `<span class="bg-red-100 text-red-600 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide flex items-center">Live 🔴</span>`;
-                    } else if (data.status === 'Soon') {
-                        statusBadge = `<span class="bg-yellow-100 text-yellow-700 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Soon 🟡</span>`;
-                        cardOpacity = 'bg-gray-50 opacity-90';
-                    } else {
-                        statusBadge = `<span class="bg-gray-100 text-gray-600 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Finished ⚫</span>`;
-                        cardOpacity = 'opacity-60';
-                    }
+          visibleCats.forEach(div => {
+            const id = div.id;
+            const columnMap = {
+              'cat1': 'cat1', 'cat2': 'cat2', 'cat3': 'cat3', 'cat4': 'cat4', 'cat5': 'cat5', 'common': 'common_cat'
+            };
+            const col = columnMap[id] || 'cat1';
+            loadCategoryTop3(id + '-list', col);
+          });
+        })
+        .subscribe();
+    } 
 
-                    contentHTML = `
-                        <div class="flex justify-between items-start mb-6 w-full">
-                            <h3 class="text-xl md:text-2xl font-bold leading-tight pr-2">${data.name}</h3>
-                            ${statusBadge}
-                        </div>
-                        <div class="text-gray-500 space-y-3 mb-8 w-full text-sm md:text-base">
-                            <p class="flex items-center"><span class="w-6 text-center mr-2">📍</span> ${data.location}</p>
-                            <p class="flex items-center"><span class="w-6 text-center mr-2">👥</span> ${data.teams} Teams</p>
-                        </div>
-                        <div class="border-t pt-4 mt-auto flex justify-between items-center text-xs md:text-sm text-gray-400 w-full">
-                            <span>Category:</span>
-                            <span class="font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                                ${data.category || 'General'}
-                            </span>
-                        </div>
-                    `;
-                    if(cardOpacity) cardStyle += ' ' + cardOpacity;
-                }
+    loadScoreboard();
+    setupRealtime();
+    loadCategoryTop3('cat1-list', 'cat1');
 
-                const cardHTML = `
-                    <div class="card p-5 md:p-8 text-left flex flex-col justify-between h-full ${cardStyle}">
-                        ${contentHTML}
-                    </div>
-                `;
-                grid.innerHTML += cardHTML;
-            });
-        }
-
-        // --- 4. SCOREBOARD LOGIC ---
-        const scoreContainer = document.getElementById("top-3-container");
-
-        async function loadTopThree() {
-            const { data, error } = await supabase
-                .from("scoreboard")
-                .select("*")
-                .order("total", { ascending: false })
-                .limit(3);
-
-            if (error) {
-                scoreContainer.innerHTML = `<p class="text-center text-red-500">Error loading leaderboard.</p>`;
-                return;
-            }
-
-            if (!data || data.length === 0) {
-                scoreContainer.innerHTML = `<p class="text-center text-gray-400">No scores yet.</p>`;
-                return;
-            }
-
-            scoreContainer.innerHTML = "";
-
-            data.forEach((row, index) => {
-                const colors = [
-                    { bg: "bg-orange-50", border: "border-orange-200", icon: "🏆", pointsColor: "text-orange-600" },
-                    { bg: "bg-blue-50", border: "border-blue-200", icon: "⚡", pointsColor: "text-blue-600" },
-                    { bg: "bg-yellow-50", border: "border-yellow-200", icon: "🌟", pointsColor: "text-yellow-600" },
-                ];
-                const c = colors[index] || { bg: "bg-white", border: "border-gray-200", icon: `#${index + 1}`, pointsColor: "text-gray-600" };
-
-                scoreContainer.innerHTML += `
-                    <div class="${c.bg} p-4 md:p-6 rounded-2xl flex items-center border ${c.border} shadow-sm">
-                        <div class="text-2xl md:text-3xl font-black text-gray-700 w-10 md:w-12 text-center">${index + 1}</div>
-                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xl md:text-2xl mr-3 md:mr-4">${c.icon}</div>
-                        <div class="flex-1">
-                            <h3 class="text-lg md:text-xl font-bold text-gray-900">${row.name}</h3>
-                            <p class="${c.pointsColor} font-bold text-sm md:text-base">${row.total.toLocaleString()} points</p>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        // --- 5. INITIALIZE ---
-        fetchEvents();
-        loadTopThree();
-
-        // Realtime Subscriptions
-        supabase.channel("public-channel")
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, fetchEvents)
-            .on("postgres_changes", { event: "*", schema: "public", table: "scoreboard" }, loadTopThree)
-            .subscribe();
-
-    </script>
+  </script>
 </body>
 </html>
