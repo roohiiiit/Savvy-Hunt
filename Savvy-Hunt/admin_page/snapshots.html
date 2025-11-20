@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Gallery - Savvy Hunt</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: sans-serif; background-color: #f3f4f6; }
+        .dropzone { border: 2px dashed #ccc; padding: 40px; text-align: center; background: white; border-radius: 10px; cursor: pointer; }
+        .dropzone:hover { border-color: #a855f7; background: #faf5ff; }
+    </style>
+</head>
+<body class="p-8 max-w-4xl mx-auto">
+
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-2xl font-bold">📸 Manage Snapshots</h1>
+        <a href="admin_index.html" class="text-blue-600 hover:underline">← Back to Dashboard</a>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-md mb-8 border-t-4 border-purple-500">
+        <div id="dropzone" class="dropzone">
+            <p class="text-gray-500">Click or Drag images here to upload</p>
+            <input type="file" id="fileInput" class="hidden" multiple accept="image/*">
+        </div>
+        <p id="status" class="mt-4 text-center text-sm font-bold text-purple-600"></p>
+    </div>
+
+    <div id="gallery-grid" class="grid grid-cols-3 md:grid-cols-4 gap-4"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const BUCKET = 'snapshots';
+
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        const status = document.getElementById('status');
+
+        dropzone.onclick = () => fileInput.click();
+        fileInput.onchange = async () => handleFiles(fileInput.files);
+        
+        dropzone.ondragover = (e) => e.preventDefault();
+        dropzone.ondrop = (e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); };
+
+        async function handleFiles(files) {
+            status.innerText = "Uploading...";
+            for (let file of files) {
+                const fileName = `${Date.now()}-${file.name}`;
+                const { error } = await db.storage.from(BUCKET).upload(fileName, file);
+                if (error) console.error(error);
+            }
+            status.innerText = "Upload Complete!";
+            loadGallery();
+        }
+
+        async function loadGallery() {
+            const { data } = await db.storage.from(BUCKET).list();
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = '';
+            
+            if(!data) return;
+
+            data.forEach(file => {
+                if(file.name === '.emptyFolderPlaceholder') return;
+                const url = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${file.name}`;
+                grid.innerHTML += `
+                    <div class="relative group">
+                        <img src="${url}" class="w-full h-32 object-cover rounded border">
+                        <button onclick="deleteImg('${file.name}')" class="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 rounded opacity-0 group-hover:opacity-100 transition">Delete</button>
+                    </div>
+                `;
+            });
+        }
+
+        window.deleteImg = async (name) => {
+            if(confirm('Delete image?')) {
+                await db.storage.from(BUCKET).remove([name]);
+                loadGallery();
+            }
+        };
+
+        loadGallery();
+    </script>
+</body>
+</html>

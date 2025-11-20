@@ -3,199 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Savvy Hunt - Admin Control</title>
-    
-    <!-- Tailwind -->
+    <title>Admin Dashboard - Savvy Hunt</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    
-    <!-- Load Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
-        /* Safety Styles */
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #f3f4f6 !important; 
-            color: #111827 !important; 
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .dashboard-card {
+            transition: all 0.3s ease;
         }
-        .safety-container {
-            background-color: white;
-            color: black;
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-8">
+<body class="min-h-screen flex items-center justify-center p-8">
 
-    <div class="max-w-4xl mx-auto">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-black text-gray-900 flex items-center">
-                🔐 Admin Dashboard
-            </h1>
-            <a href="#" onclick="alert('This would link to your public website')" class="bg-white border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 text-sm font-bold text-gray-700">
-                Open Public Website &rarr;
-            </a>
+    <div class="max-w-5xl w-full">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-black text-gray-900 mb-4">🔐 Savvy Hunt Admin</h1>
+            <p class="text-gray-500">Select a module to manage</p>
         </div>
 
-        <!-- Add Event Form -->
-        <div class="bg-white p-6 rounded-xl shadow-lg mb-8 border-t-4 border-orange-500 safety-container">
-            <h2 class="text-xl font-bold mb-6 text-gray-800 border-b pb-2">Add New Event</h2>
-            <form id="add-event-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Event Name</label>
-                    <input type="text" id="event-name" placeholder="e.g. Riddle Relay" class="w-full border border-gray-300 p-3 rounded focus:ring-2 focus:ring-orange-500 outline-none" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Location</label>
-                    <input type="text" id="event-location" placeholder="e.g. Main Quad" class="w-full border border-gray-300 p-3 rounded focus:ring-2 focus:ring-orange-500 outline-none" required>
-                </div>
-                
-                <div class="flex gap-4">
-                    <div class="w-1/2">
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Team Count</label>
-                        <input type="number" id="team-count" placeholder="e.g. 8" class="w-full border border-gray-300 p-3 rounded focus:ring-2 focus:ring-orange-500 outline-none" required>
-                    </div>
-                    <div class="w-1/2">
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Status</label>
-                        <select id="event-status" class="w-full border border-gray-300 p-3 rounded focus:ring-2 focus:ring-orange-500 outline-none" required>
-                            <option value="Live">Live 🔴</option>
-                            <option value="Soon">Soon 🟡</option>
-                            <option value="Finished">Finished ⚫</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- UPDATED: Category Input -->
-                <div class="flex gap-4 items-end">
-                    <div class="w-full">
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Category</label>
-                        <input type="text" id="event-category" placeholder="e.g. Puzzle, Physical, Art" class="w-full border border-gray-300 p-3 rounded focus:ring-2 focus:ring-orange-500 outline-none" required>
-                    </div>
-                    <button type="submit" class="w-full bg-orange-500 text-white font-bold px-6 py-3 rounded hover:bg-orange-600 transition shadow-md h-[50px]" style="background-color: #f97316;">
-                        Publish Event
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Event List -->
-        <div class="bg-white rounded-xl shadow-lg p-6 safety-container">
-            <div class="flex justify-between items-center mb-6 border-b pb-2">
-                <h2 class="text-xl font-bold text-gray-800">Live Database View</h2>
-                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full flex items-center">
-                    <span class="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></span> Connected
-                </span>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             
-            <div id="admin-events-list" class="space-y-3">
-                <p class="text-gray-500 italic">Connecting to Supabase...</p>
-            </div>
+            <!-- 1. Live Events -->
+            <a href="events.html" class="dashboard-card bg-white p-8 rounded-2xl shadow-lg border-b-4 border-orange-500 flex flex-col items-center text-center cursor-pointer hover:border-orange-600 group">
+                <div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-3xl mb-6 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                    📡
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Live Events</h2>
+                <p class="text-gray-500 text-sm">Update current events, locations, and status.</p>
+            </a>
+
+            <!-- 2. Scoreboard -->
+            <a href="scoreboard.html" class="dashboard-card bg-white p-8 rounded-2xl shadow-lg border-b-4 border-blue-500 flex flex-col items-center text-center cursor-pointer hover:border-blue-600 group">
+                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                    🏆
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Scoreboard</h2>
+                <p class="text-gray-500 text-sm">Manage team points and calculate totals.</p>
+            </a>
+
+            <!-- 3. Gallery -->
+            <a href="snapshots.html" class="dashboard-card bg-white p-8 rounded-2xl shadow-lg border-b-4 border-purple-500 flex flex-col items-center text-center cursor-pointer hover:border-purple-600 group">
+                <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-3xl mb-6 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                    📸
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Gallery Uploads</h2>
+                <p class="text-gray-500 text-sm">Upload photos and videos for the public feed.</p>
+            </a>
+
+        </div>
+
+        <div class="text-center mt-12">
+            <a href="../index.html" class="text-gray-400 hover:text-gray-600 text-sm underline">Back to Public Website</a>
         </div>
     </div>
 
-    <script>
-        // --- 1. SUPABASE CONFIGURATION ---
-        const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
-
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // --- 2. APP LOGIC ---
-        const form = document.getElementById('add-event-form');
-        const listContainer = document.getElementById('admin-events-list');
-
-        fetchEvents();
-
-        supabase
-            .channel('admin-channel')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, (payload) => {
-                fetchEvents();
-            })
-            .subscribe();
-
-        async function fetchEvents() {
-            const { data, error } = await supabase
-                .from('live_events')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) {
-                listContainer.innerHTML = `<p class="text-red-500">Error: ${error.message}</p>`;
-                return;
-            }
-            renderList(data);
-        }
-
-        function renderList(events) {
-            listContainer.innerHTML = '';
-            if (!events || events.length === 0) {
-                listContainer.innerHTML = '<p class="text-gray-400 text-center py-4">No events in database. Add one above!</p>';
-                return;
-            }
-
-            events.forEach(event => {
-                const item = document.createElement('div');
-                item.className = "bg-gray-50 p-4 rounded-lg border border-gray-200 hover:border-orange-200 transition flex justify-between items-center group mb-2";
-                item.style.backgroundColor = "#f9fafb"; 
-                
-                let statusColor = event.status === 'Live' ? 'bg-red-100 text-red-700 border-red-200' : (event.status === 'Soon' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' : 'bg-gray-200 text-gray-700 border-gray-300');
-
-                item.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <div class="${statusColor} border px-3 py-1 rounded text-xs font-bold w-20 text-center">
-                            ${event.status}
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-lg">${event.name}</h3>
-                            <p class="text-xs text-gray-500 flex gap-3 items-center">
-                                <span>📍 ${event.location}</span>
-                                <span class="text-gray-300">|</span>
-                                <span>👥 ${event.teams} Teams</span>
-                                <span class="text-gray-300">|</span>
-                                <!-- SHOW CATEGORY -->
-                                <span class="font-semibold text-orange-600">🏷️ ${event.category || 'General'}</span>
-                            </p>
-                        </div>
-                    </div>
-                    <button onclick="deleteEvent('${event.id}')" class="text-gray-400 hover:text-red-600 hover:bg-red-50 p-2 rounded transition" title="Delete Event">
-                        ❌
-                    </button>
-                `;
-                listContainer.appendChild(item);
-            });
-        }
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitBtn = form.querySelector('button');
-            submitBtn.innerHTML = 'Saving...';
-            submitBtn.disabled = true;
-
-            const newEvent = {
-                name: document.getElementById('event-name').value,
-                location: document.getElementById('event-location').value,
-                teams: document.getElementById('team-count').value,
-                status: document.getElementById('event-status').value,
-                // SAVE CATEGORY TO DB
-                category: document.getElementById('event-category').value
-            };
-
-            const { error } = await supabase.from('live_events').insert([newEvent]);
-
-            submitBtn.innerHTML = 'Publish Event';
-            submitBtn.disabled = false;
-
-            if (error) alert('Error: ' + error.message);
-            else form.reset();
-        });
-
-        window.deleteEvent = async (id) => {
-            if(confirm('Are you sure you want to delete this event?')) {
-                await supabase.from('live_events').delete().eq('id', id);
-            }
-        }
-    </script>
 </body>
 </html>

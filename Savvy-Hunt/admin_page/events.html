@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Events - Savvy Hunt</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        body { font-family: sans-serif; background-color: #f3f4f6; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .input-group { margin-bottom: 10px; }
+        input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        label { font-weight: bold; font-size: 0.9em; display: block; margin-bottom: 5px; }
+        .btn-primary { background: #f97316; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn-primary:hover { background: #ea580c; }
+        .delete-btn { color: red; border: 1px solid red; background: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+        .results-btn { color: #ca8a04; border: 1px solid #ca8a04; background: #fef9c3; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-right: 5px; }
+
+        /* Modal Styles */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 50; }
+        .modal-content { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .modal-show { display: flex; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1 style="margin:0; font-size: 1.5em;">📡 Manage Live Events</h1>
+            <a href="admin_index.html" style="color: blue; text-decoration: none;">← Back to Dashboard</a>
+        </div>
+
+        <!-- Add Event Form -->
+        <div class="card" style="border-left: 5px solid #f97316;">
+            <h3 style="margin-top:0;">Add New Event</h3>
+            <form id="add-event-form">
+                <div class="input-group">
+                    <label>Event Name</label>
+                    <input type="text" id="event-name" placeholder="e.g. Riddle Relay" required>
+                </div>
+                <div class="input-group">
+                    <label>Location</label>
+                    <input type="text" id="event-location" placeholder="e.g. Main Quad" required>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label>Teams</label>
+                        <input type="number" id="team-count" placeholder="8" required>
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Status</label>
+                        <select id="event-status">
+                            <option value="Live">Live 🔴</option>
+                            <option value="Soon">Soon 🟡</option>
+                            <option value="Finished">Finished ⚫</option>
+                            <option value="Results Published">Results Published 🏁</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group" style="margin-top: 10px;">
+                    <label>Category</label>
+                    <input type="text" id="event-category" placeholder="e.g. Sports, Logic" required>
+                </div>
+                <button type="submit" class="btn-primary" style="margin-top: 10px;">Publish Event</button>
+            </form>
+        </div>
+
+        <div id="event-list">
+            <p style="text-align: center; color: gray;">Loading events...</p>
+        </div>
+    </div>
+
+    <!-- RESULTS MODAL -->
+    <div id="resultsModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="text-xl font-bold mb-4 text-center text-gray-800">🏆 Enter Winners</h2>
+            <p class="text-sm text-gray-500 mb-4 text-center">Enter the names of the winning teams/schools.</p>
+            
+            <input type="hidden" id="result-event-id">
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs text-yellow-600 font-bold">🥇 1st Place</label>
+                    <input type="text" id="winner-1" class="w-full border p-2 rounded">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 font-bold">🥈 2nd Place</label>
+                    <input type="text" id="winner-2" class="w-full border p-2 rounded">
+                </div>
+                <div>
+                    <label class="text-xs text-orange-700 font-bold">🥉 3rd Place</label>
+                    <input type="text" id="winner-3" class="w-full border p-2 rounded">
+                </div>
+            </div>
+
+            <div class="flex gap-2 mt-6">
+                <button onclick="closeModal()" class="w-1/2 border border-gray-300 py-2 rounded hover:bg-gray-50">Cancel</button>
+                <button onclick="saveResults()" class="w-1/2 bg-green-600 text-white py-2 rounded hover:bg-green-700 font-bold">Save Results</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- ERROR CHECK ---
+        if (typeof window.supabase === 'undefined') {
+            document.body.innerHTML = '<h2 style="color:red; text-align:center; margin-top:50px;">Error: Scripts blocked. Check internet connection.</h2>';
+            throw new Error("Supabase not loaded");
+        }
+
+        const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const list = document.getElementById('event-list');
+        const modal = document.getElementById('resultsModal');
+
+        // --- LOAD EVENTS ---
+        async function loadEvents() {
+            const { data, error } = await db.from('live_events').select('*').order('created_at', { ascending: false });
+            
+            if (error) { alert("Database Error: " + error.message); return; }
+
+            list.innerHTML = '';
+            if (data.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: gray;">No events found.</p>';
+                return;
+            }
+
+            data.forEach(ev => {
+                const isLive = ev.status === 'Live' ? 'selected' : '';
+                const isSoon = ev.status === 'Soon' ? 'selected' : '';
+                const isFinished = ev.status === 'Finished' ? 'selected' : '';
+                const isPublished = ev.status === 'Results Published' ? 'selected' : '';
+
+                // If results exist, show a little checkmark
+                const hasResults = ev.winner_1 ? '✅' : '';
+
+                list.innerHTML += `
+                    <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="flex-grow: 1; padding-right: 15px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                <h3 style="margin: 0;">${ev.name} ${hasResults}</h3>
+                                <select onchange="updateStatus('${ev.id}', this.value)" class="status-select">
+                                    <option value="Live" ${isLive}>Live 🔴</option>
+                                    <option value="Soon" ${isSoon}>Soon 🟡</option>
+                                    <option value="Finished" ${isFinished}>Finished ⚫</option>
+                                    <option value="Results Published" ${isPublished}>Results Published 🏁</option>
+                                </select>
+                            </div>
+                            <p style="margin: 0; color: #666; font-size: 0.9em;">📍 ${ev.location} | 🏷️ ${ev.category || 'General'}</p>
+                        </div>
+                        <div style="display:flex; gap:5px;">
+                            <button onclick="openModal('${ev.id}', '${ev.winner_1 || ''}', '${ev.winner_2 || ''}', '${ev.winner_3 || ''}')" class="results-btn" title="Edit Winners">🏆</button>
+                            <button onclick="deleteEvent('${ev.id}')" class="delete-btn">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- UPDATE STATUS ---
+        window.updateStatus = async (id, newStatus) => {
+            const { error } = await db.from('live_events').update({ status: newStatus }).eq('id', id);
+            if (error) alert("Error updating status");
+            
+            // If they selected "Results Published", automatically open the modal
+            if (newStatus === 'Results Published') {
+                // Need to fetch existing results first to populate the modal correctly
+                const { data } = await db.from('live_events').select('winner_1, winner_2, winner_3').eq('id', id).single();
+                openModal(id, data.winner_1 || '', data.winner_2 || '', data.winner_3 || '');
+            }
+        };
+
+        // --- RESULTS MODAL LOGIC ---
+        window.openModal = (id, w1, w2, w3) => {
+            document.getElementById('result-event-id').value = id;
+            document.getElementById('winner-1').value = w1;
+            document.getElementById('winner-2').value = w2;
+            document.getElementById('winner-3').value = w3;
+            modal.classList.add('modal-show');
+        }
+
+        window.closeModal = () => {
+            modal.classList.remove('modal-show');
+        }
+
+        window.saveResults = async () => {
+            const id = document.getElementById('result-event-id').value;
+            const w1 = document.getElementById('winner-1').value;
+            const w2 = document.getElementById('winner-2').value;
+            const w3 = document.getElementById('winner-3').value;
+
+            const { error } = await db.from('live_events').update({
+                winner_1: w1,
+                winner_2: w2,
+                winner_3: w3,
+                status: 'Results Published' // Ensure status is set
+            }).eq('id', id);
+
+            if (error) alert("Error saving results: " + error.message);
+            else {
+                closeModal();
+                loadEvents(); // Refresh UI
+            }
+        }
+
+        // --- ADD & DELETE ---
+        document.getElementById('add-event-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.textContent = "Saving...";
+            
+            const { error } = await db.from('live_events').insert([{
+                name: document.getElementById('event-name').value,
+                location: document.getElementById('event-location').value,
+                teams: document.getElementById('team-count').value,
+                status: document.getElementById('event-status').value,
+                category: document.getElementById('event-category').value
+            }]);
+
+            btn.textContent = "Publish Event";
+
+            if(error) alert("Error adding: " + error.message);
+            else {
+                e.target.reset();
+                loadEvents();
+            }
+        });
+
+        window.deleteEvent = async (id) => {
+            if(confirm('Delete this event?')) {
+                const { error } = await db.from('live_events').delete().eq('id', id);
+                if(error) alert("Error deleting");
+                else loadEvents();
+            }
+        };
+
+        loadEvents();
+    </script>
+</body>
+</html>

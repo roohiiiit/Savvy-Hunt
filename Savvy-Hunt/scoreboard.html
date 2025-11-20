@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Savvy Hunt Scoreboard</title>
+
+  <style>
+
+    body {
+      font-family: "Poppins", "Inter", "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      padding-top: 80px;   /* space for navbar */
+      background: #f9fafb;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      width: 100%;
+      height: 80px; /* <<< FIXED HEIGHT */
+      padding: 15px 30px;
+      background: #1f2937;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0px 3px 10px rgba(0,0,0,0.15);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+      box-sizing: border-box;
+    }
+
+    .nav-title {
+      font-size: 30px;
+      font-weight: 700;
+      color: #f97316;
+      letter-spacing: 1px;
+    }
+
+    .nav-btn {
+      background: #f97316;
+      padding: 10px 20px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 600;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-sizing: border-box;
+    }
+
+    .nav-btn:hover {
+      background: #fb923c;
+      box-shadow: 0px 4px 12px rgba(249,115,22,0.4);
+    }
+
+    /* MAIN SCOREBOARD CONTAINER */
+    .scoreboard-container {
+      max-width: 1100px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0px 6px 25px rgba(0,0,0,0.08);
+      border-top: 6px solid #f97316;
+    }
+
+    /* TITLE */
+    .scoreboard-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #1f2937;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    /* TABLE */
+    .scoreboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    .scoreboard-table thead tr {
+      background: #435b6b;
+      color: white;
+    }
+
+    .scoreboard-table th {
+      padding: 14px 10px;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border-bottom: 2px solid #f97316;
+    }
+
+    .scoreboard-table tbody tr {
+      background: #f9fafb;
+      transition: 0.2s ease-in-out;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .scoreboard-table tbody tr:hover {
+      background: #fff7ed;
+    }
+
+    .scoreboard-table td {
+      padding: 12px 10px;
+      text-align: center;
+      font-size: 1rem;
+      color: #1f2937;
+    }
+
+    .scoreboard-rank {
+      font-weight: 700;
+      color: #f97316;
+      font-size: 1.2rem;
+    }
+
+    .scoreboard-total {
+      font-weight: 800;
+      background: #f5cba7;
+      color: #1f2937;
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .scoreboard-table th,
+      .scoreboard-table td {
+        font-size: 0.85rem;
+        padding: 8px;
+      }
+
+      .scoreboard-title {
+        font-size: 1.7rem;
+      }
+    }
+
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+
+<body>
+
+<!-- FIXED NAVBAR -->
+<nav class="navbar">
+  <div class="nav-left">
+    <span class="nav-title">SAVVY HUNT LIVE SCOREBOARD</span>
+  </div>
+  <div class="nav-right">
+    <a href="index.html" class="nav-btn">🏠 Home</a>
+  </div>
+</nav>
+
+<!-- SCOREBOARD -->
+<div class="scoreboard-container">
+
+  <h1 class="scoreboard-title">SAVVY HUNT LEADERBOARD</h1>
+
+  <table id="scoreTable" class="scoreboard-table">
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Name of Institution</th>
+        <th>Cat 1</th>
+        <th>Cat 2</th>
+        <th>Cat 3</th>
+        <th>Cat 4</th>
+        <th>Cat 5</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+</div>
+
+<script>
+const db = supabase.createClient(
+  "https://updkjbvelzlleowheeyq.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark"
+);
+
+async function loadScoreboard() {
+  const { data } = await db
+    .from("scoreboard")
+    .select("*")
+    .order("total", { ascending: false });
+
+  const tbody = document.querySelector("#scoreTable tbody");
+  tbody.innerHTML = "";
+
+  data.forEach((row, index) => {
+    tbody.innerHTML += `
+      <tr>
+        <td class="scoreboard-rank">${index + 1}</td>
+        <td>${row.name}</td>
+        <td>${row.cat1}</td>
+        <td>${row.cat2}</td>
+        <td>${row.cat3}</td>
+        <td>${row.cat4}</td>
+        <td>${row.cat5}</td>
+        <td class="scoreboard-total">${row.total}</td>
+      </tr>
+    `;
+  });
+}
+
+loadScoreboard();
+
+db
+  .channel("realtime-scoreboard")
+  .on(
+    "postgres_changes",
+    { event: "*", schema: "public", table: "scoreboard" },
+    () => loadScoreboard()
+  )
+  .subscribe();
+</script>
+
+</body>
+</html>

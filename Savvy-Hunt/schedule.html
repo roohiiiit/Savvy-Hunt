@@ -14,7 +14,7 @@
         body {
             font-family: sans-serif;
             background-color: #f3f4f6; /* Light Gray */
-            color: #000000; /* Black Text */
+            color: #111827; /* Black Text */
             margin: 0;
             padding: 0;
         }
@@ -36,19 +36,38 @@
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             border: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 200px; /* Ensure cards are uniform height */
         }
         .status-live { color: red; font-weight: bold; border: 1px solid red; padding: 2px 8px; border-radius: 10px; }
         .status-soon { color: #b45309; font-weight: bold; background: #fef3c7; padding: 2px 8px; border-radius: 10px; }
         .status-done { color: gray; }
+        .status-results { background: black; color: white; font-weight: bold; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; display: inline-block; margin-bottom: 10px;}
         .back-btn {
             display: inline-block;
-            background: #000000;
+            background: #f97316;
             color: white;
             padding: 10px 20px;
             text-decoration: none;
             border-radius: 5px;
             margin-top: 20px;
             font-weight: bold;
+        }
+        /* Results Styling */
+        .winner-row { display: flex; align-items: center; margin-bottom: 5px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .winner-row:last-child { border-bottom: none; }
+        .medal { font-size: 1.2em; margin-right: 10px; }
+        .winner-name { font-weight: bold; color: #333; }
+        /* Error Box */
+        .error-box {
+            background-color: #fee2e2;
+            color: #991b1b;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #ef4444;
+            text-align: center;
         }
     </style>
 </head>
@@ -62,7 +81,7 @@
     <div class="container">
         <!-- Status Message Container -->
         <div id="status-message" style="text-align: center; padding: 20px;">
-            <p style="font-size: 1.2em; color: #666;">Loading events from database...</p>
+            <p style="font-size: 1.2em; color: #666;" class="animate-pulse">Loading events from database...</p>
         </div>
 
         <!-- Grid for Events -->
@@ -76,62 +95,106 @@
     </div>
 
     <script>
-        // --- DEBUG CHECK ---
-        setTimeout(() => {
-            const list = document.getElementById('schedule-list');
-            if(list.children.length === 0 && document.getElementById('status-message').innerText.includes('Loading')) {
-                alert("Trouble connecting to Supabase. \n\n1. Check your internet connection.\n2. Ensure you aren't opening this file directly from a zipped folder.");
-            }
-        }, 5000);
+        // --- 1. INITIALIZATION CHECK ---
+        // This runs immediately to see if the Supabase script loaded correctly
+        const msg = document.getElementById('status-message');
+        const grid = document.getElementById('schedule-list');
 
-        // --- SUPABASE SETUP ---
+        if (typeof window.supabase === 'undefined') {
+            msg.innerHTML = `
+                <div class="error-box">
+                    <h3 style="font-weight:bold; font-size: 1.2em;">⚠️ Script Error</h3>
+                    <p>The database script failed to load. This usually happens if:</p>
+                    <ul style="text-align:left; display:inline-block; margin-top:10px;">
+                        <li>1. You have no internet connection.</li>
+                        <li>2. An ad-blocker is blocking the script.</li>
+                    </ul>
+                </div>
+            `;
+            // Stop execution
+            throw new Error("Supabase SDK not loaded");
+        }
+
+        // --- 2. SUPABASE CONFIGURATION ---
         const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
 
+        // Initialize Client
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const grid = document.getElementById('schedule-list');
-        const msg = document.getElementById('status-message');
 
+        // --- 3. FETCH DATA ---
         async function loadSchedule() {
             console.log("Fetching schedule...");
             
+            // Fetch ALL events (No limit applied here)
             const { data, error } = await supabase
                 .from('live_events')
                 .select('*')
                 .order('created_at', { ascending: false });
 
+            // Handle Database Error
             if (error) {
                 console.error(error);
-                msg.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                msg.innerHTML = `<div class="error-box">Database Error: ${error.message}</div>`;
                 return;
             }
 
-            if (data.length === 0) {
-                msg.innerHTML = `<p>No events found in the database yet.</p>`;
+            // Handle Empty Database
+            if (!data || data.length === 0) {
+                msg.innerHTML = `
+                    <div style="padding: 40px; text-align: center; color: #666;">
+                        <p style="font-size: 2em;">📭</p>
+                        <p>No events found in the database.</p>
+                        <p style="font-size: 0.9em;">Go to the Admin Panel to add some!</p>
+                    </div>
+                `;
                 return;
             }
 
-            // Clear loading message
+            // Success - Clear loading message
             msg.innerHTML = '';
             grid.innerHTML = '';
 
             data.forEach(event => {
                 let badge = '';
-                if(event.status === 'Live') badge = `<span class="status-live">LIVE 🔴</span>`;
-                else if(event.status === 'Soon') badge = `<span class="status-soon">Soon 🟡</span>`;
-                else badge = `<span class="status-done">Finished ⚫</span>`;
+                let contentHTML = '';
+                let cardStyle = '';
 
-                // UPDATED CARD: Category instead of Progress
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                        <h3 style="margin: 0; font-size: 1.25rem; font-weight: bold;">${event.name}</h3>
-                        ${badge}
-                    </div>
-                    <p style="color: #555; margin: 5px 0;">📍 ${event.location}</p>
-                    <p style="color: #555; margin: 5px 0;">👥 ${event.teams} Teams</p>
-                    
+                // Logic for different statuses
+                if (event.status === 'Results Published') {
+                    cardStyle = 'border: 2px solid #facc15; background-color: #fefce8;'; // Yellow-ish border
+                    contentHTML = `
+                        <div style="text-align:center;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <h3 style="margin: 0; font-size: 1.25rem; font-weight: bold;">${event.name}</h3>
+                            </div>
+                            <span class="status-results">🏁 RESULTS</span>
+                            <div style="text-align:left; background: white; padding: 10px; border-radius: 8px; border: 1px solid #eee;">
+                                <div class="winner-row"><span class="medal">🥇</span> <span class="winner-name">${event.winner_1 || 'TBA'}</span></div>
+                                <div class="winner-row"><span class="medal">🥈</span> <span class="winner-name" style="color: #666;">${event.winner_2 || '-'}</span></div>
+                                <div class="winner-row"><span class="medal">🥉</span> <span class="winner-name" style="color: #666;">${event.winner_3 || '-'}</span></div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    if(event.status === 'Live') badge = `<span class="status-live">LIVE 🔴</span>`;
+                    else if(event.status === 'Soon') badge = `<span class="status-soon">Soon 🟡</span>`;
+                    else badge = `<span class="status-done">Finished ⚫</span>`;
+
+                    contentHTML = `
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <h3 style="margin: 0; font-size: 1.25rem; font-weight: bold;">${event.name}</h3>
+                                ${badge}
+                            </div>
+                            <p style="color: #555; margin: 5px 0;">📍 ${event.location}</p>
+                            <p style="color: #555; margin: 5px 0;">👥 ${event.teams} Teams</p>
+                        </div>
+                    `;
+                }
+
+                // Add Category (Common to both styles)
+                contentHTML += `
                     <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
                         <span style="color: #888; font-size: 0.9rem;">Category</span>
                         <span style="background: #f3f4f6; color: #374151; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem;">
@@ -139,13 +202,21 @@
                         </span>
                     </div>
                 `;
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                if (cardStyle) card.style.cssText += cardStyle; // Apply special styles if needed
+                card.innerHTML = contentHTML;
                 grid.appendChild(card);
             });
         }
 
+        // --- 4. START & LISTEN ---
         loadSchedule();
         
-        supabase.channel('schedule').on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, loadSchedule).subscribe();
+        supabase.channel('schedule')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, loadSchedule)
+            .subscribe();
     </script>
 </body>
-</html>
+</html> 
