@@ -5,238 +5,545 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Full Schedule - Savvy Hunt</title>
     
-    <!-- 1. Load Tailwind & Supabase -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- 2. Failsafe CSS -->
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
         body {
-            font-family: sans-serif;
-            background-color: #f3f4f6; /* Light Gray */
-            color: #111827; /* Black Text */
+            font-family: 'Poppins', sans-serif;
+            /* Subtle gradient background */
+            background: radial-gradient(circle at 50% 0%, #fff7ed, #f3f4f6 60%); 
+            color: #111827;
             margin: 0;
             padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
+
+        /* --- NEW SEXY FLOATING HEADER --- */
+        .header-wrapper {
+            padding: 20px 20px 0 20px;
+            display: flex;
+            justify-content: center;
+        }
+
         .header {
-            background-color: #f97316;
-            color: white;
-            padding: 20px;
+            width: 100%;
+            max-width: 1000px; /* Compact width for the "Island" look */
+            /* Rich Animated Gradient */
+            background: linear-gradient(120deg, #fb923c, #ea580c, #c2410c);
+            background-size: 200% 200%;
+            animation: gradient-flow 8s ease infinite;
+            
+            border-radius: 30px; /* Pill shape */
+            padding: 40px 20px;
             text-align: center;
+            position: relative;
+            z-index: 10;
+            
+            /* Deep Glowing Shadow */
+            box-shadow: 
+                0 20px 40px -10px rgba(234, 88, 12, 0.5),
+                0 0 0 1px rgba(255,255,255,0.2) inset;
         }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
+
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-        .card {
+
+        .header h1 { 
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2); 
+            letter-spacing: -1px;
+            font-size: 2.5rem;
+            line-height: 1.2;
+        }
+
+        /* --- NEW SEARCH BAR STYLE --- */
+        .search-container {
+            max-width: 480px;
+            margin: 30px auto 10px;
+            position: relative;
+            transform: translateZ(0); /* Fix for Safari flicker */
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 18px 60px 18px 25px;
+            border-radius: 50px;
+            border: none;
             background: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            border: 1px solid #ddd;
+            color: #374151;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .search-input::placeholder {
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .search-input:focus {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        
+        .search-icon-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ea580c;
+            color: white;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(234, 88, 12, 0.4);
+            pointer-events: none; /* It's just visual */
+        }
+
+        /* --- BACK BUTTON (Floating Top Left of Header) --- */
+        .back-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(5px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.2s ease;
+        }
+        .back-pill:hover {
+            background: white;
+            color: #ea580c;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* --- FLIP CARD CONTAINER --- */
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            height: 360px; 
+            perspective: 1000px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transform-style: preserve-3d;
+            border-radius: 24px; 
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1); 
+        }
+
+        .flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* --- CARD FACES --- */
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 24px;
+            padding: 28px 24px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 200px; /* Ensure cards are uniform height */
+            align-items: center;
+            color: #111827;
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
-        .status-live { color: red; font-weight: bold; border: 1px solid red; padding: 2px 8px; border-radius: 10px; }
-        .status-soon { color: #b45309; font-weight: bold; background: #fef3c7; padding: 2px 8px; border-radius: 10px; }
-        .status-done { color: gray; }
-        .status-results { background: black; color: white; font-weight: bold; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; display: inline-block; margin-bottom: 10px;}
-        .back-btn {
-            display: inline-block;
-            background: #f97316;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 20px;
-            font-weight: bold;
+
+        .flip-card-front {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 2;
+            transform: rotateY(0deg);
+            box-shadow: inset 0 0 40px rgba(255,255,255,0.5); 
         }
-        /* Results Styling */
-        .winner-row { display: flex; align-items: center; margin-bottom: 5px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .winner-row:last-child { border-bottom: none; }
-        .medal { font-size: 1.2em; margin-right: 10px; }
-        .winner-name { font-weight: bold; color: #333; }
-        /* Error Box */
-        .error-box {
-            background-color: #fee2e2;
-            color: #991b1b;
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid #ef4444;
+
+        .flip-card-front.is-results {
+            border: 1px solid rgba(251, 191, 36, 0.5);
+            background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(254, 243, 199, 0.4));
+            box-shadow: inset 0 0 20px rgba(251, 191, 36, 0.15), 0 10px 30px -10px rgba(251, 191, 36, 0.3);
+        }
+
+        .flip-card-back {
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transform: rotateY(180deg);
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* --- BADGES --- */
+        .badge-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px; 
+            flex-shrink: 0;
+        }
+
+        .status-badge, .category-pill { 
+            font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 6px 14px; border-radius: 100px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .is-results .status-badge { background: linear-gradient(135deg, #fcd34d, #fbbf24); color: #78350f; border: none; box-shadow: 0 4px 10px rgba(251, 191, 36, 0.3); }
+        .status-live { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+        .status-soon { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+        .status-done { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
+        .category-pill { background: white; border: 1px solid #e5e7eb; color: #6b7280; }
+
+        /* --- CONTENT TYPOGRAPHY --- */
+        .main-content {
+            flex-grow: 1; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
         }
+        .main-content h3 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #1a202c;
+            line-height: 1.1;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        .main-content .location {
+            font-size: 1.05rem; color: #4b5563; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px; justify-content: center;
+            font-weight: 500;
+        }
+        .main-content .teams-registered {
+            font-size: 0.85rem; color: #9ca3af; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+        }
 
+        /* --- BUTTONS --- */
+        .action-btn {
+            width: 100%;
+            padding: 14px; 
+            border-radius: 14px; 
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: auto;
+            position: relative; 
+            overflow: hidden;
+            flex-shrink: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-view { 
+            background: linear-gradient(135deg, #fb923c, #ea580c);
+            color: white; 
+            box-shadow: 0 8px 20px -5px rgba(234, 88, 12, 0.4);
+        }
+        .btn-view:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 12px 25px -5px rgba(234, 88, 12, 0.5);
+        }
         
-        ::-webkit-scrollbar {
-            width: 10px;
+        .btn-back { 
+            background: white;
+            color: #4b5563; 
+            border: 1px solid #e5e7eb;
+            margin-top: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .btn-back:hover { 
+            background: #f9fafb;
+            color: #111827;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px -2px rgba(0,0,0,0.05);
         }
 
-        ::-webkit-scrollbar-track {
-            background: #FFF3E6;
-            border-radius: 10px;
+        /* --- WINNERS LIST --- */
+        .winner-row { 
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 10px; 
+            background: white;
+            padding: 10px 16px; 
+            border-radius: 12px;
+            border: 1px solid #f3f4f6;
+            width: 100%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #F97316, #EA580C);
-            border-radius: 10px;
+        .winner-row:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-color: #e5e7eb;
         }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #EA580C, #C2410C);
-        }
+        .winner-row:last-child { margin-bottom: 0; }
+        
+        .medal { font-size: 1.5em; margin-right: 16px; flex-shrink: 0; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1)); }
+        .winner-info { display: flex; flex-direction: column; text-align: left; overflow: hidden; }
+        .student-name { font-weight: 700; color: #1f2937; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .school-name { font-size: 0.75rem; color: #6b7280; font-weight: 600; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1 class="text-2xl font-bold">📅 Full Event Schedule</h1>
-        <a href="index.html" style="color: #000000; text-decoration: underline;">&larr; Back to Live Page</a>
+    <div class="header-wrapper">
+        <div class="header">
+            <a href="index.html" class="back-pill">
+                &larr; Back to Live Page
+            </a>
+            
+            <h1 class="text-4xl font-black mb-2 tracking-tight text-white">
+                Event Schedule
+            </h1>
+            
+            <!-- SEXY FLOATING SEARCH BAR -->
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="Find events, venues, or categories...">
+                <div class="search-icon-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="container">
-        <!-- Status Message Container -->
-        <div id="status-message" style="text-align: center; padding: 20px;">
-            <p style="font-size: 1.2em; color: #666;" class="animate-pulse">Loading events from database...</p>
+        <div id="status-message" style="text-align: center; padding: 40px;">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mb-4"></div>
+            <p class="text-gray-500 font-medium">Loading events...</p>
         </div>
 
-        <!-- Grid for Events -->
-        <div id="schedule-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Events will appear here -->
+        <div id="schedule-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
+            <!-- Cards will be injected here -->
         </div>
         
-        <div style="text-align: center;">
-            <a href="index.html" class="back-btn">Return to Home</a>
+        <div id="no-results" style="text-align: center; display: none; padding: 40px;">
+            <div class="text-6xl mb-4">🔍</div>
+            <h3 class="text-xl font-bold text-gray-700">No events found</h3>
+            <p class="text-gray-500">Try adjusting your search terms.</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px; padding-bottom: 40px;">
+            <a href="index.html" class="inline-block bg-slate-800 text-white px-8 py-3 rounded-full font-bold hover:bg-slate-900 transition shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+                Return to Home
+            </a>
         </div>
     </div>
 
     <script>
-        // --- 1. INITIALIZATION CHECK ---
-        // This runs immediately to see if the Supabase script loaded correctly
-        const msg = document.getElementById('status-message');
-        const grid = document.getElementById('schedule-list');
-
-        if (typeof window.supabase === 'undefined') {
-            msg.innerHTML = `
-                <div class="error-box">
-                    <h3 style="font-weight:bold; font-size: 1.2em;">⚠️ Script Error</h3>
-                    <p>The database script failed to load. This usually happens if:</p>
-                    <ul style="text-align:left; display:inline-block; margin-top:10px;">
-                        <li>1. You have no internet connection.</li>
-                        <li>2. An ad-blocker is blocking the script.</li>
-                    </ul>
-                </div>
-            `;
-            // Stop execution
-            throw new Error("Supabase SDK not loaded");
-        }
-
-        // --- 2. SUPABASE CONFIGURATION ---
         const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
 
-        // Initialize Client
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        if (typeof window.supabase === 'undefined') {
+            document.getElementById('status-message').innerHTML = `<div class="bg-red-50 text-red-600 px-6 py-4 rounded-xl border border-red-100 shadow-sm font-medium inline-block">Error: Supabase SDK failed to load.</div>`;
+            throw new Error("Supabase SDK not loaded");
+        }
 
-        // --- 3. FETCH DATA ---
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let allEvents = [];
+
+        window.toggleFlip = function(cardId) {
+            const cardInner = document.getElementById(cardId);
+            if(cardInner) {
+                cardInner.classList.toggle('flipped');
+            }
+        }
+
         async function loadSchedule() {
             console.log("Fetching schedule...");
             
-            // Fetch ALL events (No limit applied here)
             const { data, error } = await supabase
                 .from('live_events')
                 .select('*')
                 .order('created_at', { ascending: false });
 
-            // Handle Database Error
+            const msg = document.getElementById('status-message');
+
             if (error) {
-                console.error(error);
-                msg.innerHTML = `<div class="error-box">Database Error: ${error.message}</div>`;
+                msg.innerHTML = `<div class="text-red-600 font-bold">Database Error: ${error.message}</div>`;
                 return;
             }
 
-            // Handle Empty Database
             if (!data || data.length === 0) {
-                msg.innerHTML = `
-                    <div style="padding: 40px; text-align: center; color: #666;">
-                        <p style="font-size: 2em;">📭</p>
-                        <p>No events found in the database.</p>
-                        <p style="font-size: 0.9em;">Go to the Admin Panel to add some!</p>
-                    </div>
-                `;
+                msg.innerHTML = `<div class="text-gray-400 text-xl font-bold">No events found.</div>`;
                 return;
             }
 
-            // Success - Clear loading message
-            msg.innerHTML = '';
+            allEvents = data;
+            renderEvents(allEvents);
+            msg.style.display = 'none';
+        }
+
+        function renderEvents(events) {
+            const grid = document.getElementById('schedule-list');
+            const noResults = document.getElementById('no-results');
+            
             grid.innerHTML = '';
 
-            data.forEach(event => {
-                let badge = '';
-                let contentHTML = '';
-                let cardStyle = '';
+            if(events.length === 0) {
+                noResults.style.display = 'block';
+                return;
+            } else {
+                noResults.style.display = 'none';
+            }
 
-                // Logic for different statuses
+            events.forEach((event, index) => {
+                const uniqueId = `card-inner-${event.id || index}`; 
+                
+                let badgeClass = 'status-done';
+                let badgeText = 'FINISHED';
+                let btnText = 'View Results';
+                let isResults = false;
+                let frontCardClass = ''; 
+
                 if (event.status === 'Results Published') {
-                    cardStyle = 'border: 2px solid #facc15; background-color: #fefce8;'; // Yellow-ish border
-                    contentHTML = `
-                        <div style="text-align:center;">
-                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                                <h3 style="margin: 0; font-size: 1.25rem; font-weight: bold;">${event.name}</h3>
-                            </div>
-                            <span class="status-results">🏁 RESULTS</span>
-                            <div style="text-align:left; background: white; padding: 10px; border-radius: 8px; border: 1px solid #eee;">
-                                <div class="winner-row"><span class="medal">🥇</span> <span class="winner-name">${event.winner_1 || 'TBA'}</span></div>
-                                <div class="winner-row"><span class="medal">🥈</span> <span class="winner-name" style="color: #666;">${event.winner_2 || '-'}</span></div>
-                                <div class="winner-row"><span class="medal">🥉</span> <span class="winner-name" style="color: #666;">${event.winner_3 || '-'}</span></div>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    if(event.status === 'Live') badge = `<span class="status-live">LIVE 🔴</span>`;
-                    else if(event.status === 'Soon') badge = `<span class="status-soon">Soon 🟡</span>`;
-                    else badge = `<span class="status-done">Finished ⚫</span>`;
-
-                    contentHTML = `
-                        <div>
-                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                                <h3 style="margin: 0; font-size: 1.25rem; font-weight: bold;">${event.name}</h3>
-                                ${badge}
-                            </div>
-                            <p style="color: #555; margin: 5px 0;">📍 ${event.location}</p>
-                            <p style="color: #555; margin: 5px 0;">👥 ${event.teams} Teams</p>
-                        </div>
-                    `;
+                    badgeText = '🏁 RESULTS OUT';
+                    isResults = true;
+                    frontCardClass = 'is-results'; 
+                } else if (event.status === 'Live') {
+                    badgeClass = 'status-live';
+                    badgeText = '🔴 LIVE NOW';
+                    btnText = 'View Details';
+                } else if (event.status === 'Soon') {
+                    badgeClass = 'status-soon';
+                    badgeText = '🟡 COMING SOON';
+                    btnText = 'View Details';
                 }
 
-                // Add Category (Common to both styles)
-                contentHTML += `
-                    <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #888; font-size: 0.9rem;">Category</span>
-                        <span style="background: #f3f4f6; color: #374151; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem;">
-                            ${event.category || 'General'}
-                        </span>
+                const student1 = event.student_1 || 'TBA';
+                const school1 = event.winner_1 || 'TBA';
+                const student2 = event.student_2 || '-';
+                const school2 = event.winner_2 || '-';
+                const student3 = event.student_3 || '-';
+                const school3 = event.winner_3 || '-';
+
+                const winnersHTML = `
+                    <div class="winner-row">
+                        <span class="medal">🥇</span>
+                        <div class="winner-info">
+                            <span class="student-name">${student1}</span>
+                            <span class="school-name">${school1}</span>
+                        </div>
+                    </div>
+                    <div class="winner-row">
+                        <span class="medal">🥈</span>
+                        <div class="winner-info">
+                            <span class="student-name">${student2}</span>
+                            <span class="school-name">${school2}</span>
+                        </div>
+                    </div>
+                    <div class="winner-row">
+                        <span class="medal">🥉</span>
+                        <div class="winner-info">
+                            <span class="student-name">${student3}</span>
+                            <span class="school-name">${school3}</span>
+                        </div>
                     </div>
                 `;
 
-                const card = document.createElement('div');
-                card.className = 'card';
-                if (cardStyle) card.style.cssText += cardStyle; // Apply special styles if needed
-                card.innerHTML = contentHTML;
-                grid.appendChild(card);
+                const waitingHTML = `
+                    <div class="flex flex-col items-center justify-center h-48 text-center text-gray-400">
+                        <div class="text-4xl mb-3 opacity-50">⏳</div>
+                        <p class="text-base font-bold text-gray-600">Coming Soon</p>
+                        <p class="text-xs font-medium opacity-70">Results pending.</p>
+                    </div>
+                `;
+
+                const cardHTML = `
+                <div class="flip-card">
+                    <div class="flip-card-inner" id="${uniqueId}">
+                        <div class="flip-card-front ${frontCardClass}">
+                            <div class="badge-container">
+                                <span class="status-badge ${badgeClass}">${badgeText}</span>
+                                <span class="category-pill">${event.category || 'General'}</span>
+                            </div>
+                            <div class="main-content">
+                                <h3 class="font-extrabold">${event.name}</h3>
+                                <div class="location">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-orange-500">
+                                        <path fill-rule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                                    </svg>
+                                    ${event.location || 'Venue TBA'}
+                                </div>
+                                <p class="teams-registered">Teams Registered: ${event.teams || 0}</p>
+                            </div>
+                            <button onclick="toggleFlip('${uniqueId}')" class="action-btn btn-view">
+                                ${btnText} &rarr;
+                            </button>
+                        </div>
+                        <div class="flip-card-back">
+                            <div class="w-full flex-grow flex flex-col justify-center">
+                                <h4 class="text-slate-800 font-black uppercase text-xs border-b-2 border-orange-100 pb-3 mb-4 tracking-wider text-left flex items-center gap-2">
+                                    <span class="text-lg">🏆</span> Winners Podium
+                                </h4>
+                                ${isResults ? winnersHTML : waitingHTML}
+                            </div>
+                            <button onclick="toggleFlip('${uniqueId}')" class="action-btn btn-back">
+                                &larr; Back to Info
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+                
+                grid.insertAdjacentHTML('beforeend', cardHTML);
             });
         }
 
-        // --- 4. START & LISTEN ---
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredEvents = allEvents.filter(event => {
+                return (
+                    event.name.toLowerCase().includes(searchTerm) ||
+                    (event.location && event.location.toLowerCase().includes(searchTerm)) ||
+                    (event.category && event.category.toLowerCase().includes(searchTerm))
+                );
+            });
+            renderEvents(filteredEvents);
+        });
+
         loadSchedule();
         
         supabase.channel('schedule')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, loadSchedule)
             .subscribe();
+
     </script>
 </body>
-</html> 
+</html>
