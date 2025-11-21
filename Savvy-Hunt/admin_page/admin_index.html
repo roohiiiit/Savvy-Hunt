@@ -1,451 +1,592 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Savvy Hunt</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Savvy Hunt - Live Event</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'hover-drone': 'hoverDrone 6s ease-in-out infinite',
+                        'spin-fast': 'spin 0.5s ease-in-out',
+                        'scan-beam': 'scanBeam 2s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        hoverDrone: {
+                            '0%, 100%': { marginTop: '0px' },
+                            '50%': { marginTop: '-8px' },
+                        },
+                        scanBeam: {
+                            '0%, 100%': { opacity: '0.2', height: '80px' },
+                            '50%': { opacity: '0.6', height: '100px' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .dashboard-card {
+        body {
+            background-color: #FFFBF5;
+            overflow-x: hidden;
+            cursor: default;
+            /* Prevent pull-to-refresh on mobile to make dragging smoother */
+            overscroll-behavior-y: none; 
+        }
+
+        /* --- THE SAVVY BOT V3 (Interactive) --- */
+        #savvy-bot-container {
+            position: fixed;
+            z-index: 100;
+            top: 0; left: 0; 
+            width: 80px; height: 80px;
+            perspective: 1000px;
+            cursor: grab; /* Indicates draggable */
+            touch-action: none; /* Critical for mobile dragging */
+            will-change: transform;
+            /* Default slow drift. We remove this class via JS when dragging for instant response */
+            transition: transform 8s cubic-bezier(0.2, 0.8, 0.2, 1); 
+        }
+        
+        #savvy-bot-container.dragging {
+            cursor: grabbing;
+            transition: none !important; /* Instant follow */
+            z-index: 9999;
+        }
+
+        .bot-body {
+            width: 60px; height: 60px;
+            margin: 10px;
+            background: radial-gradient(circle at 30% 30%, #fff, #e2e8f0);
+            border-radius: 50%;
+            box-shadow: 
+                inset -5px -5px 15px rgba(0,0,0,0.1),
+                0 10px 20px rgba(0,0,0,0.15),
+                0 0 0 2px rgba(255,255,255,0.5);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+
+        /* Physics & Emotions */
+        .bot-body:active { transform: scale(0.95); }
+        .bot-spin { animation: spin-fast 0.6s ease-in-out; }
+
+        .bot-eye {
+            width: 40px; height: 22px;
+            background: #0f172a;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #cbd5e1;
+            box-shadow: inset 0 0 5px #000;
             transition: all 0.3s ease;
         }
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+        .bot-pupil {
+            width: 14px; height: 14px;
+            background: #F97316;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%; left: 50%;
+            margin-top: -7px; margin-left: -7px;
+            box-shadow: 0 0 8px #F97316;
+            transition: opacity 0.2s;
         }
+
+        /* --- EMOTION STATES --- */
+        /* 1. Sleeping */
+        .bot-eye.sleeping { height: 4px; margin-top: 8px; background: #334155; border-color: #475569; }
+        .bot-eye.sleeping .bot-pupil { opacity: 0; }
+
+        /* 2. Happy (Dragging) */
+        .bot-eye.happy {
+            height: 15px;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            border-radius: 0;
+            border-bottom: 3px solid #0f172a;
+            overflow: visible;
+        }
+        .bot-eye.happy .bot-pupil { opacity: 0; }
+
+        /* 3. Scanning (Laser Mode) */
+        .bot-eye.scanning {
+            border-color: #ef4444;
+            box-shadow: 0 0 10px #ef4444;
+        }
+        .bot-eye.scanning .bot-pupil {
+            background: #ef4444;
+            box-shadow: 0 0 15px #ef4444;
+            width: 18px; height: 18px; margin-top: -9px; margin-left: -9px;
+            animation: pulse 0.5s infinite;
+        }
+
+        /* --- LASER BEAM --- */
+        .laser-beam {
+            position: absolute;
+            top: 50px; left: 10px;
+            width: 40px; height: 0px; /* Hidden by default */
+            background: linear-gradient(to bottom, rgba(239, 68, 68, 0.5), transparent);
+            clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+        .bot-scanning .laser-beam {
+            height: 120px;
+            opacity: 0.6;
+            animation: scanBeam 1.5s infinite alternate;
+        }
+
+        /* --- CHAT BUBBLE --- */
+        .bot-chat-bubble {
+            position: absolute;
+            top: -45px; left: 50%;
+            transform: translateX(-50%) scale(0.8);
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            font-size: 12px; font-weight: 700; color: #334155;
+            white-space: nowrap;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            border: 1px solid rgba(0,0,0,0.1);
+            z-index: 101;
+        }
+        .bot-chat-bubble.visible { opacity: 1; transform: translateX(-50%) scale(1); top: -55px; }
+        .bot-chat-bubble::after { content: ''; position: absolute; bottom: -6px; left: 50%; margin-left: -6px; border-width: 6px 6px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
+
+        /* --- GENERAL UI --- */
+        .bg-parallax-text { position: fixed; top: 50%; left: -10%; font-size: 20vh; font-weight: 900; color: rgba(0,0,0,0.02); white-space: nowrap; pointer-events: none; z-index: 0; transform: translateY(-50%); will-change: transform; }
+        .scroll-line-track { position: fixed; left: 0; top: 0; width: 4px; height: 100vh; background: rgba(0,0,0,0.05); z-index: 50; }
+        .scroll-line-fill { width: 100%; height: 0%; background: linear-gradient(to bottom, #F97316, #EC4899); box-shadow: 2px 0 10px rgba(249, 115, 22, 0.5); }
+        .blur-word { display: inline-block; opacity: 0; filter: blur(12px); transform: translateY(20px); transition: all 0.8s ease; margin-right: 0.2em; }
+        .blur-word.visible { opacity: 1; filter: blur(0); transform: translateY(0); }
+        .card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-radius: 2rem; border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.05); transition: transform 0.4s ease; }
+        .card:hover { transform: scale(1.02); box-shadow: 0 30px 60px -10px rgba(249, 115, 22, 0.15); }
+        .btn-gradient { background: linear-gradient(135deg, #F97316 0%, #DC2626 100%); color: white !important; box-shadow: 0 10px 30px rgba(249, 115, 22, 0.4); transition: all 0.3s ease; }
+        .btn-gradient:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(249, 115, 22, 0.6); }
+        #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-8">
+<body class="text-slate-800 antialiased">
 
-    <div class="max-w-5xl w-full">
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-black text-gray-900 mb-4">🔐 Savvy Hunt Admin</h1>
-            <p class="text-gray-500">Select a module to manage</p>
-        </div>
+    <div class="scroll-line-track"><div class="scroll-line-fill" id="scroll-fill"></div></div>
+    <div class="bg-parallax-text" id="big-parallax-text">SAVVY HUNT 2025</div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
-            <!-- 1. Live Events -->
-            <a href="events.html" class="dashboard-card bg-white p-8 rounded-2xl shadow-lg border-b-4 border-orange-500 flex flex-col items-center text-center cursor-pointer hover:border-orange-600 group">
-                <div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-3xl mb-6 group-hover:bg-orange-600 group-hover:text-white transition-colors">
-                    📡
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">Live Events</h2>
-                <p class="text-gray-500 text-sm">Update current events, locations, and status.</p>
-            </a>
-
-            <!-- 2. Scoreboard -->
-            <a href="scoreboard.html" class="dashboard-card bg-white p-8 rounded-2xl shadow-lg border-b-4 border-blue-500 flex flex-col items-center text-center cursor-pointer hover:border-blue-600 group">
-                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                    🏆
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">Scoreboard</h2>
-                <p class="text-gray-500 text-sm">Manage team points and calculate totals.</p>
-            </a>
-
-            <!-- 3. Gallery -->
-            <a href="snapshots.html" class="dashboard-card bg-white p-8 rounded-2xl shadow-lg border-b-4 border-purple-500 flex flex-col items-center text-center cursor-pointer hover:border-purple-600 group">
-                <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-3xl mb-6 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                    📸
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">Gallery Uploads</h2>
-                <p class="text-gray-500 text-sm">Upload photos and videos for the public feed.</p>
-            </a>
-
-        </div>
-
-        <div class="text-center mt-12">
-            <a href="../index.html" class="text-gray-400 hover:text-gray-600 text-sm underline">Back to Public Website</a>
+    <div id="savvy-bot-container" style="transform: translate(85vw, 85vh);">
+        <div class="bot-chat-bubble" id="bot-bubble">System Online.</div>
+        <div class="bot-body animate-hover-drone" id="bot-body">
+            <div class="bot-antenna"></div>
+            <div class="bot-eye" id="bot-eye">
+                <div class="bot-pupil" id="bot-pupil"></div>
+            </div>
+            <div class="laser-beam"></div>
         </div>
     </div>
 
-
-  
-
-  <script>
-    // --- 1. SUPABASE CONFIGURATION (existing) ---
-    const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
-    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const SNAPSHOTS_BUCKET = 'snapshots';
-
-    // --- 2. EXISTING APP LOGIC (events UI) ---
-    const form = document.getElementById('add-event-form');
-    const listContainer = document.getElementById('admin-events-list');
-    fetchEvents();
-    db
-      .channel('admin-channel')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, (payload) => {
-        fetchEvents();
-      })
-      .subscribe();
-
-    async function fetchEvents() {
-      const { data, error } = await db
-        .from('live_events')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) {
-        listContainer.innerHTML = `<p class="text-red-500">Error: ${error.message}</p>`;
-        return;
-      }
-      renderList(data);
-    }
-
-    function renderList(events) {
-      listContainer.innerHTML = '';
-      if (!events || events.length === 0) {
-        listContainer.innerHTML = '<p class="text-gray-400 text-center py-4">No events in database. Add one above!</p>';
-        return;
-      }
-      events.forEach(event => {
-        const item = document.createElement('div');
-        item.className = "bg-gray-50 p-4 rounded-lg border border-gray-200 hover:border-orange-200 transition flex justify-between items-center group mb-2";
-        item.style.backgroundColor = "#f9fafb";
-        let statusColor = event.status === 'Live' ? 'bg-red-100 text-red-700 border-red-200' : (event.status === 'Soon' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' : 'bg-gray-200 text-gray-700 border-gray-300');
-        item.innerHTML = `
-          <div class="flex items-center gap-4">
-            <div class="${statusColor} border px-3 py-1 rounded text-xs font-bold w-20 text-center"> ${event.status} </div>
-            <div>
-              <h3 class="font-bold text-gray-900 text-lg">${event.name}</h3>
-              <p class="text-xs text-gray-500 flex gap-3 items-center">
-                <span>📍 ${event.location}</span>
-                <span class="text-gray-300">|</span>
-                <span>👥 ${event.teams} Teams</span>
-                <span class="text-gray-300">|</span>
-                <span class="font-semibold text-orange-600">🏷️ ${event.category || 'General'}</span>
-              </p>
+    <section id="hero-section" class="relative min-h-[65vh] md:min-h-[90vh] flex flex-col justify-center items-center text-white text-center rounded-b-[3rem] overflow-hidden shadow-2xl z-10 pt-16 pb-8 md:py-0">
+        <div class="absolute inset-0 bg-[#0f172a] bg-top bg-no-repeat bg-cover" style="background-image: url('assests/bg.png');"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/50 to-slate-900/95"></div>
+        <canvas id="hero-canvas"></canvas>
+        <div class="relative z-20 px-4 max-w-5xl w-full parallax-layer" data-speed="-0.1">
+            <h1 id="hero-title" class="text-4xl md:text-8xl font-black mb-4 drop-shadow-2xl tracking-tighter leading-none min-h-[90px] md:min-h-[160px]"></h1>
+            <p class="text-base md:text-3xl font-bold mb-8 drop-shadow-lg opacity-0 animate-fade-in-up [animation-delay:600ms] text-orange-50">The ultimate showdown is <span class="text-orange-500">NOW!</span></p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center opacity-0 animate-fade-in-up [animation-delay:800ms]">
+                <a href="#live-events" class="hover-trigger btn-gradient text-white font-bold py-4 px-10 rounded-full text-base md:text-lg w-full sm:w-auto shadow-lg shadow-orange-500/30" data-bot-say="Let's see the action! ⚡">See What's Happening LIVE</a>
+                <a href="scoreboard.html" class="hover-trigger bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold py-4 px-10 rounded-full text-base md:text-lg w-full sm:w-auto hover:bg-white/20 transition-colors" data-bot-say="Who is #1? 🏆">View Scoreboard</a>
             </div>
-          </div>
-          <button onclick="deleteEvent('${event.id}')" class="text-gray-400 hover:text-red-600 hover:bg-red-50 p-2 rounded transition" title="Delete Event"> ❌ </button>
-        `;
-        listContainer.appendChild(item);
-      });
-    }
+        </div>
+    </section>
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitBtn = form.querySelector('button');
-      submitBtn.innerHTML = 'Saving...';
-      submitBtn.disabled = true;
-      const newEvent = {
-        name: document.getElementById('event-name').value,
-        location: document.getElementById('event-location').value,
-        teams: document.getElementById('team-count').value,
-        status: document.getElementById('event-status').value,
-        category: document.getElementById('event-category').value
-      };
-      const { error } = await db.from('live_events').insert([newEvent]);
-      submitBtn.innerHTML = 'Publish Event';
-      submitBtn.disabled = false;
-      if (error) showToast('Error: ' + error.message, 'bg-red-600');
-      else {
-        showToast('Event published successfully!');
-        form.reset();
-      }
-    });
-
-    window.deleteEvent = async (id) => {
-      if (confirm('Are you sure you want to delete this event?')) {
-        const { error } = await db.from('live_events').delete().eq('id', id);
-        if (error) showToast('Error deleting: ' + error.message, 'bg-red-600');
-        else showToast('Event deleted!');
-      }
-    }
-
-    //  Admin Snapshots Upload Logic (uses existing `supabase`) ////
-    const dropzone = document.getElementById('dropzone');
-    const snapFiles = document.getElementById('snapFiles');
-    const uploadStartBtn = document.getElementById('uploadStartBtn');
-    const clearSelectionBtn = document.getElementById('clearSelectionBtn');
-    const globalProgress = document.getElementById('globalProgress');
-    const progressText = document.getElementById('progressText');
-    const progressCount = document.getElementById('progressCount');
-    const refreshGalleryBtn = document.getElementById('refreshGalleryBtn');
-    const adminGallery = document.getElementById('adminGallery');
-    const toast = document.getElementById('toast');
-
-    // Drag & drop UI
-    ['dragenter','dragover'].forEach(evt => {
-      dropzone.addEventListener(evt, (e) => {
-        e.preventDefault(); e.stopPropagation();
-        dropzone.classList.add('dragover');
-      });
-    });
-    ['dragleave','drop','dragend'].forEach(evt => {
-      dropzone.addEventListener(evt, (e) => {
-        e.preventDefault(); e.stopPropagation();
-        dropzone.classList.remove('dragover');
-      });
-    });
-
-    dropzone.addEventListener('drop', (e) => {
-      const dt = e.dataTransfer;
-      const files = dt.files;
-      if (files && files.length) {
-        snapFiles.files = files;
-        progressText.innerText = `${files.length} file(s) selected`;
-      }
-    });
-
-    // Clicking the visible link opens file browser
-    document.querySelector('label[for="snapFiles"]').addEventListener('click', (e) => {
-      e.preventDefault(); // prevent default for label
-      snapFiles.click();
-    });
-    
-    // Fallback for clicking the dropzone area but not the label/input
-    dropzone.addEventListener('click', (e) => {
-        // Only open file dialog if the click is not on the input or label itself (which already handle it)
-        if (e.target.id === 'dropzone') { 
-            snapFiles.click();
-        }
-    });
-
-
-    snapFiles.addEventListener('change', () => {
-      const count = snapFiles.files.length;
-      progressText.innerText = `${count} file(s) selected`;
-    });
-
-    clearSelectionBtn.addEventListener('click', () => {
-      snapFiles.value = '';
-      globalProgress.style.width = '0%';
-      progressText.innerText = 'Selection cleared';
-      progressCount.innerText = '';
-    });
-
-    refreshGalleryBtn.addEventListener('click', () => loadAdminGallery());
-
-    async function uploadSnapshots() {
-      const files = snapFiles.files;
-      if (!files || files.length === 0) return showToast('Select files first.', 'bg-yellow-600');
-
-      uploadStartBtn.disabled = true;
-      clearSelectionBtn.disabled = true;
-      progressText.innerText = 'Uploading...';
-      const total = files.length;
-      let uploadSuccessCount = 0;
-
-      for (let i = 0; i < total; i++) {
-        const file = files[i];
-        // Create a unique filename to prevent conflicts
-        const filePath = `${Date.now()}-${file.name.replace(/ /g, '_')}`;
-
-        progressCount.innerText = `${i+1}/${total}`;
-        globalProgress.style.width = `${Math.round(((i) / total) * 100)}%`;
-
-        try {
-          const { error } = await db.storage.from(SNAPSHOTS_BUCKET).upload(filePath, file, { upsert: false });
-          if (error) throw error;
-          uploadSuccessCount++;
-        } catch (err) {
-          console.error('Upload error for file', file.name, err);
-          showToast(`Upload failed for ${file.name}.`, 'bg-red-600');
-        }
-
-        globalProgress.style.width = `${Math.round(((i+1) / total) * 100)}%`;
-      }
-
-      // Done
-      if (uploadSuccessCount > 0) {
-        progressText.innerText = `Finished: ${uploadSuccessCount} files uploaded successfully.`;
-        showToast('Upload successful — files available to public gallery');
-        loadAdminGallery();
-      } else {
-        progressText.innerText = 'No files were uploaded.';
-        showToast('No files uploaded.', 'bg-yellow-600');
-      }
-
-      snapFiles.value = '';
-      uploadStartBtn.disabled = false;
-      clearSelectionBtn.disabled = false;
-      setTimeout(() => { globalProgress.style.width = '0%'; progressCount.innerText = ''; }, 3000);
-    }
-
-    uploadStartBtn.addEventListener('click', uploadSnapshots);
-
-    // Small toast helper
-    function showToast(msg = 'Saved', colorClass = 'bg-gray-900') {
-      toast.innerText = msg;
-      toast.className = `toast ${colorClass}`;
-      toast.style.display = 'block';
-      setTimeout(() => { toast.style.display = 'none'; }, 3000);
-    }
-
-    // Load admin preview gallery
-    async function loadAdminGallery() {
-      adminGallery.innerHTML = '<p class="text-gray-400 col-span-full italic">Loading...</p>';
-
-      const { data, error } = await db.storage.from(SNAPSHOTS_BUCKET).list('', { limit: 200, sortBy: { column: 'created_at', order: 'desc' } });
-      
-      if (error) {
-        adminGallery.innerHTML = `<p class="text-red-500 col-span-full">Error loading gallery: ${error.message}</p>`;
-        return;
-      }
-
-      adminGallery.innerHTML = '';
-      if (data.length === 0 || data.every(file => file.id === null)) { // Check if only directories or empty
-        const empty = document.createElement('div');
-        empty.className = 'text-gray-500 col-span-full';
-        empty.innerText = 'No uploads yet';
-        adminGallery.appendChild(empty);
-        return;
-      }
-
-      for (const file of data) {
-        // Skip directories which are also returned in the list
-        if (file.id === null) continue;
+    <div class="max-w-7xl mx-auto p-4 md:p-12 relative -mt-12 z-20">
         
-        const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${SNAPSHOTS_BUCKET}/${encodeURIComponent(file.name)}`;
-        const ext = (file.name.split('.').pop() || '').toLowerCase();
+        <section id="live-events" class="text-center mb-32 pt-24">
+            <span class="inline-block py-1 px-3 rounded-full bg-red-50 text-red-600 text-xs font-bold tracking-widest mb-4 border border-red-100 opacity-0 animate-fade-in-up [animation-delay:1000ms]">LIVE FEED</span>
+            <h2 class="text-4xl md:text-8xl font-extrabold mb-6 text-slate-900 opacity-0 animate-fade-in-up [animation-delay:1100ms] tracking-tighter">Real-Time <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-pink-600">Updates</span></h2>
+            <div id="events-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
+                <div class="col-span-1 md:col-span-3 py-24 bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-xl">
+                    <div class="flex flex-col items-center animate-pulse">
+                        <div class="w-12 h-12 border-[5px] border-orange-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <p class="text-slate-400 font-bold text-lg">Syncing satellite feed...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        const card = document.createElement('div');
-        card.className = 'thumb';
-        
-        let mediaHTML;
+        <section id="scoreboard-section" class="hover-trigger card p-8 md:p-20 mb-32 opacity-0 animate-fade-in-up [animation-delay:200ms] relative overflow-hidden" data-bot-say="Calculating stats... 📊">
+             <div class="absolute top-0 right-0 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse"></div>
+             <div class="absolute bottom-0 left-0 w-80 h-80 bg-blue-200/30 rounded-full blur-3xl -ml-20 -mb-20 animate-pulse" style="animation-delay: 1.5s"></div>
+             <div class="text-center max-w-4xl mx-auto mb-12 relative z-10">
+                <h2 class="text-4xl md:text-7xl font-black mb-4 tracking-tighter text-slate-900">Who's Leading?</h2>
+                <p class="text-slate-500 font-medium">Top 3 contenders fighting for glory.</p>
+            </div>
+            <div id="top-3-container" class="max-w-3xl mx-auto space-y-4 relative z-10">
+                <p class="text-center text-slate-400 py-10">Loading rankings...</p>
+            </div>
+             <div class="text-center mt-16 relative z-10">
+                 <a href="scoreboard.html" class="group inline-flex items-center bg-slate-900 text-white font-bold py-4 px-10 rounded-full shadow-2xl shadow-slate-900/30 hover:bg-black transition-all hover:scale-105">
+                   View Full Scoreboard
+                   <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                </a>
+             </div>
+        </section>
 
-        if (['mp4','mov','webm','ogg'].includes(ext)) {
-          mediaHTML = `<video src="${publicUrl}" controls class="w-full h-40 object-cover rounded"></video>`;
-        } else {
-          mediaHTML = `<img src="${publicUrl}" alt="${file.name}" class="w-full h-40 object-cover rounded" />`;
+        <section id="gallery-section" class="mb-32 px-2">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 px-4">
+                <div class="max-w-2xl">
+                    <h2 class="text-4xl md:text-7xl font-black mb-4 tracking-tighter text-slate-900">Snapshots 📸</h2>
+                    <p class="text-slate-600 text-lg">Moments captured in time.</p>
+                </div>
+                <a href="snapshots.html" class="hidden md:inline-block bg-white border border-slate-200 text-slate-900 font-bold py-3 px-8 rounded-full hover:bg-slate-50 transition shadow-sm">Open Gallery</a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 px-2">
+                <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[-3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group" data-bot-say="Nice memory! 💾">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10"></div>
+                    <img src="assests/group2.jpg" class="w-full h-full object-cover">
+                </div>
+                <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform translate-y-[-40px] z-20 bg-gray-200 relative hover:translate-y-[-50px] hover:scale-105 transition duration-500 group" data-bot-say="Look at that! 👀">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10"></div>
+                    <img src="assests/group1.jpg" class="w-full h-full object-cover">
+                </div>
+                <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group" data-bot-say="Awesome! ✨">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10"></div>
+                    <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600&auto=format&fit=crop&q=60" class="w-full h-full object-cover">
+                </div>
+            </div>
+             <div class="text-center mt-8 md:hidden">
+                <a href="snapshots.html" class="inline-block bg-white border border-slate-200 text-slate-900 font-bold py-3 px-8 rounded-full shadow-sm">View Full Gallery</a>
+             </div>
+        </section>
+
+        <section id="about-section" class="mb-32 px-2 md:px-4 relative z-20">
+             <div class="bg-white/80 backdrop-blur-xl rounded-[3rem] p-8 md:p-20 lg:flex lg:items-center lg:gap-20 shadow-2xl border border-white">
+                <div class="lg:w-1/2">
+                    <h2 class="text-3xl md:text-5xl font-black mb-6 text-slate-900 tracking-tight">What is <span class="text-orange-500">Savvy Hunt?</span></h2>
+                    <p class="text-lg text-slate-600 mb-10 leading-relaxed">It's not just a game. It's a digital battlefield where students compete in real-time challenges.</p>
+                    <a href="about.html" class="text-orange-600 font-bold hover:text-orange-700 flex items-center gap-2 text-lg group">Our Mission <span class="group-hover:translate-x-1 transition-transform">→</span></a>
+                </div>
+                <div class="lg:w-1/2 mt-12 lg:mt-0">
+                    <div class="bg-gradient-to-br from-orange-50 to-white rounded-[2.5rem] p-10 border border-orange-100 shadow-lg transform rotate-2 hover:rotate-0 transition duration-500">
+                        <h3 class="text-2xl font-bold mb-4 text-slate-900">Student Organized</h3>
+                        <p class="text-base text-slate-600 mb-6">Proudly run by the District Student Council.</p>
+                        <div class="flex gap-2">
+                            <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce"></div>
+                            <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce" style="animation-delay: 0.2s"></div>
+                            <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce" style="animation-delay: 0.4s"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="bg-slate-950 text-slate-400 pt-32 pb-12 -mt-20 relative z-10" style="border-top-left-radius: 3rem; border-top-right-radius: 3rem;">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h3 class="text-3xl font-bold text-white mb-2 tracking-tight">Savvy Hunt <span class="text-orange-500">2025</span></h3>
+            <p class="text-sm text-slate-500 mb-8">&copy; 2025 Savvy Hunt.</p>
+            <a href="admin_page/login.html" class="text-slate-700 hover:text-white transition-colors text-lg p-2">🔐</a>
+        </div>
+    </footer>
+
+    <script>
+        // --- SAVVY BOT INTELLIGENCE V3 (DRAGGABLE & SCANNER) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const botContainer = document.getElementById('savvy-bot-container');
+            const botBody = document.getElementById('bot-body');
+            const botEye = document.getElementById('bot-eye');
+            const botPupil = document.getElementById('bot-pupil');
+            const botBubble = document.getElementById('bot-bubble');
+            
+            let isSleeping = false;
+            let isDragging = false;
+            let idleTimer;
+            let moveTimer;
+
+            // --- 1. DRAG & DROP LOGIC ---
+            let offsetX, offsetY;
+
+            const startDrag = (e) => {
+                isDragging = true;
+                botContainer.classList.add('dragging');
+                botEye.classList.add('happy'); // Happy eyes when grabbed
+                showBubble("Weee! 🚀");
+                
+                // Calculate offset relative to bot center
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+                const rect = botContainer.getBoundingClientRect();
+                offsetX = clientX - rect.left;
+                offsetY = clientY - rect.top;
+                
+                // Stop auto movement
+                clearInterval(moveTimer);
+            };
+
+            const doDrag = (e) => {
+                if (!isDragging) return;
+                e.preventDefault(); // Prevent scrolling on touch
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+                
+                let x = clientX - offsetX;
+                let y = clientY - offsetY;
+                
+                botContainer.style.transform = `translate(${x}px, ${y}px)`;
+            };
+
+            const stopDrag = () => {
+                if (!isDragging) return;
+                isDragging = false;
+                botContainer.classList.remove('dragging');
+                botEye.classList.remove('happy');
+                
+                // Restart auto movement logic
+                moveTimer = setInterval(behaviorLoop, 12000);
+            };
+
+            // Add Event Listeners (Mouse & Touch)
+            botContainer.addEventListener('mousedown', startDrag);
+            botContainer.addEventListener('touchstart', startDrag);
+            window.addEventListener('mousemove', doDrag);
+            window.addEventListener('touchmove', doDrag, { passive: false });
+            window.addEventListener('mouseup', stopDrag);
+            window.addEventListener('touchend', stopDrag);
+
+
+            // --- 2. AUTONOMOUS BEHAVIOR LOOP (Move or Scan) ---
+            function behaviorLoop() {
+                if(isDragging || isSleeping) return;
+
+                const action = Math.random();
+                
+                if(action > 0.7) {
+                    // 30% chance to SCAN instead of move
+                    performScan();
+                } else {
+                    // 70% chance to MOVE
+                    pickNewPosition();
+                }
+            }
+
+            function pickNewPosition() {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                const pad = 80; 
+                const zone = Math.floor(Math.random() * 6);
+                let x, y;
+
+                switch(zone) {
+                    case 0: x = pad; y = pad + 100; break; 
+                    case 1: x = width - pad - 80; y = pad + 100; break; 
+                    case 2: x = pad; y = height - pad - 100; break; 
+                    case 3: x = width - pad - 80; y = height - pad - 100; break; 
+                    case 4: x = pad; y = height / 2; break; 
+                    case 5: x = width - pad - 80; y = height / 2; break; 
+                }
+                x += (Math.random() * 60 - 30);
+                y += (Math.random() * 60 - 30);
+                botContainer.style.transform = `translate(${x}px, ${y}px)`;
+            }
+
+            function performScan() {
+                botBody.classList.add('bot-scanning');
+                botEye.classList.add('scanning');
+                showBubble("Scanning... 🔍");
+                
+                // Stop scanning after 3 seconds
+                setTimeout(() => {
+                    botBody.classList.remove('bot-scanning');
+                    botEye.classList.remove('scanning');
+                }, 3000);
+            }
+
+            // Start Loop (Very slow intervals - 12 seconds)
+            moveTimer = setInterval(behaviorLoop, 12000);
+            setTimeout(pickNewPosition, 100); // Initial move
+
+
+            // --- 3. EYE TRACKING & SLEEP ---
+            function wakeUp() {
+                if(isSleeping) {
+                    isSleeping = false;
+                    botEye.classList.remove('sleeping');
+                    showBubble("I'm awake! 😳");
+                }
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(goToSleep, 8000); // Sleep after 8s
+            }
+
+            function goToSleep() {
+                isSleeping = true;
+                botEye.classList.add('sleeping');
+                showBubble("Zzz... 😴");
+            }
+
+            document.addEventListener('mousemove', (e) => {
+                wakeUp();
+                if(!isSleeping && !isDragging) {
+                    const rect = botEye.getBoundingClientRect();
+                    const eyeCenterX = rect.left + rect.width / 2;
+                    const eyeCenterY = rect.top + rect.height / 2;
+                    const angle = Math.atan2(e.clientY - eyeCenterY, e.clientX - eyeCenterX);
+                    const distance = Math.min(6, Math.hypot(e.clientX - eyeCenterX, e.clientY - eyeCenterY));
+                    const pupilX = Math.cos(angle) * distance;
+                    const pupilY = Math.sin(angle) * distance;
+                    botPupil.style.transform = `translate(${pupilX}px, ${pupilY}px)`;
+                }
+            });
+
+            // --- 4. UI HOVER INTERACTION ---
+            const triggers = document.querySelectorAll('.hover-trigger');
+            triggers.forEach(trigger => {
+                trigger.addEventListener('mouseenter', () => {
+                    const text = trigger.getAttribute('data-bot-say');
+                    if(text && !isDragging) showBubble(text);
+                });
+            });
+
+            // --- 5. TIME GREETING ---
+            const hour = new Date().getHours();
+            let greeting = "Hello!";
+            if(hour < 12) greeting = "Good Morning! ☀️";
+            else if(hour < 18) greeting = "Good Afternoon! 🌤️";
+            else greeting = "Good Evening! 🌙";
+            setTimeout(() => showBubble(greeting), 1000);
+
+            // Helpers
+            function showBubble(text) {
+                botBubble.textContent = text;
+                botBubble.classList.add('visible');
+                setTimeout(() => botBubble.classList.remove('visible'), 3000);
+            }
+        });
+
+        // --- SCROLL & PARALLAX ---
+        window.addEventListener('scroll', () => {
+            const st = window.pageYOffset;
+            const scrollFill = document.getElementById('scroll-fill');
+            const parallaxText = document.getElementById('big-parallax-text');
+            const scrollTotal = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (st / scrollTotal) * 100;
+            scrollFill.style.height = scrolled + "%";
+            if(window.innerWidth > 768) {
+                parallaxText.style.transform = `translateY(-50%) translateX(${st * 0.2}px)`;
+            }
+        });
+
+        // --- BLUR TEXT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const titleContainer = document.getElementById('hero-title');
+            const phrases = [{ text: "Welcome to the", color: "text-white" }, { break: true }, { text: "Savvy", color: "text-orange-500" }, { text: "Hunt!", color: "text-orange-500" }];
+            let delayCounter = 150;
+            phrases.forEach(phrase => {
+                if (phrase.break) titleContainer.appendChild(document.createElement('br'));
+                else {
+                    const spanWrapper = document.createElement('span');
+                    phrase.text.split(' ').forEach(word => {
+                        const wordSpan = document.createElement('span');
+                        wordSpan.textContent = word + '\u00A0';
+                        wordSpan.className = `blur-word ${phrase.color}`;
+                        wordSpan.style.transitionDelay = `${delayCounter}ms`;
+                        spanWrapper.appendChild(wordSpan);
+                        delayCounter += 150;
+                    });
+                    titleContainer.appendChild(spanWrapper);
+                }
+            });
+            setTimeout(() => document.querySelectorAll('.blur-word').forEach(span => span.classList.add('visible')), 100);
+        });
+
+        // --- HERO PARTICLES ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('hero-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            window.addEventListener('resize', resize); resize();
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 3 + 1; this.speedX = Math.random() * 1 - 0.5; this.speedY = Math.random() * 1 - 0.5;
+                    this.color = Math.random() > 0.6 ? 'rgba(255, 255, 255, 0.8)' : 'rgba(249, 115, 22, 0.8)';
+                }
+                update() { this.x += this.speedX; this.y += this.speedY; if (this.x > canvas.width) this.x = 0; if (this.x < 0) this.x = canvas.width; if (this.y > canvas.height) this.y = 0; if (this.y < 0) this.y = canvas.height; }
+                draw() { ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+            }
+            function init() { for (let i = 0; i < (window.innerWidth < 768 ? 40 : 80); i++) particles.push(new Particle()); }
+            function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+            init(); animate();
+        });
+
+        // --- DATA ---
+        const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const grid = document.getElementById('events-grid');
+        const scoreContainer = document.getElementById("top-3-container");
+
+        async function fetchEvents() {
+            const { data } = await supabase.from('live_events').select('*').order('created_at', { ascending: false }).limit(3);
+            if (!data || data.length === 0) { grid.innerHTML = `<div class="col-span-3 text-slate-400 py-10">No live events right now.</div>`; return; }
+            grid.innerHTML = '';
+            data.forEach((d, i) => {
+                let badge = d.status === 'Live' ? '<span class="text-red-500 font-bold">Live 🔴</span>' : '<span class="text-slate-500">Finished</span>';
+                grid.innerHTML += `
+                    <div class="card p-6 flex flex-col justify-between h-full opacity-0 animate-fade-in-up" style="animation-delay: ${i*150}ms">
+                        <div class="flex justify-between mb-4"><h3 class="font-bold text-xl">${d.name}</h3>${badge}</div>
+                        <div class="text-sm text-slate-500 space-y-2"><p>📍 ${d.location}</p><p>👥 ${d.teams} Teams</p></div>
+                        <div class="mt-4 pt-4 border-t"><span class="font-bold text-xs uppercase text-slate-400">Category</span> <span class="ml-2 font-bold">${d.category}</span></div>
+                    </div>`;
+            });
         }
 
-        // Add delete button
-        card.innerHTML = mediaHTML + `<button onclick="deleteSnapshot('${file.name}')" title="Delete Snapshot">✕</button>`;
-        
-        adminGallery.appendChild(card);
-      }
-    }
-    
-    window.deleteSnapshot = async (fileName) => {
-        if (!confirm(`Are you sure you want to delete the file: ${fileName}?`)) return;
-
-        const { error } = await db.storage.from(SNAPSHOTS_BUCKET).remove([fileName]);
-
-        if (error) {
-            showToast(`Error deleting file: ${error.message}`, 'bg-red-600');
-        } else {
-            showToast('Snapshot deleted successfully.');
-            loadAdminGallery();
+        async function loadTopThree() {
+            const { data } = await supabase.from("scoreboard").select("*").order("total", { ascending: false }).limit(3);
+            if (!data) return;
+            scoreContainer.innerHTML = "";
+            data.forEach((r, i) => {
+                let c = ['text-orange-600','text-blue-600','text-yellow-600'][i] || 'text-slate-600';
+                let icon = ['🏆','⚡','🌟'][i] || '#';
+                scoreContainer.innerHTML += `
+                    <div class="bg-white p-4 rounded-2xl flex items-center shadow-sm opacity-0 animate-fade-in-up" style="animation-delay: ${i*150}ms">
+                        <div class="text-2xl font-black text-slate-300 w-10 text-center">${i+1}</div>
+                        <div class="w-10 h-10 rounded-full border flex items-center justify-center text-xl mr-4">${icon}</div>
+                        <div class="flex-1 font-bold text-slate-900">${r.name}</div>
+                        <div class="font-black text-lg ${c}">${r.total.toLocaleString()}</div>
+                    </div>`;
+            });
         }
-    }
-    //---------------------------------------------
-    //  SCOREBOARD ADMIN MANAGEMENT
-    //---------------------------------------------
-
-    async function loadScoreboardAdmin() {
-      const box = document.getElementById('scoreboard-admin');
-      box.innerHTML = '<p class="text-gray-400 italic">Loading...</p>';
-
-      const { data, error } = await db
-          .from('scoreboard')
-          .select('*')
-          .order('total', { ascending: false });
-
-      if (error) {
-        box.innerHTML = `<p class="text-red-500">Error loading scoreboard: ${error.message}</p>`;
-        return;
-      }
-
-      renderScoreboardAdmin(data);
-    }
-
-    function renderScoreboardAdmin(rows) {
-      const box = document.getElementById('scoreboard-admin');
-
-      let html = `
-        <table class="min-w-full text-sm text-left border">
-          <thead class="bg-gray-100 font-bold">
-            <tr>
-              <th class="p-2 border">Rank</th>
-              <th class="p-2 border">Institution</th>
-              <th class="p-2 border">Cat 1</th>
-              <th class="p-2 border">Cat 2</th>
-              <th class="p-2 border">Cat 3</th>
-              <th class="p-2 border">Cat 4</th>
-              <th class="p-2 border">Cat 5</th>
-              <th class="p-2 border">Total</th>
-              <th class="p-2 border">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-
-      rows.forEach((row, index) => {
-        html += `
-          <tr class="border">
-            <td class="p-2 border">${index + 1}</td>
-            <td class="p-2 border">${row.name}</td>
-            <td class="p-2 border"><input class="w-16 p-1 border rounded" value="${row.cat1}" onchange="updateScore(${row.id}, 'cat1', this.value)"></td>
-            <td class="p-2 border"><input class="w-16 p-1 border rounded" value="${row.cat2}" onchange="updateScore(${row.id}, 'cat2', this.value)"></td>
-            <td class="p-2 border"><input class="w-16 p-1 border rounded" value="${row.cat3}" onchange="updateScore(${row.id}, 'cat3', this.value)"></td>
-            <td class="p-2 border"><input class="w-16 p-1 border rounded" value="${row.cat4}" onchange="updateScore(${row.id}, 'cat4', this.value)"></td>
-            <td class="p-2 border"><input class="w-16 p-1 border rounded" value="${row.cat5}" onchange="updateScore(${row.id}, 'cat5', this.value)"></td>
-            <td class="p-2 border font-bold">${row.total}</td>
-            <td class="p-2 border">
-              <button onclick="recalculate(${row.id})"
-                class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs">
-                Recalc
-              </button>
-            </td>
-          </tr>
-        `;
-      });
-
-      html += `</tbody></table>`;
-
-      box.innerHTML = html;
-    }
-
-    // Update individual category
-    async function updateScore(id, field, value) {
-      value = Number(value);
-      const { error } = await db
-          .from('scoreboard')
-          .update({ [field]: value })
-          .eq('id', id);
-
-      if (error) {
-        showToast("Update failed: " + error.message, 'bg-red-600');
-      } else {
-        showToast("Score updated!");
-        recalcTotal(id);
-      }
-    }
-
-    // Recalculate total
-    async function recalcTotal(id) {
-      const { data } = await db
-          .from('scoreboard')
-          .select('cat1, cat2, cat3, cat4, cat5')
-          .eq('id', id)
-          .single();
-
-      const total =
-        Number(data.cat1) +
-        Number(data.cat2) +
-        Number(data.cat3) +
-        Number(data.cat4) +
-        Number(data.cat5);
-
-      await db  
-          .from('scoreboard')
-          .update({ total })
-          .eq('id', id);
-
-      loadScoreboardAdmin();
-    }
-
-    // Initial load
-    loadScoreboardAdmin();
-
-
-    // initial gallery load
-    loadAdminGallery();
-
-  </script>
+        fetchEvents(); loadTopThree();
+        supabase.channel("public-channel").on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, fetchEvents).on("postgres_changes", { event: "*", schema: "public", table: "scoreboard" }, loadTopThree).subscribe();
+    </script>
 </body>
 </html>

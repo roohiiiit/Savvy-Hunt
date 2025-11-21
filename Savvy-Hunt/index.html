@@ -1,241 +1,520 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Savvy Hunt - Live Event</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
                     },
+                    colors: {
+                        primary: { 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'float-organic': 'floatOrganic 6s ease-in-out infinite',
+                        'scan-pulse': 'scanPulse 0.5s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        floatOrganic: {
+                            '0%, 100%': { transform: 'translate(0, 0) rotate(0deg)' },
+                            '33%': { transform: 'translate(0, -8px) rotate(2deg)' },
+                            '66%': { transform: 'translate(0, -4px) rotate(-2deg)' },
+                        },
+                        scanPulse: {
+                            '0%': { opacity: '0.6', transform: 'scaleX(1)' },
+                            '100%': { opacity: '1', transform: 'scaleX(1.2)' },
+                        }
+                    }
                 }
             }
         }
     </script>
 
     <style>
-        /* --- ANIMATION STYLES (BlurText) --- */
-        .blur-word {
-            display: inline-block;
-            opacity: 0;
-            filter: blur(10px);
-            transform: translateY(-20px);
-            transition: all 0.8s cubic-bezier(0.2, 0.65, 0.3, 0.9);
-            margin-right: 0.2em;
-        }
-        .blur-word.visible {
-            opacity: 1;
-            filter: blur(0);
-            transform: translateY(0);
+        body {
+            background-color: #FFF7ED;
+            overflow-x: hidden;
+            cursor: default;
+            overscroll-behavior-y: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- STANDARD BUTTONS --- */
-        .btn-gradient { background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); color: white !important; transition: transform 0.2s, box-shadow 0.2s; }
-        .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(234, 88, 12, 0.3); }
-        .btn-outline { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); transition: all 0.3s ease; }
-        .btn-outline:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
-        .btn-teal { background-color: #14B8A6; color: white; transition: all 0.3s; }
-        .btn-teal:hover { background-color: #0D9488; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(20, 184, 166, 0.3); }
+        /* --- 1. BUTTON STYLES --- */
+        .btn-alive {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border-radius: 9999px;
+            overflow: hidden;
+            transition: transform 0.1s ease-out, box-shadow 0.2s ease;
+            z-index: 10;
+            cursor: pointer;
+            background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%); 
+            color: white !important;
+            box-shadow: 0 8px 25px -5px rgba(234, 88, 12, 0.5);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 16px 24px;
+            font-size: 1.125rem;
+            width: 100%; 
+        }
+        @media (min-width: 640px) { .btn-alive { width: auto; } }
+        .btn-alive:active { transform: scale(0.96); box-shadow: 0 4px 15px -5px rgba(234, 88, 12, 0.6); }
 
-        /* --- CARD STYLES --- */
-        .card { background: white; border-radius: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+        /* Header Blue Button */
+        .btn-alive-secondary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);
+            box-shadow: 0 8px 25px -5px rgba(59, 130, 246, 0.6);
+            border-color: rgba(255,255,255,0.2);
+        }
+        .btn-alive-secondary:active { box-shadow: 0 4px 15px -5px rgba(59, 130, 246, 0.7); }
+
+        .btn-alive::after {
+            content: ''; position: absolute; top: 0; left: -150%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            transform: skewX(-20deg); animation: shimmer 3.5s infinite; pointer-events: none;
+        }
+        @keyframes shimmer { 0% { left: -150%; } 30% { left: 150%; } 100% { left: 150%; } }
+
+        /* --- 2. UPDATED STATIC CARD STYLES --- */
+        .event-card {
+            background: white;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 320px;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+            /* HOVER TRANSITION SETUP */
+            border: 2px solid transparent; /* Invisible border by default */
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* THE HOVER EFFECT (Yellow Outline) */
+        .event-card:hover {
+            transform: translateY(-8px);
+            border-color: #FACC15; /* Yellow-400 */
+            box-shadow: 0 20px 50px -10px rgba(250, 204, 21, 0.3); /* Golden Glow */
+        }
+
+        /* Results Card Base Style (Light Yellow Bg, No Border initially) */
+        .event-card.is-results {
+            background: #FEFCE8; /* Yellow-50 */
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #111827;
+            line-height: 1.2;
+            max-width: 70%;
+        }
+
+        /* Badges */
+        .badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            border-radius: 99px;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+        .badge-live { background: #FEE2E2; color: #DC2626; display: flex; align-items: center; gap: 4px; }
+        .badge-soon { background: #FEF3C7; color: #D97706; }
+        .badge-done { color: #9CA3AF; font-weight: 600; background: transparent; padding: 0; }
         
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        .badge-results {
+            background: #000;
+            color: #fff;
+            font-size: 0.65rem;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
         }
+
+        .card-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6B7280;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        /* Winners List */
+        .winner-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: white; /* White box inside yellow card */
+            padding: 12px;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+        .winner-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .card-footer {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .category-label { font-size: 0.75rem; color: #9CA3AF; }
+        .category-pill {
+            background: #F3F4F6;
+            color: #4B5563;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 99px;
+        }
+
+        /* --- 3. COMPACT SAVVY BOT --- */
+        #savvy-bot-container { position: fixed; z-index: 100; top: 0; left: 0; width: 60px; height: 60px; transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: auto; cursor: pointer; }
+        .bot-body { width: 48px; height: 48px; margin: 6px; background: radial-gradient(circle at 30% 30%, #ffffff, #fff7ed); border-radius: 50%; box-shadow: inset -3px -3px 8px rgba(234, 88, 12, 0.1), 0 8px 20px rgba(0,0,0,0.15), 0 0 0 2px rgba(255,255,255,0.9); position: relative; display: flex; align-items: center; justify-content: center; animation: float-organic 6s ease-in-out infinite; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .bot-body:active { transform: scale(0.9); } .bot-body.windblown { transform: rotate(-15deg) translateX(-5px); }
+        .bot-cheek { position: absolute; top: 28px; width: 6px; height: 4px; background: #fdba74; border-radius: 50%; opacity: 0.8; filter: blur(1px); z-index: 2; } .cheek-left { left: 8px; } .cheek-right { right: 8px; }
+        .bot-eye { width: 32px; height: 18px; background: #0f172a; border-radius: 14px; position: relative; overflow: hidden; border: 2px solid #cbd5e1; box-shadow: inset 0 0 4px #000; z-index: 3; transition: all 0.2s ease; }
+        .bot-pupil { width: 10px; height: 10px; background: #f97316; border-radius: 50%; position: absolute; top: 4px; left: 11px; box-shadow: 0 0 6px #f97316; transition: transform 0.1s; }
+        .bot-eye.sleeping { height: 3px; margin-top: 6px; background: #334155; border-color: #475569; } .bot-eye.sleeping .bot-pupil, .bot-eye.sleeping .bot-cheek { opacity: 0; }
+        .bot-scanning .bot-eye { border-color: #ea580c; box-shadow: 0 0 10px #ea580c; } .bot-scanning .bot-pupil { background: #ea580c; box-shadow: 0 0 10px #ea580c; width: 32px; height: 2px; border-radius: 0; top: 8px; left: 0; animation: none; }
+        .laser-cone { position: absolute; top: 25px; left: 50%; transform: translateX(-50%) perspective(300px) rotateX(20deg); width: 40px; height: 0; background: linear-gradient(to bottom, rgba(234, 88, 12, 0.8) 0%, rgba(234, 88, 12, 0.1) 100%); clip-path: polygon(30% 0, 70% 0, 100% 100%, 0% 100%); opacity: 0; z-index: 50; pointer-events: none; transition: height 0.3s ease-out, opacity 0.3s ease-out; filter: drop-shadow(0 0 5px rgba(234,88,12,0.8)); mix-blend-mode: hard-light; } .bot-body.scanning .laser-cone { height: 120px; opacity: 1; animation: scan-pulse 0.2s infinite alternate; }
+        .bot-antenna { position: absolute; top: -10px; left: 22px; width: 3px; height: 10px; background: #94a3b8; z-index: -1; } .bot-antenna::after { content: ''; position: absolute; top: -5px; left: -2.5px; width: 8px; height: 8px; background: #f97316; border-radius: 50%; box-shadow: 0 0 8px #f97316; }
+        .bot-bubble { position: absolute; top: -45px; left: 50%; transform: translateX(-50%) scale(0) translateY(10px); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); padding: 8px 14px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); font-size: 11px; font-weight: 700; color: #c2410c; white-space: nowrap; opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; border: 1px solid white; } .bot-bubble.show { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); } .bot-bubble::after { content: ''; position: absolute; bottom: -5px; left: 50%; margin-left: -5px; border-width: 5px 5px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
+
+        /* --- UI BASICS --- */
+        .bg-parallax-text { position: fixed; top: 50%; left: -10%; font-size: 20vh; font-weight: 900; color: rgba(234, 88, 12, 0.03); white-space: nowrap; pointer-events: none; z-index: 0; transform: translateY(-50%); will-change: transform; }
+        .scroll-line-track { position: fixed; left: 0; top: 0; width: 4px; height: 100vh; background: rgba(0,0,0,0.05); z-index: 50; }
+        .scroll-line-fill { width: 100%; height: 0%; background: linear-gradient(to bottom, #fb923c, #ea580c); box-shadow: 2px 0 10px rgba(234, 88, 12, 0.5); }
+        .blur-word { display: inline-block; opacity: 0; filter: blur(12px); transform: translateY(20px); transition: all 0.8s ease; margin-right: 0.2em; }
+        .blur-word.visible { opacity: 1; filter: blur(0); transform: translateY(0); }
+        .card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-radius: 2rem; border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.05); transition: transform 0.4s ease; }
+        .card:hover { transform: scale(1.02); box-shadow: 0 30px 60px -10px rgba(234, 88, 12, 0.15); }
+        #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
     </style>
 </head>
-<body class="text-gray-800 antialiased bg-[#FFFBF5]">
+<body class="text-slate-800 antialiased">
 
-    <!-- HERO SECTION -->
-    <section 
-        style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('assests/bg.png'); background-color: #1f2937; background-size: cover; background-position: center;" 
-        class="relative min-h-[85vh] flex items-center justify-center text-white text-center rounded-b-[3rem] overflow-hidden shadow-2xl pb-16 md:pb-32"
-    >
-        <div class="relative z-10 p-4 md:p-6 max-w-5xl">
+    <div class="scroll-line-track"><div class="scroll-line-fill" id="scroll-fill"></div></div>
+    <div class="bg-parallax-text" id="big-parallax-text">SAVVY HUNT 2025</div>
+
+    <div id="savvy-bot-container" style="transform: translate(80vw, 80vh);">
+        <div class="bot-bubble" id="bot-bubble">Online! 🟠</div>
+        <div class="bot-body" id="bot-body">
+            <div class="laser-cone"></div>
+            <div class="bot-cheek cheek-left"></div>
+            <div class="bot-cheek cheek-right"></div>
+            <div class="bot-antenna"></div>
+            <div class="bot-eye" id="bot-eye"><div class="bot-pupil" id="bot-pupil"></div></div>
+        </div>
+    </div>
+
+    <section id="hero-section" class="relative min-h-[65vh] md:min-h-[90vh] flex flex-col justify-center items-center text-white text-center rounded-b-[3rem] overflow-hidden shadow-2xl z-10 pt-16 pb-8 md:py-0">
+        <div class="absolute inset-0 bg-[#0f172a] bg-top bg-no-repeat bg-cover" style="background-image: url('assests/bg.png');"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/50 to-slate-900/95"></div>
+        <canvas id="hero-canvas"></canvas>
+        <div class="relative z-20 px-4 max-w-5xl w-full parallax-layer" data-speed="-0.1">
+            <h1 id="hero-title" class="text-4xl md:text-8xl font-black mb-4 drop-shadow-2xl tracking-tighter leading-none min-h-[90px] md:min-h-[160px]"></h1>
+            <p class="text-base md:text-3xl font-bold mb-8 drop-shadow-lg opacity-0 animate-fade-in-up [animation-delay:600ms] text-orange-50">The ultimate showdown is <span class="text-orange-500">NOW!</span></p>
             
-            <!-- ANIMATED TITLE (Smaller font on mobile) -->
-            <h1 id="hero-title" class="text-4xl md:text-8xl font-black mb-4 md:mb-6 drop-shadow-lg tracking-tight leading-tight min-h-[120px] md:min-h-[160px]">
-                <!-- Text injected by JS -->
-            </h1>
-
-            <p class="text-lg md:text-3xl font-bold mb-4 drop-shadow-md">
-                The ultimate school showdown is happening NOW!
-            </p>
-            <p class="text-base md:text-xl max-w-2xl mx-auto mb-8 md:mb-12 text-gray-100 drop-shadow-md font-medium">
-                Watch the competition unfold in real-time as schools battle for the championship.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
-                <a href="#live-events" class="btn-gradient text-white font-bold py-3 px-6 md:py-4 md:px-10 rounded-full text-base md:text-lg shadow-xl">
+            <div class="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-2xl mx-auto opacity-0 animate-fade-in-up [animation-delay:800ms]">
+                <a href="#live-events" class="btn-alive hover-trigger w-full sm:flex-1" data-bot-say="Check the live feed! ⚡">
                     See What's Happening LIVE
                 </a>
-                <a href="scoreboard.html" class="btn-outline text-white font-bold py-3 px-6 md:py-4 md:px-10 rounded-full text-base md:text-lg shadow-xl">
-                    View the Full Scoreboard
+                <a href="scoreboard.html" class="btn-alive btn-alive-secondary hover-trigger w-full sm:flex-1" data-bot-say="Let's see the ranks! 🏆">
+                    View Scoreboard
                 </a>
             </div>
         </div>
     </section>
 
-    <!-- MAIN CONTENT (Adjusted margins for mobile) -->
-    <div class="max-w-7xl mx-auto p-4 md:p-12 relative -mt-16 md:-mt-24 z-20">
+    <div class="max-w-7xl mx-auto p-4 md:p-12 relative -mt-12 z-20">
         
-        <!-- STATUS SECTION -->
-        <section id="live-events" class="text-center mb-16 md:mb-32 px-2 md:px-4">
-            <div class="inline-flex items-center bg-white/90 backdrop-blur shadow-lg text-red-600 font-bold py-2 px-4 md:py-3 md:px-6 rounded-full mb-6 md:mb-8 text-sm md:text-lg border border-red-100">
-                <span class="status-dot bg-red-600 mr-2 md:mr-3"></span> LIVE NOW: The Hunt Is On!
-            </div>
+        <section id="live-events" class="text-center mb-40 pt-24">
+            <span class="inline-block py-1 px-3 rounded-full bg-orange-50 text-orange-600 text-xs font-bold tracking-widest mb-4 border border-orange-200 opacity-0 animate-fade-in-up [animation-delay:1000ms]">LIVE FEED</span>
+            <h2 class="text-4xl md:text-8xl font-extrabold mb-6 text-slate-900 opacity-0 animate-fade-in-up [animation-delay:1100ms] tracking-tighter">Real-Time <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 pb-2 pr-1">Updates</span></h2>
             
-            <h2 class="text-3xl md:text-6xl font-extrabold mb-4 text-gray-900">Real-Time Event Status</h2>
-            <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto mb-10 md:mb-16">
-                Don't miss a second of the action. Here's what's happening right now across campus.
-            </p>
-
-            <!-- DYNAMIC EVENTS GRID -->
-            <div id="events-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
-                <!-- Loading State -->
-                <div class="col-span-1 md:col-span-3 py-12 bg-white rounded-3xl border border-gray-100">
-                    <p class="text-gray-500 animate-pulse">Connecting to live feed...</p>
+            <div id="events-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10 mb-12">
+                <div class="col-span-1 md:col-span-3 py-24 bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-xl">
+                    <div class="flex flex-col items-center animate-pulse">
+                        <div class="w-12 h-12 border-[5px] border-orange-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <p class="text-slate-400 font-bold text-lg">Syncing satellite feed...</p>
+                    </div>
                 </div>
             </div>
-            
-            <a href="schedule.html" class="btn-gradient text-white font-bold py-3 px-8 md:py-4 md:px-10 rounded-full text-base md:text-lg shadow-lg inline-flex items-center mt-10 md:mt-16">
-                 Go to the Full Event Schedule →
-            </a>
+
+            <div class="text-center">
+                <a href="schedule.html" class="btn-alive hover-trigger px-12 sm:w-auto" data-bot-say="Full Schedule!">Go to Full Event</a>
+            </div>
         </section>
 
-        <!-- LEADERBOARD SECTION -->
-        <section class="card p-6 md:p-16 mb-16 md:mb-32 bg-white border border-gray-100">
-             <div class="text-center max-w-3xl mx-auto mb-8 md:mb-12">
-                <h2 class="text-3xl md:text-5xl font-extrabold mb-2 md:mb-4">
-                    Who's Leading <span class="text-orange-500">the Pack?</span>
-                </h2>
-                <p class="text-gray-500 font-medium text-sm md:text-base">
-                    Last updated: <span class="text-gray-800 font-bold">2 minutes ago</span>
-                </p>
+        <section id="scoreboard-section" class="hover-trigger card bg-white/90 p-8 md:p-20 mb-40 opacity-0 animate-fade-in-up [animation-delay:200ms] relative overflow-hidden" data-bot-say="Calculating stats... 🧮">
+             <div class="absolute top-0 right-0 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse"></div>
+             <div class="absolute bottom-0 left-0 w-80 h-80 bg-orange-100/40 rounded-full blur-3xl -ml-20 -mb-20 animate-pulse" style="animation-delay: 1.5s"></div>
+             <div class="text-center max-w-4xl mx-auto mb-12 relative z-10">
+                <h2 class="text-4xl md:text-7xl font-black mb-4 tracking-tighter text-slate-900">Who's <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 pb-2 pr-1">Leading?</span></h2>
+                <p class="text-slate-500 font-medium">Top 3 contenders fighting for glory.</p>
             </div>
-
-            <!-- DYNAMIC LEADERBOARD -->
-            <div id="top-3-container" class="max-w-3xl mx-auto space-y-3 md:space-y-4">
-                <p class="text-center text-gray-400 py-6 animate-pulse">Loading leaderboard...</p>
+            <div id="top-3-container" class="max-w-3xl mx-auto space-y-4 relative z-10">
+                <p class="text-center text-slate-400 py-10">Loading rankings...</p>
             </div>
-
-             <div class="text-center mt-8">
-                 <a href="scoreboard.html" class="btn-teal font-bold py-3 px-6 md:py-4 md:px-8 rounded-full text-base md:text-lg shadow-lg inline-block">
-                   See the Full Scoreboard
-                </a>
+             <div class="text-center mt-16 relative z-10">
+                 <a href="scoreboard.html" class="btn-alive px-12 sm:w-auto">View Full Scoreboard</a>
              </div>
         </section>
 
-        <!-- SNAPSHOTS SECTION (Forced Grid on Mobile) -->
-        <section class="mb-16 md:mb-32 px-2 md:px-4">
-            <div class="text-center max-w-3xl mx-auto mb-10 md:mb-16">
-                <h2 class="text-3xl md:text-6xl font-extrabold mb-4 md:mb-6">
-                    Savvy Hunt <span class="text-gray-400">Snapshots</span> 📸
-                </h2>
-                <p class="text-base md:text-xl text-gray-600">
-                   See the competition as it happens! We're uploading photos and highlights.
-                </p>
-                <!-- View Photos Button -->
-                <a href="snapshots.html" class="mt-6 md:mt-8 inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 md:py-3 md:px-8 rounded-full shadow-lg transition text-sm md:text-base">
-                    View photos
-                </a>
+        <section id="gallery-section" class="mb-40 px-2">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <h2 class="text-4xl md:text-7xl font-black mb-4 tracking-tighter text-slate-900"><span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 pb-2 pr-1">Snapshots</span></h2>
+                <p class="text-slate-600 text-lg">Moments captured in time.</p>
             </div>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 opacity-90">
-        <div class="rounded-3xl overflow-hidden h-64 shadow-lg border-4 border-white transform rotate-[-2deg]">
-            <img src="assests/group2.jpg" class="w-full h-full object-cover">
-        </div>
-        <div class="rounded-3xl overflow-hidden h-64 shadow-lg border-4 border-white transform translate-y-[-10px] z-10">
-            <img src="assests/group1.jpg" class="w-full h-full object-cover">
-        </div>
-        <div class="rounded-3xl overflow-hidden h-64 shadow-lg border-4 border-white transform rotate-[2deg]">
-            <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600&auto=format&fit=crop&q=60" class="w-full h-full object-cover">
-        </div>
-    </div>
-</section>
-        <!-- ABOUT SECTION -->
-        <section class="mb-16 md:mb-32 px-2 md:px-4">
-             <div class="bg-white rounded-[2rem] md:rounded-[3rem] p-6 md:p-16 lg:flex lg:items-center lg:gap-16 shadow-xl">
-                <div class="lg:w-1/2">
-                    <h2 class="text-3xl md:text-6xl font-extrabold mb-4 md:mb-8 text-gray-900">
-                        What is the <span class="text-orange-500">Savvy Hunt?</span>
-                    </h2>
-                    <p class="text-base md:text-lg text-gray-600 mb-6 leading-relaxed">
-                        We're more than just a game. The Savvy Hunt is a student-organized competition designed to build school spirit.
-                    </p>
-                    <div class="flex items-center gap-4 mb-8">
-                         <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-orange-100 flex items-center justify-center text-xl md:text-2xl text-orange-600">🌟</div>
-                         <p class="font-bold text-gray-700 text-sm md:text-base">Thank you for being part of this event!</p>
-                    </div>
-                    
-                    <a href="about.html" class="btn-teal font-bold py-3 px-6 md:py-4 md:px-8 rounded-full text-base md:text-lg shadow-lg inline-block w-full md:w-auto text-center">
-                        Learn More About Our Mission
-                    </a>
-                    
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 px-2 mb-12">
+                <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[-3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group" data-bot-say="Nice pic! 📸">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10"></div>
+                    <img src="assests/group2.jpg" class="w-full h-full object-cover">
                 </div>
-                <div class="lg:w-1/2 mt-8 md:mt-12 lg:mt-0">
-                    <div class="bg-orange-50 rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-10 border border-orange-100 relative">
-                        <h3 class="text-xl md:text-2xl font-bold mb-2 md:mb-4 text-gray-900">Organized by Students</h3>
-                        <p class="text-sm md:text-base text-gray-600 leading-relaxed">
-                            Proudly organized by the Student Council and Tech Club.
-                        </p>
+                <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform translate-y-[-40px] z-20 bg-gray-200 relative hover:translate-y-[-50px] hover:scale-105 transition duration-500 group" data-bot-say="Look at that! 👀">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10"></div>
+                    <img src="assests/group1.jpg" class="w-full h-full object-cover">
+                </div>
+                <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group" data-bot-say="So cool! ✨">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10"></div>
+                    <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600&auto=format&fit=crop&q=60" class="w-full h-full object-cover">
+                </div>
+            </div>
+             <div class="text-center">
+                <a href="snapshots.html" class="btn-alive px-12 sm:w-auto">Open Gallery</a>
+             </div>
+        </section>
+
+        <section id="about-section" class="mb-32 px-2 md:px-4 relative z-20">
+             <div class="bg-white/80 backdrop-blur-xl rounded-[3rem] p-8 md:p-20 lg:flex lg:items-center lg:gap-20 shadow-2xl border border-white">
+                <div class="lg:w-1/2">
+                    <h2 class="text-3xl md:text-5xl font-black mb-6 text-slate-900 tracking-tight">What is <span class="text-orange-500">Savvy Hunt?</span></h2>
+                    <p class="text-lg text-slate-600 mb-10 leading-relaxed">It's not just a game. It's a digital battlefield where students compete in real-time challenges.</p>
+                    <a href="about.html" class="text-orange-600 font-bold hover:text-orange-700 flex items-center gap-2 text-lg group hover-trigger" data-bot-say="Learn more! 📚">Our Mission <span class="group-hover:translate-x-1 transition-transform">→</span></a>
+                </div>
+                <div class="lg:w-1/2 mt-12 lg:mt-0">
+                    <div class="bg-gradient-to-br from-orange-50 to-white rounded-[2.5rem] p-10 border border-orange-100 shadow-lg transform rotate-2 hover:rotate-0 transition duration-500">
+                        <h3 class="text-2xl font-bold mb-4 text-slate-900">Student Organized</h3>
+                        <p class="text-base text-slate-600 mb-6">Proudly run by the District Student Council.</p>
+                        <div class="flex gap-2">
+                            <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce"></div>
+                            <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce" style="animation-delay: 0.2s"></div>
+                            <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce" style="animation-delay: 0.4s"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
-
     </div>
 
-    <footer class="bg-gray-900 text-gray-400 pt-16 md:pt-20 pb-8 md:pb-10 -mt-24 relative z-10" style="border-top-left-radius: 2rem; border-top-right-radius: 2rem;">
-        <div class="max-w-7xl mx-auto px-8 text-center">
-            <h3 class="text-xl md:text-2xl font-bold text-white mb-2">Savvy Hunt <span class="text-orange-500">2025</span></h3>
-            <p class="text-xs md:text-sm text-gray-500">&copy; 2025 Savvy Hunt. A project by the District Student Council.</p>
-            <a href="admin_page/login.html" class="text-gray-800 hover:text-orange-500 text-xs opacity-30 hover:opacity-100 transition-opacity" title="Admin Login">
-                    🔐
-                </a>
+    <footer class="bg-slate-950 text-slate-400 pt-32 pb-12 -mt-20 relative z-10" style="border-top-left-radius: 3rem; border-top-right-radius: 3rem;">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h3 class="text-3xl font-bold text-white mb-2 tracking-tight">Savvy Hunt <span class="text-orange-500">2025</span></h3>
+            <p class="text-sm text-slate-500 mb-8">&copy; 2025 Savvy Hunt.</p>
+            <a href="admin_page/login.html" class="opacity-20 hover:opacity-80 transition-opacity text-lg p-2 grayscale hover:grayscale-0">🔐</a>
         </div>
     </footer>
 
-    <!-- SCRIPTS -->
     <script>
-        // --- 1. BLUR TEXT ANIMATION ---
+        // --- SAVVY BOT INTELLIGENCE ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const botContainer = document.getElementById('savvy-bot-container');
+            const botBody = document.getElementById('bot-body');
+            const botEye = document.getElementById('bot-eye');
+            const botPupil = document.getElementById('bot-pupil');
+            const botBubble = document.getElementById('bot-bubble');
+            
+            let isSleeping = false;
+            let idleTimer;
+            let lastScrollY = 0;
+
+            const tileMessages = {
+                'hero-section': "Ready to start? 🚀",
+                'live-events': "Incoming data... 📡",
+                'scoreboard-section': "Who is winning? 🏆",
+                'gallery-section': "Say cheese! 📸",
+                'about-section': "Our mission. 📜"
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !isSleeping) {
+                        const msg = tileMessages[entry.target.id];
+                        if (msg) showBubble(msg);
+                    }
+                });
+            }, { threshold: 0.5 }); 
+
+            Object.keys(tileMessages).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) observer.observe(el);
+            });
+
+            const clickPhrases = ["Beep Boop! 🤖", "Stop poking! 💢", "System OK. ✅", "I'm watching... 👀"];
+            botContainer.addEventListener('click', () => {
+                if(isSleeping) { wakeUp(); return; }
+                botBody.style.transform = "scale(0.9)";
+                setTimeout(() => botBody.style.transform = "scale(1)", 150);
+                const txt = clickPhrases[Math.floor(Math.random() * clickPhrases.length)];
+                showBubble(txt);
+            });
+
+            function pickNewPosition() {
+                if(isSleeping || botBody.classList.contains('scanning')) return;
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                const pad = 60; 
+                const botSize = 60;
+                const zones = [
+                    {x: pad, y: pad + 80},              
+                    {x: w - pad - botSize, y: pad + 80},
+                    {x: pad, y: h - 120},               
+                    {x: w - pad - botSize, y: h - 120}, 
+                    {x: pad, y: h/2},                   
+                    {x: w - pad - botSize, y: h/2}      
+                ];
+                const choice = zones[Math.floor(Math.random() * zones.length)];
+                const x = choice.x + (Math.random() * 30 - 15);
+                const y = choice.y + (Math.random() * 30 - 15);
+                botContainer.style.transform = `translate(${x}px, ${y}px)`;
+                if(Math.random() > 0.75) setTimeout(triggerScan, 2500);
+            }
+            setInterval(pickNewPosition, 10000);
+            setTimeout(pickNewPosition, 200);
+
+            function triggerScan() {
+                botBody.classList.add('scanning');
+                showBubble("Scanning area... 🔍");
+                setTimeout(() => botBody.classList.remove('scanning'), 3000);
+            }
+
+            function showBubble(text) {
+                botBubble.textContent = text;
+                botBubble.classList.add('show');
+                setTimeout(() => botBubble.classList.remove('show'), 3000);
+            }
+
+            function wakeUp() {
+                if(isSleeping) {
+                    isSleeping = false;
+                    botEye.classList.remove('sleeping');
+                    showBubble("I'm awake! 😳");
+                }
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(goToSleep, 10000);
+            }
+            function goToSleep() {
+                isSleeping = true;
+                botEye.classList.add('sleeping');
+                showBubble("Powering down... 😴");
+            }
+            document.addEventListener('mousemove', (e) => {
+                wakeUp();
+                if(!isSleeping && !botBody.classList.contains('scanning')) {
+                    const rect = botEye.getBoundingClientRect();
+                    const cx = rect.left + rect.width/2;
+                    const cy = rect.top + rect.height/2;
+                    const angle = Math.atan2(e.clientY - cy, e.clientX - cx);
+                    const dist = Math.min(4, Math.hypot(e.clientX - cx, e.clientY - cy));
+                    botPupil.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
+                }
+            });
+
+            window.addEventListener('scroll', () => {
+                resetSleepTimer();
+                const st = window.scrollY;
+                if (Math.abs(st - lastScrollY) > 40) {
+                    botBody.classList.add('windblown');
+                } else {
+                    botBody.classList.remove('windblown');
+                }
+                lastScrollY = st;
+                const pText = document.getElementById('big-parallax-text');
+                if(window.innerWidth > 768) pText.style.transform = `translateY(-50%) translateX(${st * 0.2}px)`;
+                const total = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                document.getElementById('scroll-fill').style.height = (st / total * 100) + "%";
+            });
+
+            function resetSleepTimer() {
+                if(isSleeping) wakeUp();
+                else {
+                    clearTimeout(idleTimer);
+                    idleTimer = setTimeout(goToSleep, 10000);
+                }
+            }
+
+            document.querySelectorAll('.hover-trigger').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    const txt = el.getAttribute('data-bot-say');
+                    if(txt) showBubble(txt);
+                });
+            });
+        });
+
+        // --- TEXT ANIMATION ---
         document.addEventListener('DOMContentLoaded', () => {
             const titleContainer = document.getElementById('hero-title');
-            const phrases = [
-                { text: "Welcome to the", color: "text-white" },
-                { break: true },
-                { text: "Savvy Hunt!", color: "text-orange-400" }
-            ];
+            const phrases = [{ text: "Welcome to the", color: "text-white" }, { break: true }, { text: "Savvy", color: "text-orange-500" }, { text: "Hunt!", color: "text-orange-500" }];
             let delayCounter = 150;
-
             phrases.forEach(phrase => {
-                if (phrase.break) {
-                    titleContainer.appendChild(document.createElement('br'));
-                } else {
-                    const words = phrase.text.split(' ');
+                if (phrase.break) titleContainer.appendChild(document.createElement('br'));
+                else {
                     const spanWrapper = document.createElement('span');
-                    if (phrase.color) spanWrapper.className = phrase.color;
-
-                    words.forEach((word) => {
+                    phrase.text.split(' ').forEach(word => {
                         const wordSpan = document.createElement('span');
                         wordSpan.textContent = word + '\u00A0';
-                        wordSpan.className = 'blur-word';
+                        wordSpan.className = `blur-word ${phrase.color}`;
                         wordSpan.style.transitionDelay = `${delayCounter}ms`;
                         spanWrapper.appendChild(wordSpan);
                         delayCounter += 150;
@@ -243,175 +522,108 @@
                     titleContainer.appendChild(spanWrapper);
                 }
             });
-
-            setTimeout(() => {
-                const animatedWords = document.querySelectorAll('.blur-word');
-                animatedWords.forEach(span => span.classList.add('visible'));
-            }, 100);
+            setTimeout(() => document.querySelectorAll('.blur-word').forEach(span => span.classList.add('visible')), 100);
         });
 
-        // --- 2. SUPABASE SETUP ---
+        // --- HERO PARTICLES ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('hero-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            window.addEventListener('resize', resize); resize();
+            class Particle {
+                constructor() { this.x=Math.random()*canvas.width; this.y=Math.random()*canvas.height; this.size=Math.random()*3+1; this.speedX=Math.random()-0.5; this.speedY=Math.random()-0.5; this.color=Math.random()>0.6?'rgba(255,255,255,0.8)':'rgba(249,115,22,0.8)'; }
+                update() { this.x+=this.speedX; this.y+=this.speedY; if(this.x>canvas.width)this.x=0; if(this.x<0)this.x=canvas.width; if(this.y>canvas.height)this.y=0; if(this.y<0)this.y=canvas.height; }
+                draw() { ctx.fillStyle=this.color; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); }
+            }
+            function init() { for(let i=0; i<(window.innerWidth<768?40:80); i++) particles.push(new Particle()); }
+            function animate() { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(animate); }
+            init(); animate();
+        });
+
+        // --- DATA & CARD RENDERING (STATIC DESIGN) ---
         const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
-
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const grid = document.getElementById('events-grid');
+        const scoreContainer = document.getElementById("top-3-container");
 
-        // --- 3. LIVE EVENTS LOGIC ---
         async function fetchEvents() {
-            const { data, error } = await supabase
-                .from('live_events')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(3);
-
-            if (error) {
-                grid.innerHTML = '<div class="col-span-3 text-red-400 py-10">Error loading data.</div>';
-                return;
-            }
-            renderEvents(data);
-        }
-
-        function renderEvents(events) {
+            const { data } = await supabase.from('live_events').select('*').order('created_at', { ascending: false }).limit(3);
             grid.innerHTML = '';
-            if (!events || events.length === 0) {
-                grid.innerHTML = `<div class="col-span-1 md:col-span-3 text-gray-500 py-10">No live events right now.</div>`;
-                return;
-            }
-
-            events.forEach(data => {
-                let contentHTML = '';   
-                let cardStyle = '';
-
-                // Check for Results Published Status
-                if (data.status === 'Results Published') {
-                    cardStyle = 'border-2 border-yellow-400 bg-yellow-50';
-                    contentHTML = `
-                        <div class="flex flex-col h-full justify-between">
-                            <div class="text-center w-full">
-                                <h3 class="text-xl md:text-2xl font-bold mb-2 text-gray-800">${data.name}</h3>
-                                <span class="bg-black text-white text-[10px] md:text-xs font-bold px-3 py-1 rounded-full mb-4 inline-block">⭐ RESULTS PUBLISHED</span>
-                                
-                                <div class="space-y-3 text-left bg-white p-3 md:p-4 rounded-xl shadow-sm w-full mb-4">
-                                    <div class="flex items-center border-b pb-2">
-                                        <span class="text-xl md:text-2xl mr-3">🥇</span> 
-                                        <span class="font-bold text-gray-800 text-sm md:text-base">${data.winner_1 || 'TBA'}</span>
-                                    </div>
-                                    <div class="flex items-center border-b pb-2">
-                                        <span class="text-lg md:text-xl mr-3">🥈</span> 
-                                        <span class="font-medium text-gray-600 text-sm md:text-base">${data.winner_2 || '-'}</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <span class="text-base md:text-lg mr-3">🥉</span> 
-                                        <span class="font-medium text-gray-600 text-sm md:text-base">${data.winner_3 || '-'}</span>
-                                    </div>
+            if (!data || data.length === 0) { grid.innerHTML = `<div class="col-span-3 text-slate-400 py-10">No live events.</div>`; return; }
+            
+            data.forEach((d, i) => {
+                let cardHTML = '';
+                
+                // === SCENARIO A: RESULTS PUBLISHED (YELLOW CARD) ===
+                if (d.status === 'Results Published') {
+                    cardHTML = `
+                    <div class="event-card is-results opacity-0 animate-fade-in-up" style="animation-delay: ${i*150}ms">
+                        <div class="card-header">
+                            <div class="card-title text-center w-full">
+                                ${d.name}
+                                <div class="badge-results">
+                                    <span>★</span> RESULTS PUBLISHED
                                 </div>
                             </div>
-                            
-                            <div class="border-t border-yellow-200 pt-4 mt-auto flex justify-between items-center text-xs md:text-sm text-gray-500 w-full">
-                                <span>Category:</span>
-                                <span class="font-bold text-gray-700 bg-white border border-gray-200 px-3 py-1 rounded-full">
-                                    ${data.category || 'General'}
-                                </span>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="winner-list">
+                                <div class="winner-item"><span class="text-xl">🥇</span> ${d.winner_1 || 'TBA'}</div>
+                                <div class="winner-item"><span class="text-lg grayscale opacity-70">🥈</span> ${d.winner_2 || '-'}</div>
+                                <div class="winner-item"><span class="text-base grayscale opacity-50">🥉</span> ${d.winner_3 || '-'}</div>
                             </div>
                         </div>
-                    `;
-                } else {
-                    // Standard Event Status
-                    let statusBadge = '';
-                    let cardOpacity = '';
-                    
-                    if (data.status === 'Live') {
-                        statusBadge = `<span class="bg-red-100 text-red-600 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide flex items-center">Live 🔴</span>`;
-                    } else if (data.status === 'Soon') {
-                        statusBadge = `<span class="bg-yellow-100 text-yellow-700 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Soon 🟡</span>`;
-                        cardOpacity = 'bg-gray-50 opacity-90';
-                    } else {
-                        statusBadge = `<span class="bg-gray-100 text-gray-600 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Finished ⚫</span>`;
-                        cardOpacity = 'opacity-60';
-                    }
 
-                    contentHTML = `
-                        <div class="flex justify-between items-start mb-6 w-full">
-                            <h3 class="text-xl md:text-2xl font-bold leading-tight pr-2">${data.name}</h3>
-                            ${statusBadge}
+                        <div class="card-footer">
+                            <span class="category-label">Category</span>
+                            <span class="category-pill">${d.category || 'General'}</span>
                         </div>
-                        <div class="text-gray-500 space-y-3 mb-8 w-full text-sm md:text-base">
-                            <p class="flex items-center"><span class="w-6 text-center mr-2">📍</span> ${data.location}</p>
-                            <p class="flex items-center"><span class="w-6 text-center mr-2">👥</span> ${data.teams} Teams</p>
+                    </div>`;
+                } 
+                // === SCENARIO B: LIVE / SOON / FINISHED (STATIC WHITE CARD) ===
+                else {
+                    let badgeHTML = '';
+                    if (d.status === 'Live') badgeHTML = `<span class="badge badge-live"><span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span> LIVE</span>`;
+                    else if (d.status === 'Soon') badgeHTML = `<span class="badge badge-soon">SOON 🟡</span>`;
+                    else badgeHTML = `<span class="badge badge-done">Finished</span>`;
+
+                    cardHTML = `
+                    <div class="event-card opacity-0 animate-fade-in-up" style="animation-delay: ${i*150}ms">
+                        <div class="card-header">
+                            <div class="card-title text-left">${d.name}</div>
+                            ${badgeHTML}
                         </div>
-                        <div class="border-t pt-4 mt-auto flex justify-between items-center text-xs md:text-sm text-gray-400 w-full">
-                            <span>Category:</span>
-                            <span class="font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                                ${data.category || 'General'}
-                            </span>
+                        
+                        <div class="card-body">
+                            <div class="info-row"><span class="text-lg">📍</span> ${d.location}</div>
+                            <div class="info-row"><span class="text-lg">👥</span> ${d.teams} Teams</div>
                         </div>
-                    `;
-                    if(cardOpacity) cardStyle += ' ' + cardOpacity;
+
+                        <div class="card-footer">
+                            <span class="category-label">Category</span>
+                            <span class="category-pill">${d.category || 'General'}</span>
+                        </div>
+                    </div>`;
                 }
-
-                const cardHTML = `
-                    <div class="card p-5 md:p-8 text-left flex flex-col justify-between h-full ${cardStyle}">
-                        ${contentHTML}
-                    </div>
-                `;
                 grid.innerHTML += cardHTML;
             });
         }
 
-        // --- 4. SCOREBOARD LOGIC ---
-        const scoreContainer = document.getElementById("top-3-container");
-
         async function loadTopThree() {
-            const { data, error } = await supabase
-                .from("scoreboard")
-                .select("*")
-                .order("total", { ascending: false })
-                .limit(3);
-
-            if (error) {
-                scoreContainer.innerHTML = `<p class="text-center text-red-500">Error loading leaderboard.</p>`;
-                return;
-            }
-
-            if (!data || data.length === 0) {
-                scoreContainer.innerHTML = `<p class="text-center text-gray-400">No scores yet.</p>`;
-                return;
-            }
-
+            const { data } = await supabase.from("scoreboard").select("*").order("total", { ascending: false }).limit(3);
             scoreContainer.innerHTML = "";
-
-            data.forEach((row, index) => {
-                const colors = [
-                    { bg: "bg-orange-50", border: "border-orange-200", icon: "🏆", pointsColor: "text-orange-600" },
-                    { bg: "bg-blue-50", border: "border-blue-200", icon: "⚡", pointsColor: "text-blue-600" },
-                    { bg: "bg-yellow-50", border: "border-yellow-200", icon: "🌟", pointsColor: "text-yellow-600" },
-                ];
-                const c = colors[index] || { bg: "bg-white", border: "border-gray-200", icon: `#${index + 1}`, pointsColor: "text-gray-600" };
-
-                scoreContainer.innerHTML += `
-                    <div class="${c.bg} p-4 md:p-6 rounded-2xl flex items-center border ${c.border} shadow-sm">
-                        <div class="text-2xl md:text-3xl font-black text-gray-700 w-10 md:w-12 text-center">${index + 1}</div>
-                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xl md:text-2xl mr-3 md:mr-4">${c.icon}</div>
-                        <div class="flex-1">
-                            <h3 class="text-lg md:text-xl font-bold text-gray-900">${row.name}</h3>
-                            <p class="${c.pointsColor} font-bold text-sm md:text-base">${row.total.toLocaleString()} points</p>
-                        </div>
-                    </div>
-                `;
+            if(data) data.forEach((r, i) => {
+                let c = ['text-orange-600','text-blue-600','text-yellow-600'][i] || 'text-slate-600';
+                let icon = ['🏆','⚡','🌟'][i] || '#';
+                scoreContainer.innerHTML += `<div class="bg-white p-4 rounded-2xl flex items-center shadow-sm opacity-0 animate-fade-in-up" style="animation-delay: ${i*150}ms"><div class="text-2xl font-black text-slate-300 w-10 text-center">${i+1}</div><div class="w-10 h-10 rounded-full border flex items-center justify-center text-xl mr-4">${icon}</div><div class="flex-1 font-bold text-slate-900">${r.name}</div><div class="font-black text-lg ${c}">${r.total.toLocaleString()}</div></div>`;
             });
         }
-
-        // --- 5. INITIALIZE ---
-        fetchEvents();
-        loadTopThree();
-
-        // Realtime Subscriptions
-        supabase.channel("public-channel")
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, fetchEvents)
-            .on("postgres_changes", { event: "*", schema: "public", table: "scoreboard" }, loadTopThree)
-            .subscribe();
-
+        fetchEvents(); loadTopThree();
+        supabase.channel("public-channel").on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, fetchEvents).on("postgres_changes", { event: "*", schema: "public", table: "scoreboard" }, loadTopThree).subscribe();
     </script>
 </body>
 </html>
