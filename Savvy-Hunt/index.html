@@ -284,39 +284,43 @@
                 let cardStyle = '';
 
                 // Check for Results Published Status
-                if (data.status === 'Results Published') {
-                    cardStyle = 'border-2 border-yellow-400 bg-yellow-50';
-                    contentHTML = `
-                        <div class="flex flex-col h-full justify-between">
-                            <div class="text-center w-full">
-                                <h3 class="text-xl md:text-2xl font-bold mb-2 text-gray-800">${data.name}</h3>
-                                <span class="bg-black text-white text-[10px] md:text-xs font-bold px-3 py-1 rounded-full mb-4 inline-block">⭐ RESULTS PUBLISHED</span>
-                                
-                                <div class="space-y-3 text-left bg-white p-3 md:p-4 rounded-xl shadow-sm w-full mb-4">
-                                    <div class="flex items-center border-b pb-2">
-                                        <span class="text-xl md:text-2xl mr-3">🥇</span> 
-                                        <span class="font-bold text-gray-800 text-sm md:text-base">${data.winner_1 || 'TBA'}</span>
-                                    </div>
-                                    <div class="flex items-center border-b pb-2">
-                                        <span class="text-lg md:text-xl mr-3">🥈</span> 
-                                        <span class="font-medium text-gray-600 text-sm md:text-base">${data.winner_2 || '-'}</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <span class="text-base md:text-lg mr-3">🥉</span> 
-                                        <span class="font-medium text-gray-600 text-sm md:text-base">${data.winner_3 || '-'}</span>
-                                    </div>
+            if (data.status === 'Results Published') {
+                cardStyle = 'border-2 border-yellow-400 bg-yellow-50';
+                contentHTML = `
+                    <div class="flex flex-col h-full justify-between">
+                        <div class="text-center w-full">
+                            <h3 class="text-2xl font-bold mb-2 text-gray-800">${data.name}</h3>
+                            <span class="bg-black text-white text-xs font-bold px-3 py-1 rounded-full mb-4 inline-block">⭐ RESULTS PUBLISHED</span>
+                            
+                            <div class="space-y-3 text-left bg-white p-4 rounded-xl shadow-sm w-full mb-4">
+                                <div class="flex items-center border-b pb-2">
+                                    <span class="text-2xl mr-3">🥇</span> 
+                                    <!-- STUDENT NAME HERE -->
+                                    <span class="font-bold text-gray-800">${data.student_1 || 'TBA'}</span>
+                                </div>
+                                <div class="flex items-center border-b pb-2">
+                                    <span class="text-xl mr-3">🥈</span> 
+                                    <!-- STUDENT NAME HERE -->
+                                    <span class="font-medium text-gray-600">${data.student_2 || '-'}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-lg mr-3">🥉</span> 
+                                    <!-- STUDENT NAME HERE -->
+                                    <span class="font-medium text-gray-600">${data.student_3 || '-'}</span>
                                 </div>
                             </div>
-                            
-                            <div class="border-t border-yellow-200 pt-4 mt-auto flex justify-between items-center text-xs md:text-sm text-gray-500 w-full">
-                                <span>Category:</span>
-                                <span class="font-bold text-gray-700 bg-white border border-gray-200 px-3 py-1 rounded-full">
-                                    ${data.category || 'General'}
-                                </span>
-                            </div>
                         </div>
-                    `;
-                } else {
+                        
+                        <!-- CATEGORY AT BOTTOM -->
+                        <div class="border-t border-yellow-200 pt-4 mt-auto flex justify-between items-center text-sm text-gray-500 w-full">
+                            <span>Category:</span>
+                            <span class="font-bold text-gray-700 bg-white border border-gray-200 px-3 py-1 rounded-full">
+                                ${data.category || 'General'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            } else {
                     // Standard Event Status
                     let statusBadge = '';
                     let cardOpacity = '';
