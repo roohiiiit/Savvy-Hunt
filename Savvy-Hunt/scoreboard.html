@@ -182,12 +182,31 @@
     font-size: 1.2rem;
   }
 
+  /* ---- UPDATED TOTAL COLUMN ANIMATION ---- */
   .scoreboard-total {
     font-weight: 800;
     background: #f5cba7;
     color: #1f2937;
     border-radius: 8px;
     padding: 8px;
+    position: relative;
+    overflow: hidden; /* Keep shine inside */
+    vertical-align: middle;
+  }
+
+  /* The Shine Effect for Table Cell */
+  .scoreboard-total::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    animation: sheen 5s infinite ease-in-out;
+    pointer-events: none;
+    z-index: 1;
   }
 
   /* ============================
@@ -241,7 +260,6 @@
   .pod {
     width: 100%;
     border-radius: 14px;
-    /* Changed background to slight gradient so white shine is visible */
     background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
     padding: 16px;
     box-shadow: 0 4px 15px rgba(17,24,39,0.06);
@@ -266,7 +284,6 @@
     left: -100%;
     width: 60%;
     height: 100%;
-    /* Brighter gradient */
     background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
     transform: skewX(-25deg);
     animation: sheen 5s infinite ease-in-out;
@@ -276,8 +293,8 @@
 
   @keyframes sheen {
     0% { left: -100%; }
-    20% { left: 200%; } /* Swipes across fast */
-    100% { left: 100%; } /* Pause */
+    20% { left: 200%; }
+    100% { left: 200%; }
   }
 
   .pod .badge {
@@ -292,24 +309,23 @@
     font-size: 20px;
     color: white;
     position: relative;
-    z-index: 5; /* Above shine */
+    z-index: 5;
   }
 
   .pod .meta { 
       text-align: left; 
       flex-grow: 1;
-      overflow: hidden;
       position: relative;
-      z-index: 5; /* Above shine */
+      z-index: 5;
   }
 
   .pod h4 {
     margin: 0;
     font-size: 1.05rem;
     font-weight: 800;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal; 
+    word-wrap: break-word;
+    line-height: 1.4;
   }
 
   .pod p {
@@ -331,7 +347,8 @@
     font-weight: 800;
     font-size: 0.95rem;
     position: relative;
-    z-index: 5; /* Above shine */
+    z-index: 5;
+    flex-shrink: 0;
   }
 
   /* ============================
@@ -421,7 +438,7 @@
           <thead>
             <tr>
               <th>Rank</th>
-              <th>Name of Institution</th>
+              <th>Name</th>
               <th>Cat 1</th>
               <th>Cat 2</th>
               <th>Cat 3</th>
@@ -556,7 +573,9 @@
             <td>${Number(row.cat4 || 0)}</td>
             <td>${Number(row.cat5 || 0)}</td>
             <td>${Number(row.common_cat || 0)}</td>
-            <td class="scoreboard-total">${Number(row.total || 0)}</td>
+            <td class="scoreboard-total">
+                <span style="position:relative; z-index:2;">${Number(row.total || 0)}</span>
+            </td>
           </tr>
         `);
       });
