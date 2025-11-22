@@ -97,7 +97,7 @@
 
         /* FRONT FACE */
         .flip-card-front {
-            background: rgba(255, 255, 255, 0.8); /* Slightly more opaque for index page readability */
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             z-index: 2;
@@ -175,7 +175,6 @@
         @media (min-width: 640px) { .btn-alive { width: auto; } }
         .btn-alive:active { transform: scale(0.96); box-shadow: 0 4px 15px -5px rgba(234, 88, 12, 0.6); }
 
-        /* Header Blue Button */
         .btn-alive-secondary {
             background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);
             box-shadow: 0 8px 25px -5px rgba(59, 130, 246, 0.6);
@@ -183,25 +182,148 @@
         }
         .btn-alive-secondary:active { box-shadow: 0 4px 15px -5px rgba(59, 130, 246, 0.7); }
 
+        /* subtle glow on hover, no layout change */
+        .btn-alive::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 9999px;
+            background: radial-gradient(circle at 50% 0, rgba(255,255,255,0.25), transparent 60%);
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        .btn-alive:hover::before {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         .btn-alive::after {
-            content: ''; position: absolute; top: 0; left: -150%; width: 100%; height: 100%;
+            content: '';
+            position: absolute;
+            top: 0; left: -150%; width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-            transform: skewX(-20deg); animation: shimmer 3.5s infinite; pointer-events: none;
+            transform: skewX(-20deg);
+            animation: shimmer 3.5s infinite;
+            pointer-events: none;
         }
         @keyframes shimmer { 0% { left: -150%; } 30% { left: 150%; } 100% { left: 150%; } }
 
         /* --- 3. COMPACT SAVVY BOT --- */
         #savvy-bot-container { position: fixed; z-index: 100; top: 0; left: 0; width: 60px; height: 60px; transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: auto; cursor: pointer; }
-        .bot-body { width: 48px; height: 48px; margin: 6px; background: radial-gradient(circle at 30% 30%, #ffffff, #fff7ed); border-radius: 50%; box-shadow: inset -3px -3px 8px rgba(234, 88, 12, 0.1), 0 8px 20px rgba(0,0,0,0.15), 0 0 0 2px rgba(255,255,255,0.9); position: relative; display: flex; align-items: center; justify-content: center; animation: float-organic 6s ease-in-out infinite; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .bot-body:active { transform: scale(0.9); } .bot-body.windblown { transform: rotate(-15deg) translateX(-5px); }
-        .bot-cheek { position: absolute; top: 28px; width: 6px; height: 4px; background: #fdba74; border-radius: 50%; opacity: 0.8; filter: blur(1px); z-index: 2; } .cheek-left { left: 8px; } .cheek-right { right: 8px; }
+        .bot-body { width: 48px; height: 48px; margin: 6px; background: radial-gradient(circle at 30% 30%, #ffffff, #fff7ed); border-radius: 50%; box-shadow: inset -3px -3px 8px rgba(234, 88, 12, 0.1), 0 8px 20px rgba(0,0,0,0.15), 0 0 0 2px rgba(255,255,255,0.9); position: relative; display: flex; align-items: center; justify-content: center; animation: float-organic 6s ease-in-out infinite; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; }
+        .bot-body:active { transform: scale(0.9); } 
+        .bot-body.windblown { transform: rotate(-15deg) translateX(-5px); }
+
+        /* halo & mood states */
+        .bot-body::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 9999px;
+            background: radial-gradient(circle at 50% 50%, rgba(249,115,22,0.25), transparent 70%);
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            z-index: -1;
+        }
+        .bot-body.awake::before {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .bot-body.scanning::before {
+            animation: botHaloPulse 0.8s ease-in-out infinite alternate;
+        }
+        @keyframes botHaloPulse {
+            from { opacity: 0.6; transform: scale(1); }
+            to   { opacity: 1;   transform: scale(1.05); }
+        }
+
+        .bot-body.mode-live {
+            box-shadow: inset -3px -3px 8px rgba(220, 38, 38, 0.16),
+                        0 8px 22px rgba(248, 113, 113, 0.55),
+                        0 0 0 2px rgba(254, 226, 226, 0.95);
+        }
+        .bot-body.mode-score {
+            box-shadow: inset -3px -3px 8px rgba(59, 130, 246, 0.16),
+                        0 8px 22px rgba(59, 130, 246, 0.5),
+                        0 0 0 2px rgba(219, 234, 254, 0.95);
+        }
+        .bot-body.mode-gallery {
+            box-shadow: inset -3px -3px 8px rgba(234, 179, 8, 0.16),
+                        0 8px 22px rgba(251, 191, 36, 0.45),
+                        0 0 0 2px rgba(254, 249, 195, 0.95);
+        }
+        .bot-body.mode-about {
+            box-shadow: inset -3px -3px 8px rgba(16, 185, 129, 0.16),
+                        0 8px 22px rgba(45, 212, 191, 0.45),
+                        0 0 0 2px rgba(209, 250, 229, 0.95);
+        }
+
+        .bot-cheek { position: absolute; top: 28px; width: 6px; height: 4px; background: #fdba74; border-radius: 50%; opacity: 0.8; filter: blur(1px); z-index: 2; } 
+        .cheek-left { left: 8px; } 
+        .cheek-right { right: 8px; }
+
         .bot-eye { width: 32px; height: 18px; background: #0f172a; border-radius: 14px; position: relative; overflow: hidden; border: 2px solid #cbd5e1; box-shadow: inset 0 0 4px #000; z-index: 3; transition: all 0.2s ease; }
         .bot-pupil { width: 10px; height: 10px; background: #f97316; border-radius: 50%; position: absolute; top: 4px; left: 11px; box-shadow: 0 0 6px #f97316; transition: transform 0.1s; }
-        .bot-eye.sleeping { height: 3px; margin-top: 6px; background: #334155; border-color: #475569; } .bot-eye.sleeping .bot-pupil, .bot-eye.sleeping .bot-cheek { opacity: 0; }
-        .bot-scanning .bot-eye { border-color: #ea580c; box-shadow: 0 0 10px #ea580c; } .bot-scanning .bot-pupil { background: #ea580c; box-shadow: 0 0 10px #ea580c; width: 32px; height: 2px; border-radius: 0; top: 8px; left: 0; animation: none; }
-        .laser-cone { position: absolute; top: 25px; left: 50%; transform: translateX(-50%) perspective(300px) rotateX(20deg); width: 40px; height: 0; background: linear-gradient(to bottom, rgba(234, 88, 12, 0.8) 0%, rgba(234, 88, 12, 0.1) 100%); clip-path: polygon(30% 0, 70% 0, 100% 100%, 0% 100%); opacity: 0; z-index: 50; pointer-events: none; transition: height 0.3s ease-out, opacity 0.3s ease-out; filter: drop-shadow(0 0 5px rgba(234,88,12,0.8)); mix-blend-mode: hard-light; } .bot-body.scanning .laser-cone { height: 120px; opacity: 1; animation: scan-pulse 0.2s infinite alternate; }
-        .bot-antenna { position: absolute; top: -10px; left: 22px; width: 3px; height: 10px; background: #94a3b8; z-index: -1; } .bot-antenna::after { content: ''; position: absolute; top: -5px; left: -2.5px; width: 8px; height: 8px; background: #f97316; border-radius: 50%; box-shadow: 0 0 8px #f97316; }
-        .bot-bubble { position: absolute; top: -45px; left: 50%; transform: translateX(-50%) scale(0) translateY(10px); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); padding: 8px 14px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); font-size: 11px; font-weight: 700; color: #c2410c; white-space: nowrap; opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; border: 1px solid white; } .bot-bubble.show { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); } .bot-bubble::after { content: ''; position: absolute; bottom: -5px; left: 50%; margin-left: -5px; border-width: 5px 5px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
+
+        .bot-eye.sleeping { height: 3px; margin-top: 6px; background: #334155; border-color: #475569; } 
+        .bot-eye.sleeping .bot-pupil, .bot-eye.sleeping .bot-cheek { opacity: 0; }
+
+        .bot-scanning .bot-eye { border-color: #ea580c; box-shadow: 0 0 10px #ea580c; } 
+        .bot-scanning .bot-pupil { background: #ea580c; box-shadow: 0 0 10px #ea580c; width: 32px; height: 2px; border-radius: 0; top: 8px; left: 0; animation: none; }
+
+        .laser-cone { position: absolute; top: 25px; left: 50%; transform: translateX(-50%) perspective(300px) rotateX(20deg); width: 40px; height: 0; background: linear-gradient(to bottom, rgba(234, 88, 12, 0.8) 0%, rgba(234, 88, 12, 0.1) 100%); clip-path: polygon(30% 0, 70% 0, 100% 100%, 0% 100%); opacity: 0; z-index: 50; pointer-events: none; transition: height 0.3s ease-out, opacity 0.3s ease-out; filter: drop-shadow(0 0 5px rgba(234,88,12,0.8)); mix-blend-mode: hard-light; } 
+        .bot-body.scanning .laser-cone { height: 120px; opacity: 1; animation: scan-pulse 0.2s infinite alternate; }
+
+        .bot-antenna { position: absolute; top: -10px; left: 22px; width: 3px; height: 10px; background: #94a3b8; z-index: -1; } 
+        .bot-antenna::after { content: ''; position: absolute; top: -5px; left: -2.5px; width: 8px; height: 8px; background: #f97316; border-radius: 50%; box-shadow: 0 0 8px #f97316; }
+
+        .bot-bubble { 
+            position: absolute; 
+            top: -45px; 
+            left: 50%; 
+            transform: translateX(-50%) scale(0) translateY(10px); 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(8px); 
+            padding: 8px 14px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15); 
+            font-size: 11px; 
+            font-weight: 700; 
+            color: #c2410c; 
+            white-space: nowrap; 
+            opacity: 0; 
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            pointer-events: none; 
+            border: 1px solid white; 
+        } 
+        .bot-bubble.show { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); } 
+        .bot-bubble::after { content: ''; position: absolute; bottom: -5px; left: 50%; margin-left: -5px; border-width: 5px 5px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
+
+        .bot-bubble.rich {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .typing-dots {
+            display: inline-flex;
+            gap: 3px;
+        }
+        .typing-dots span {
+            width: 4px;
+            height: 4px;
+            border-radius: 9999px;
+            background: #fed7aa;
+            animation: dotBounce 1s infinite ease-in-out;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes dotBounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+            40% { transform: translateY(-3px); opacity: 1; }
+        }
 
         /* --- UI BASICS --- */
         .bg-parallax-text { position: fixed; top: 50%; left: -10%; font-size: 20vh; font-weight: 900; color: rgba(234, 88, 12, 0.03); white-space: nowrap; pointer-events: none; z-index: 0; transform: translateY(-50%); will-change: transform; }
@@ -210,9 +332,9 @@
         .blur-word { display: inline-block; opacity: 0; filter: blur(12px); transform: translateY(20px); transition: all 0.8s ease; margin-right: 0.2em; }
         .blur-word.visible { opacity: 1; filter: blur(0); transform: translateY(0); }
         
-        /* Hover Card for Scoreboard Section */
         .card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-radius: 2rem; border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.05); transition: transform 0.4s ease; }
         .card:hover { transform: scale(1.02); box-shadow: 0 30px 60px -10px rgba(234, 88, 12, 0.15); }
+
         #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
     </style>
 </head>
@@ -276,8 +398,8 @@
 
         <!-- SCOREBOARD PREVIEW -->
         <section id="scoreboard-section" class="hover-trigger card bg-white/90 p-8 md:p-20 mb-40 opacity-0 animate-fade-in-up [animation-delay:200ms] relative overflow-hidden" data-bot-say="Calculating stats... 🧮">
-             <div class="absolute top-0 right-0 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse"></div>
-             <div class="absolute bottom-0 left-0 w-80 h-80 bg-orange-100/40 rounded-full blur-3xl -ml-20 -mb-20 animate-pulse" style="animation-delay: 1.5s"></div>
+             <div class="absolute top-0 right-0 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse parallax-layer" data-speed="-0.08"></div>
+             <div class="absolute bottom-0 left-0 w-80 h-80 bg-orange-100/40 rounded-full blur-3xl -ml-20 -mb-20 animate-pulse parallax-layer" data-speed="0.06" style="animation-delay: 1.5s"></div>
              <div class="text-center max-w-4xl mx-auto mb-12 relative z-10">
                 <h2 class="text-4xl md:text-7xl font-black mb-4 tracking-tighter text-slate-900">Who's <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 pb-2 pr-1">Leading?</span></h2>
                 <p class="text-slate-500 font-medium">Top 3 contenders fighting for glory.</p>
@@ -367,11 +489,27 @@
                 'about-section': "About The Team. 📜"
             };
 
+            const sectionModes = {
+                'hero-section': 'mode-hero',
+                'live-events': 'mode-live',
+                'scoreboard-section': 'mode-score',
+                'gallery-section': 'mode-gallery',
+                'about-section': 'mode-about'
+            };
+
+            function setBotMode(modeClass) {
+                botBody.classList.remove('mode-hero','mode-live','mode-score','mode-gallery','mode-about');
+                if (modeClass) botBody.classList.add(modeClass);
+            }
+
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting && !isSleeping) {
                         const msg = tileMessages[entry.target.id];
                         if (msg) showBubble(msg);
+
+                        const mode = sectionModes[entry.target.id];
+                        if (mode) setBotMode(mode);
                     }
                 });
             }, { threshold: 0.5 }); 
@@ -415,12 +553,19 @@
 
             function triggerScan() {
                 botBody.classList.add('scanning');
-                showBubble("Scanning area... 🔍");
+                showBubble("Scanning area... 🔍", { withTyping: true });
                 setTimeout(() => botBody.classList.remove('scanning'), 3000);
             }
 
-            function showBubble(text) {
-                botBubble.textContent = text;
+            function showBubble(text, options = {}) {
+                const { withTyping = false } = options;
+                if (withTyping) {
+                    botBubble.classList.add('rich');
+                    botBubble.innerHTML = `<span>${text}</span><span class="typing-dots"><span></span><span></span><span></span></span>`;
+                } else {
+                    botBubble.classList.remove('rich');
+                    botBubble.textContent = text;
+                }
                 botBubble.classList.add('show');
                 setTimeout(() => botBubble.classList.remove('show'), 3000);
             }
@@ -429,6 +574,7 @@
                 if(isSleeping) {
                     isSleeping = false;
                     botEye.classList.remove('sleeping');
+                    botBody.classList.add('awake');
                     showBubble("I'm awake! 😳");
                 }
                 clearTimeout(idleTimer);
@@ -437,6 +583,7 @@
             function goToSleep() {
                 isSleeping = true;
                 botEye.classList.add('sleeping');
+                botBody.classList.remove('awake');
                 showBubble("Powering down... 😴");
             }
             document.addEventListener('mousemove', (e) => {
@@ -451,6 +598,10 @@
                 }
             });
 
+            const pText = document.getElementById('big-parallax-text');
+            const scrollFill = document.getElementById('scroll-fill');
+            const parallaxLayers = document.querySelectorAll('.parallax-layer');
+
             window.addEventListener('scroll', () => {
                 resetSleepTimer();
                 const st = window.scrollY;
@@ -460,10 +611,20 @@
                     botBody.classList.remove('windblown');
                 }
                 lastScrollY = st;
-                const pText = document.getElementById('big-parallax-text');
-                if(window.innerWidth > 768) pText.style.transform = `translateY(-50%) translateX(${st * 0.2}px)`;
+
+                if(pText && window.innerWidth > 768) {
+                    pText.style.transform = `translateY(-50%) translateX(${st * 0.2}px)`;
+                }
+
                 const total = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                document.getElementById('scroll-fill').style.height = (st / total * 100) + "%";
+                if (scrollFill && total > 0) {
+                    scrollFill.style.height = (st / total * 100) + "%";
+                }
+
+                parallaxLayers.forEach(layer => {
+                    const speed = parseFloat(layer.dataset.speed || '-0.05');
+                    layer.style.transform = `translate3d(0, ${st * speed}px, 0)`;
+                });
             });
 
             function resetSleepTimer() {
@@ -618,7 +779,7 @@
                                 <h3 class="font-extrabold">${event.name}</h3>
                                 <div class="location">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-orange-500">
-                                        <path fill-rule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                                        <path fill-rule="evenodd" d="M11.54 22.351l.07.40.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
                                     </svg>
                                     ${event.location || 'Venue TBA'}
                                 </div>
@@ -662,8 +823,12 @@
             });
         }
         
-        fetchEvents(); loadTopThree();
-        supabase.channel("public-channel").on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, fetchEvents).on("postgres_changes", { event: "*", schema: "public", table: "scoreboard" }, loadTopThree).subscribe();
+        fetchEvents(); 
+        loadTopThree();
+        supabase.channel("public-channel")
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, fetchEvents)
+            .on("postgres_changes", { event: "*", schema: "public", table: "scoreboard" }, loadTopThree)
+            .subscribe();
     </script>
 </body>
 </html>
