@@ -5,274 +5,764 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Organizing Committee - Savvy Hunt</title>
     
-    <!-- Fonts & Tailwind -->
+    <!-- Fonts & Tailwind (match main site) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #FFFBF5;
-            color: #1f2937;
+        html {
+            scroll-behavior: smooth;
         }
-        
-        /* Card Hover Effect */
+
+        body {
+            font-family: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: linear-gradient(145deg,#FFF7ED 0%,#FFEEDD 40%,#FFF4E5 70%);
+            background-attachment: fixed;
+            color: #111827;
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Centered faint background text */
+        .bg-parallax-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18vh;
+            font-weight: 900;
+            color: rgba(234, 88, 12, 0.05);
+            white-space: nowrap;
+            pointer-events: none;
+            user-select: none;
+            z-index: 0;
+            letter-spacing: 0.12em;
+        }
+
+        .fade-up {
+            opacity: 0;
+            transform: translateY(16px);
+            animation: fadeUp 0.65s ease forwards;
+        }
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .shadow-soft {
+            box-shadow:
+                0 20px 40px rgba(0,0,0,0.06),
+                0 0 0 1px rgba(248,250,252,0.8);
+        }
+
+        /* Lead Dev strip */
+        .dev-strip {
+            background: linear-gradient(120deg, #fff7ed, #ffedd5);
+            border-radius: 2rem;
+            border: 1px solid rgba(248, 171, 84, 0.4);
+            box-shadow:
+                0 18px 50px rgba(248, 171, 84, 0.18),
+                0 0 0 1px rgba(255,255,255,0.9);
+        }
+
+        /* Dev card — larger & premium */
+        .dev-card {
+            background: white;
+            border-radius: 1.85rem;
+            border: 1px solid rgba(248, 171, 84, 0.55);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .dev-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top,#fed7aa70,transparent 65%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .dev-card:hover {
+            transform: translateY(-10px);
+            box-shadow:
+                0 24px 60px rgba(248,171,84,0.32),
+                0 0 0 1px rgba(248,171,84,0.8);
+            border-color: rgba(248,171,84,1);
+        }
+        .dev-card:hover::before {
+            opacity: 1;
+        }
+
+        .dev-tag {
+            position: absolute;
+            top: 12px;
+            left: 14px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(15,23,42,0.92);
+            color: #fed7aa;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 5;
+        }
+
+        .dev-avatar {
+            position: relative;
+            border-radius: 999px;
+            padding: 3px;
+            background: conic-gradient(from 180deg,#fb923c,#fde68a,#fb923c,#fed7aa,#fb923c);
+        }
+        .dev-avatar-inner {
+            border-radius: 999px;
+            overflow: hidden;
+            background: #f3f4f6;
+        }
+        .dev-avatar-inner img {
+            transition: transform 0.45s ease;
+        }
+        .dev-card:hover .dev-avatar-inner img {
+            transform: scale(1.06);
+        }
+
+        /* Normal team cards */
         .team-card {
             background: white;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 1.5rem;
             border: 1px solid #f3f4f6;
+            transition: all 0.25s ease;
         }
         .team-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            border-color: #fed7aa; /* Light orange border on hover */
+            transform: translateY(-4px);
+            box-shadow: 0 16px 35px rgba(15,23,42,0.08);
+            border-color: #fed7aa;
+        }
+
+        /* Non-dev faces slightly muted so devs pop more */
+        .team-card img {
+            filter: grayscale(12%);
+            transition: transform 0.35s ease, filter 0.35s ease;
+        }
+        .team-card:hover img {
+            filter: grayscale(0%);
+            transform: scale(1.04);
+        }
+
+        .pill-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+        }
+
+        /* Savvy Bot (same feel as snapshots / schedule) */
+        #savvy-bot-container {
+            position: fixed;
+            z-index: 110;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 60px;
+            height: 60px;
+            transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: auto;
+            cursor: pointer;
+        }
+        .bot-body {
+            width: 48px;
+            height: 48px;
+            margin: 6px;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #fff7ed);
+            border-radius: 50%;
+            box-shadow:
+                inset -3px -3px 8px rgba(234, 88, 12, 0.16),
+                0 8px 18px rgba(0,0,0,0.16),
+                0 0 0 2px rgba(255,255,255,0.9);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: floatOrganic 6s ease-in-out infinite;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .bot-body:active { transform: scale(0.9); }
+        .bot-body.windblown { transform: rotate(-8deg) translateX(-3px); }
+
+        .bot-cheek {
+            position: absolute;
+            top: 28px;
+            width: 6px;
+            height: 4px;
+            background: #fdba74;
+            border-radius: 50%;
+            opacity: 0.8;
+            filter: blur(1px);
+            z-index: 2;
+        }
+        .cheek-left { left: 8px; }
+        .cheek-right { right: 8px; }
+
+        .bot-eye {
+            width: 32px;
+            height: 18px;
+            background: #0f172a;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #ffb46b;
+            box-shadow: inset 0 0 4px #000;
+            z-index: 3;
+            transition: all 0.2s ease;
+        }
+        .bot-pupil {
+            width: 10px;
+            height: 10px;
+            background: #f17500;
+            border-radius: 50%;
+            position: absolute;
+            top: 4px;
+            left: 11px;
+            box-shadow: none;
+            transition: transform 0.1s, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        .bot-body.scanning .bot-pupil {
+            background: #ff5e00;
+            box-shadow: 0 0 8px #ff5e00;
+        }
+
+        .bot-eye.sleeping {
+            height: 3px;
+            margin-top: 6px;
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+        .bot-eye.sleeping .bot-pupil { opacity: 0; }
+
+        .laser-cone {
+            position: absolute;
+            top: 21px;
+            left: 50%;
+            transform: translateX(-50%) perspective(300px) rotateX(18deg);
+            width: 42px;
+            height: 0;
+            background: linear-gradient(to bottom, rgba(255,98,0,0.6) 0%,rgba(255,98,0,0.02) 100%);
+            clip-path: polygon(40% 0, 60% 0, 100% 100%, 0% 100%);
+            opacity: 0;
+            z-index: 50;
+            pointer-events: none;
+            transition: height 0.3s ease-out, opacity 0.3s ease-out;
+            filter: drop-shadow(0 0 4px rgba(255,98,0,0.7));
+            mix-blend-mode: multiply;
+        }
+
+        .bot-antenna {
+            position: absolute;
+            top: -10px;
+            left: 22px;
+            width: 3px;
+            height: 10px;
+            background: #cbd5e1;
+            z-index: -1;
+        }
+        .bot-antenna::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -2.5px;
+            width: 8px;
+            height: 8px;
+            background: #f97316;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #f97316;
+        }
+
+        .bot-bubble {
+            position: absolute;
+            bottom: 60px;
+            right: -4px;
+            transform: translateX(0) scale(0) translateY(10px);
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+            padding: 8px 14px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(15,23,42,0.15);
+            font-size: 11px;
+            font-weight: 700;
+            color: #c2410c;
+            white-space: nowrap;
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+            border: 1px solid #fee2e2;
+        }
+        .bot-bubble.show {
+            opacity: 1;
+            transform: translateX(0) scale(1) translateY(0);
+        }
+        .bot-bubble::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 16px;
+            border-width: 6px 6px 0;
+            border-style: solid;
+            border-color: #ffffff transparent transparent transparent;
+        }
+
+        @keyframes floatOrganic {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(0, -6px) rotate(2deg); }
+            66% { transform: translate(0, -3px) rotate(-2deg); }
+        }
+
+        /* Chip bar – keep scroll, hide scrollbar */
+        .anchor-chip-bar {
+            scrollbar-width: none;      /* Firefox */
+        }
+        .anchor-chip-bar::-webkit-scrollbar {
+            display: none;             /* Chrome / Edge / Safari */
         }
     </style>
 </head>
-<body class="antialiased text-gray-800">
+<body class="antialiased">
 
-    <!-- NAVIGATION -->
-    <nav class="p-4 md:p-6 flex justify-between items-center max-w-7xl mx-auto">
-        <a href="index.html" class="text-xl md:text-2xl font-black tracking-tighter text-gray-900">
+    <div class="bg-parallax-text">ORGANIZERS</div>
+
+    <!-- Savvy Bot -->
+    <div id="savvy-bot-container">
+        <div class="bot-bubble" id="bot-bubble">Highlighting dev squad 👀</div>
+        <div class="bot-body" id="bot-body">
+            <div class="laser-cone"></div>
+            <div class="bot-cheek cheek-left"></div>
+            <div class="bot-cheek cheek-right"></div>
+            <div class="bot-antenna"></div>
+            <div class="bot-eye" id="bot-eye">
+                <div class="bot-pupil" id="bot-pupil"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAV -->
+    <nav class="relative z-10 max-w-7xl mx-auto px-4 md:px-6 pt-5 pb-3 flex items-center justify-between">
+        <a href="index.html" class="text-xl md:text-2xl font-black tracking-tight text-slate-900">
             Savvy Hunt <span class="text-orange-500">2025</span>
         </a>
-        <a href="index.html" class="text-xs md:text-sm font-bold text-gray-500 hover:text-orange-500 transition">
+        <a href="index.html" class="text-xs md:text-sm font-bold text-slate-500 hover:text-orange-500 transition">
             &larr; Back to Home
         </a>
     </nav>
 
-    <!-- HERO HEADER -->
-    <header class="text-center py-10 md:py-16 px-4">
-        <h1 class="text-4xl md:text-7xl font-black mb-4 md:mb-6 text-gray-900">
-            Meet the <span class="text-orange-500">Team</span>
-        </h1>
-        <p class="text-base md:text-xl text-gray-500 max-w-2xl mx-auto">
-            The dedicated students and faculty behind Savvy Hunt 2025.
-        </p>
+    <!-- HERO -->
+    <header class="relative z-10 max-w-7xl mx-auto px-4 md:px-6 pb-8 md:pb-12">
+        <div class="dev-strip shadow-soft px-6 py-8 md:px-10 md:py-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+            <div class="space-y-4 md:space-y-5 max-w-2xl">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 border border-orange-200 pill-label text-orange-700">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    ORGANIZING COMMITTEE
+                </div>
+                <h1 class="text-3xl md:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 fade-up" style="animation-delay:0.05s">
+                    The Team Behind
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-400 to-orange-600">
+                        Savvy Hunt
+                    </span>
+                </h1>
+                <p class="text-sm md:text-lg text-slate-600 fade-up" style="animation-delay:0.15s">
+                    Students, coordinators, and faculty working together to run the live event, scoreboard, and every tiny detail that makes Savvy Hunt feel smooth.
+                </p>
+
+                <div class="anchor-chip-bar mt-4 flex gap-2 overflow-x-auto fade-up" style="animation-delay:0.25s">
+                    <a href="#lead-devs" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 text-orange-100 text-[11px] font-semibold tracking-[0.16em] uppercase border border-slate-900">
+                        💻 Dev Core
+                    </a>
+                    <a href="#student-coords" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/80 text-slate-700 text-[11px] font-semibold tracking-[0.16em] uppercase border border-slate-200">
+                        🎯 Student Coordinators
+                    </a>
+                    <a href="#leadership" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/80 text-slate-700 text-[11px] font-semibold tracking-[0.16em] uppercase border border-slate-200">
+                        🏛 Leadership
+                    </a>
+                    <a href="#jury" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/80 text-slate-700 text-[11px] font-semibold tracking-[0.16em] uppercase border border-slate-200">
+                        ⚖ Jury
+                    </a>
+                    <a href="#faculty" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/80 text-slate-700 text-[11px] font-semibold tracking-[0.16em] uppercase border border-slate-200">
+                        👩‍🏫 Faculty
+                    </a>
+                </div>
+            </div>
+
+            <div class="w-full max-w-sm bg-white/70 rounded-2xl shadow-soft border border-orange-100 px-5 py-5 flex flex-col gap-3 fade-up" style="animation-delay:0.2s">
+                <p class="pill-label text-xs text-orange-500">CORE NOTE</p>
+                <p class="text-sm text-slate-700">
+                    The <span class="font-semibold text-orange-600">Lead Developers</span> and coordinators are the ones wiring Supabase, scoreboard, live events, and the Savvy bot you’re seeing across pages.
+                </p>
+                <p class="text-xs text-slate-500">
+                    If the site feels smooth — that’s them. If something breaks — that’s also them. ❤️
+                </p>
+            </div>
+        </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 md:px-6 pb-32 space-y-16 md:space-y-32">
+    <main class="relative z-10 max-w-7xl mx-auto px-4 md:px-6 pb-24 space-y-16 md:space-y-24">
 
-        <!-- SECTION 1: LEAD DEVELOPERS -->
-        <section>
-            <div class="flex items-center gap-3 mb-6 md:mb-10">
+        <!-- LEAD DEVELOPERS -->
+        <section id="lead-devs" class="fade-up" style="animation-delay:0.1s">
+            <div class="flex items-center gap-3 mb-3 md:mb-4">
                 <div class="h-1 w-8 md:w-12 bg-orange-500 rounded-full"></div>
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-800">Lead Developers</h2>
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-900">
+                    Lead Developers <span class="text-orange-500">/ Savvy Core</span>
+                </h2>
             </div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
-                <!-- Raihan Shiras -->
-                <div class="team-card rounded-2xl overflow-hidden p-3 md:p-6 text-center group">
-                    <div class="aspect-square rounded-xl overflow-hidden mb-3 bg-gray-100 mx-auto w-full max-w-[300px]">
-                        <!-- Restored Path -->
-                        <img src="assests/raihan.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                    </div>
-                    <h3 class="text-base md:text-xl font-bold text-gray-900 leading-tight">Raihan Shiras</h3>
-                    <p class="text-[10px] md:text-sm text-orange-500 font-medium uppercase tracking-wide mt-1">Lead Developer</p>
-                </div>
+            <p class="text-xs md:text-sm text-slate-500 mb-6">
+                These three are the reason Savvy Hunt looks, feels, and behaves like a proper live tech event.
+            </p>
 
-                <!-- Rohit Fernantez -->
-                <div class="team-card rounded-2xl overflow-hidden p-3 md:p-6 text-center group">
-                    <div class="aspect-square rounded-xl overflow-hidden mb-3 bg-gray-100 mx-auto w-full max-w-[300px]">
-                        <!-- Restored Path -->
-                        <img src="assests/rohit.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+                <!-- Raihan -->
+                <article class="dev-card p-5 md:p-6 lg:p-7">
+                    <div class="dev-tag">
+                        <span>CORE DEV</span>
                     </div>
-                    <h3 class="text-base md:text-xl font-bold text-gray-900 leading-tight">Rohit Fernantez</h3>
-                    <p class="text-[10px] md:text-sm text-orange-500 font-medium uppercase tracking-wide mt-1">Lead Developer</p>
-                </div>
+                    <div class="flex flex-col items-center text-center gap-3 pt-4">
+                        <div class="dev-avatar w-40 h-40 md:w-48 md:h-48">
+                            <div class="dev-avatar-inner w-full h-full">
+                                <img src="assests/raihan.jpg" class="w-full h-full object-cover" alt="Raihan Shiras">
+                            </div>
+                        </div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-orange-100 pill-label">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            Lead Developer
+                        
+                    </div>
+                </article>
 
-                <!-- Melvin Biju -->
-                <div class="team-card rounded-2xl overflow-hidden p-3 md:p-6 text-center group">
-                    <div class="aspect-square rounded-xl overflow-hidden mb-3 bg-gray-100 mx-auto w-full max-w-[300px]">
-                        <!-- Restored Path -->
-                        <img src="assests/Melvin1.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                <!-- Rohit -->
+                <article class="dev-card p-5 md:p-6 lg:p-7">
+                    <div class="dev-tag">
+                        <span>CORE DEV</span>
                     </div>
-                    <h3 class="text-base md:text-xl font-bold text-gray-900 leading-tight">Melvin Biju</h3>
-                    <p class="text-[10px] md:text-sm text-orange-500 font-medium uppercase tracking-wide mt-1">Lead Developer</p>
-                </div>
+                    <div class="flex flex-col items-center text-center gap-3 pt-4">
+                        <div class="dev-avatar w-40 h-40 md:w-48 md:h-48">
+                            <div class="dev-avatar-inner w-full h-full">
+                                <img src="assests/rohit.jpg" class="w-full h-full object-cover" alt="Rohit Fernantez">
+                            </div>
+                        </div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-orange-100 pill-label">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            Lead Developer
+                        </div>
+                        
+                </article>
+
+                <!-- Melvin -->
+                <article class="dev-card p-5 md:p-6 lg:p-7">
+                    <div class="dev-tag">
+                        <span>CORE DEV</span>
+                    </div>
+                    <div class="flex flex-col items-center text-center gap-3 pt-4">
+                        <div class="dev-avatar w-40 h-40 md:w-48 md:h-48">
+                            <div class="dev-avatar-inner w-full h-full">
+                                <img src="assests/Melvin1.jpg" class="w-full h-full object-cover" alt="Melvin Biju">
+                            </div>
+                        </div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-orange-100 pill-label">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            Lead Developer
+                        </div>
+                        
+                    </div>
+                </article>
             </div>
         </section>
 
-        <!-- SECTION 1.5: STUDENT COORDINATORS -->
-        <section>
-            <div class="flex items-center gap-3 mb-6 md:mb-10">
+        <!-- STUDENT COORDINATORS -->
+        <section id="student-coords" class="fade-up" style="animation-delay:0.15s">
+            <div class="flex items-center gap-3 mb-6 md:mb-8">
                 <div class="h-1 w-8 md:w-12 bg-teal-500 rounded-full"></div>
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-800">Student Coordinators</h2>
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-900">Student Coordinators</h2>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
-                <!-- Basil Imthiyas Adams -->
-                <div class="team-card rounded-2xl overflow-hidden p-3 md:p-6 text-center group border-t-4 border-teal-500">
-                    <div class="aspect-square rounded-full overflow-hidden mb-3 bg-gray-100 w-20 h-20 md:w-32 md:h-32 mx-auto border-4 border-white shadow-md">
-                        <!-- Restored Path -->
-                        <img src="assests/basil.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                <!-- Basil -->
+                <article class="team-card p-3 md:p-5 text-center group">
+                    <div class="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full overflow-hidden mb-3 bg-gray-100 border-4 border-white shadow-md">
+                        <img src="assests/basil.jpg" class="w-full h-full object-cover" alt="Basil Imthiyas Adams">
                     </div>
-                    <h3 class="text-sm md:text-xl font-bold text-gray-900 leading-tight">Basil Imthiyas Adams</h3>
-                    <p class="text-[10px] md:text-xs text-teal-600 font-bold uppercase tracking-widest mt-1">Coordinator</p>
-                </div>
+                    <h3 class="text-sm md:text-lg font-bold text-gray-900 leading-tight">Basil Imthiyas Adams</h3>
+                    <p class="text-[10px] md:text-xs text-teal-600 font-bold uppercase tracking-[0.18em] mt-1">Coordinator</p>
+                </article>
 
-                <!-- Febin Baiju -->
-                <div class="team-card rounded-2xl overflow-hidden p-3 md:p-6 text-center group border-t-4 border-teal-500">
-                    <div class="aspect-square rounded-full overflow-hidden mb-3 bg-gray-100 w-20 h-20 md:w-32 md:h-32 mx-auto border-4 border-white shadow-md">
-                        <img src="assests/febin.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                <!-- Febin -->
+                <article class="team-card p-3 md:p-5 text-center group">
+                    <div class="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full overflow-hidden mb-3 bg-gray-100 border-4 border-white shadow-md">
+                        <img src="assests/febin.jpg" class="w-full h-full object-cover" alt="Febin Baiju">
                     </div>
-                    <h3 class="text-sm md:text-xl font-bold text-gray-900 leading-tight">Febin Baiju</h3>
-                    <p class="text-[10px] md:text-xs text-teal-600 font-bold uppercase tracking-widest mt-1">Coordinator</p>
-                </div>
+                    <h3 class="text-sm md:text-lg font-bold text-gray-900 leading-tight">Febin Baiju</h3>
+                    <p class="text-[10px] md:text-xs text-teal-600 font-bold uppercase tracking-[0.18em] mt-1">Coordinator</p>
+                </article>
 
-                <!-- Jaison K.K -->
-                <div class="team-card rounded-2xl overflow-hidden p-3 md:p-6 text-center group border-t-4 border-teal-500">
-                    <div class="aspect-square rounded-full overflow-hidden mb-3 bg-gray-100 w-20 h-20 md:w-32 md:h-32 mx-auto border-4 border-white shadow-md">
-                        <img src="assests/jaison.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                <!-- Jaison -->
+                <article class="team-card p-3 md:p-5 text-center group">
+                    <div class="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full overflow-hidden mb-3 bg-gray-100 border-4 border-white shadow-md">
+                        <img src="assests/jaison.jpg" class="w-full h-full object-cover" alt="Jaison K.K">
                     </div>
-                    <h3 class="text-sm md:text-xl font-bold text-gray-900 leading-tight">Jaison K.K</h3>
-                    <p class="text-[10px] md:text-xs text-teal-600 font-bold uppercase tracking-widest mt-1">Coordinator</p>
-                </div>
+                    <h3 class="text-sm md:text-lg font-bold text-gray-900 leading-tight">Jaison K.K</h3>
+                    <p class="text-[10px] md:text-xs text-teal-600 font-bold uppercase tracking-[0.18em] mt-1">Coordinator</p>
+                </article>
             </div>
         </section>
 
-        <!-- SECTION 2: SCHOOL LEADERSHIP -->
-        <section>
-            <div class="flex items-center gap-3 mb-6 md:mb-10">
+        <!-- SCHOOL LEADERSHIP -->
+        <section id="leadership" class="fade-up" style="animation-delay:0.2s">
+            <div class="flex items-center gap-3 mb-6 md:mb-8">
                 <div class="h-1 w-8 md:w-12 bg-blue-500 rounded-full"></div>
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-800">School Leadership</h2>
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-900">School Leadership</h2>
             </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 md:gap-8 justify-center">
-                <!-- 1. President -->
-                <div class="team-card p-4 md:p-8 rounded-2xl text-center border-t-4 border-blue-500">
-                    <div class="w-20 h-20 md:w-32 md:h-32 mx-auto rounded-full bg-gray-200 mb-3 md:mb-6 overflow-hidden border-4 border-white shadow-lg">
-                        <!-- Restored Path -->
-                        <img src="assests/alfa.jpg" class="w-full h-full object-cover">
-                    </div>
-                    <h3 class="text-sm md:text-xl font-bold text-gray-900 mb-1 leading-tight">Mrs. ALFA MARY</h3>
-                    <p class="text-blue-600 font-bold uppercase text-[10px] md:text-xs tracking-widest">President</p>
-                </div>
+            <div class="bg-white/80 border border-orange-100 rounded-3xl shadow-soft p-5 md:p-8 lg:p-10">
+                <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
+                    <!-- President -->
+                    <article class="team-card p-4 md:p-5 rounded-2xl text-center border-t-4 border-blue-400 bg-white">
+                        <div class="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full bg-gray-200 mb-3 md:mb-4 overflow-hidden border-4 border-white shadow-lg">
+                            <img src="assests/alfa.jpg" class="w-full h-full object-cover" alt="Mrs. Alfa Mary">
+                        </div>
+                        <h3 class="text-xs md:text-base font-bold text-gray-900 mb-1 leading-tight">Mrs. ALFA MARY</h3>
+                        <p class="text-blue-600 font-bold uppercase text-[10px] md:text-xs tracking-[0.18em]">President</p>
+                    </article>
 
-                <!-- 2. School Chairman -->
-                <div class="team-card p-4 md:p-8 rounded-2xl text-center border-t-4 border-blue-500 transform lg:-translate-y-4">
-                    <div class="w-20 h-20 md:w-32 md:h-32 mx-auto rounded-full bg-gray-200 mb-3 md:mb-6 overflow-hidden border-4 border-white shadow-lg">
-                        <!-- Restored Path -->
-                        <img src="assests/chairman.jpg" class="w-full h-full object-cover">
-                    </div>
-                    <h3 class="text-sm md:text-xl font-bold text-gray-900 mb-1 leading-tight">Sir Dr. GEEVARGHESE YOHANNAN</h3>
-                    <p class="text-blue-600 font-bold uppercase text-[10px] md:text-xs tracking-widest">School Chairman</p>
-                </div>
+                    <!-- Chairman -->
+                    <article class="team-card p-4 md:p-5 rounded-2xl text-center border-t-4 border-blue-400 bg-white lg:-translate-y-2">
+                        <div class="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full bg-gray-200 mb-3 md:mb-4 overflow-hidden border-4 border-white shadow-lg">
+                            <img src="assests/chairman.jpg" class="w-full h-full object-cover" alt="Sir Dr. Geevargheese Yohannan">
+                        </div>
+                        <h3 class="text-xs md:text-base font-bold text-gray-900 mb-1 leading-tight">Sir Dr. GEEVARGHESE YOHANNAN</h3>
+                        <p class="text-blue-600 font-bold uppercase text-[10px] md:text-xs tracking-[0.18em]">School Chairman</p>
+                    </article>
 
-                <!-- 3. Principal -->
-                <div class="team-card p-4 md:p-8 rounded-2xl text-center border-t-4 border-blue-500 transform lg:-translate-y-4">
-                    <div class="w-20 h-20 md:w-32 md:h-32 mx-auto rounded-full bg-gray-200 mb-3 md:mb-6 overflow-hidden border-4 border-white shadow-lg">
-                        <!-- Restored Path -->
-                        <img src="assests/julie.jpg" class="w-full h-full object-cover">
-                    </div>
-                    <h3 class="text-sm md:text-xl font-bold text-gray-900 mb-1 leading-tight">Mrs. JULIE KOSHY</h3>
-                    <p class="text-blue-600 font-bold uppercase text-[10px] md:text-xs tracking-widest">Principal</p>
-                </div>
+                    <!-- Principal -->
+                    <article class="team-card p-4 md:p-5 rounded-2xl text-center border-t-4 border-blue-400 bg-white lg:-translate-y-2">
+                        <div class="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full bg-gray-200 mb-3 md:mb-4 overflow-hidden border-4 border-white shadow-lg">
+                            <img src="assests/julie.jpg" class="w-full h-full object-cover" alt="Mrs. Julie Koshy">
+                        </div>
+                        <h3 class="text-xs md:text-base font-bold text-gray-900 mb-1 leading-tight">Mrs. JULIE KOSHY</h3>
+                        <p class="text-blue-600 font-bold uppercase text-[10px] md:text-xs tracking-[0.18em]">Principal</p>
+                    </article>
 
-                <!-- 4. Vice President -->
-                <div class="team-card p-4 md:p-8 rounded-2xl text-center border-t-4 border-blue-500">
-                    <div class="w-20 h-20 md:w-32 md:h-32 mx-auto rounded-full bg-gray-200 mb-3 md:mb-6 overflow-hidden border-4 border-white shadow-lg">
-                        <!-- Restored Path -->
-                        <img src="assests/jessy.jpg" class="w-full h-full object-cover">
-                    </div>
-                    <h3 class="text-sm md:text-xl font-bold text-gray-900 mb-1 leading-tight">Mrs. JESSY VINU</h3>
-                    <p class="text-blue-600 font-bold uppercase text-[10px] md:text-xs tracking-widest">Vice Principal</p>
-                </div>
+                    <!-- Vice Principal -->
+                    <article class="team-card p-4 md:p-5 rounded-2xl text-center border-t-4 border-blue-400 bg-white">
+                        <div class="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full bg-gray-200 mb-3 md:mb-4 overflow-hidden border-4 border-white shadow-lg">
+                            <img src="assests/jessy.jpg" class="w-full h-full object-cover" alt="Mrs. Jessy Vinu">
+                        </div>
+                        <h3 class="text-xs md:text-base font-bold text-gray-900 mb-1 leading-tight">Mrs. JESSY VINU</h3>
+                        <p class="text-blue-600 font-bold uppercase text-[10px] md:text-xs tracking-[0.18em]">Vice Principal</p>
+                    </article>
 
-                <!-- 5. vice president -->
-                <div class="team-card p-4 md:p-8 rounded-2xl text-center border-t-4 border-blue-500">
-                    <div class="w-20 h-20 md:w-32 md:h-32 mx-auto rounded-full bg-gray-200 mb-3 md:mb-6 overflow-hidden border-4 border-white shadow-lg">
-                        <img src="assests/sunil.jpg" class="w-full h-full object-cover">
-                    </div>
-                    <h3 class="text-sm md:text-xl font-bold text-gray-900 mb-1 leading-tight">Mr. SUNIL KUMAR</h3>
-                    <p class="text-blue-600 font-bold uppercase text-[10px] md:text-xs tracking-widest">Vice President</p>
+                    <!-- Vice President -->
+                    <article class="team-card p-4 md:p-5 rounded-2xl text-center border-t-4 border-blue-400 bg-white">
+                        <div class="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full bg-gray-200 mb-3 md:mb-4 overflow-hidden border-4 border-white shadow-lg">
+                            <img src="assests/sunil.jpg" class="w-full h-full object-cover" alt="Mr. Sunil Kumar">
+                        </div>
+                        <h3 class="text-xs md:text-base font-bold text-gray-900 mb-1 leading-tight">Mr. SUNIL KUMAR</h3>
+                        <p class="text-blue-600 font-bold uppercase text-[10px] md:text-xs tracking-[0.18em]">Vice President</p>
+                    </article>
                 </div>
             </div>
         </section>
 
-        <!-- SECTION 3: JURY & FACULTY COORDINATORS -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16">
-            
-            <!-- Jury of Appeal -->
-            <section>
-                <div class="flex items-center gap-3 mb-6">
+        <!-- JURY + FACULTY -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10">
+
+            <!-- Jury -->
+            <section id="jury" class="fade-up" style="animation-delay:0.25s">
+                <div class="flex items-center gap-3 mb-5">
                     <div class="h-1 w-8 bg-purple-500 rounded-full"></div>
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">Jury of Appeal</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-900">Jury of Appeal</h2>
                 </div>
-                <div class="bg-white rounded-2xl p-4 md:p-8 border border-purple-100 shadow-sm">
-                    <ul class="space-y-4">
-                        <li class="flex items-center gap-4 p-3 hover:bg-purple-50 rounded-lg transition">
-                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">1</div>
-                            <p class="font-bold text-lg text-gray-800">Mrs. Julie Koshy</p>
+                <div class="bg-white border border-purple-100 rounded-2xl shadow-soft p-4 md:p-6">
+                    <ul class="space-y-3 md:space-y-4">
+                        <li class="flex items-center gap-4 p-3 hover:bg-purple-50 rounded-xl transition">
+                            <div class="w-9 h-9 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold text-sm">1</div>
+                            <p class="font-semibold text-gray-900 text-sm md:text-base">Mrs. Julie Koshy</p>
                         </li>
-                        <li class="flex items-center gap-4 p-3 hover:bg-purple-50 rounded-lg transition">
-                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">2</div>
-                            <p class="font-bold text-lg text-gray-800">Mrs. Krishna P Nair</p>
+                        <li class="flex items-center gap-4 p-3 hover:bg-purple-50 rounded-xl transition">
+                            <div class="w-9 h-9 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold text-sm">2</div>
+                            <p class="font-semibold text-gray-900 text-sm md:text-base">Mrs. Krishna P Nair</p>
                         </li>
-                        <li class="flex items-center gap-4 p-3 hover:bg-purple-50 rounded-lg transition">
-                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">3</div>
-                            <p class="font-bold text-lg text-gray-800">Mrs. Beena Jacob</p>
+                        <li class="flex items-center gap-4 p-3 hover:bg-purple-50 rounded-xl transition">
+                            <div class="w-9 h-9 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold text-sm">3</div>
+                            <p class="font-semibold text-gray-900 text-sm md:text-base">Mrs. Beena Jacob</p>
                         </li>
-                        <li class="flex items-center gap-4 p-3 hover:bg-purple-50 rounded-lg transition">
-                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">4</div>
-                            <p class="font-bold text-lg text-gray-800">Mrs. Uma V</p>
+                        <li class="flex items-center gap-4 p-3 hover:bg-purple-50 rounded-xl transition">
+                            <div class="w-9 h-9 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold text-sm">4</div>
+                            <p class="font-semibold text-gray-900 text-sm md:text-base">Mrs. Uma V</p>
                         </li>
                     </ul>
                 </div>
             </section>
 
-            <!-- Event Coordinators (Faculty) -->
-            <section>
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="h-1 w-8 bg-green-500 rounded-full"></div>
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">Faculty Event Coordinators</h2>
+            <!-- Faculty -->
+            <section id="faculty" class="fade-up" style="animation-delay:0.3s">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="h-1 w-8 bg-emerald-500 rounded-full"></div>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-900">Faculty Event Coordinators</h2>
                 </div>
-                <div class="bg-white rounded-2xl p-4 md:p-8 border border-green-100 shadow-sm">
+                <div class="bg-white border border-emerald-100 rounded-2xl shadow-soft p-4 md:p-6">
                     <div class="grid grid-cols-2 gap-3 md:gap-4">
-                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
-                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">1</div>
-                            <p class="font-bold text-xs md:text-base text-gray-800">Mrs. Jessy Vinu</p>
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-emerald-50 rounded-lg transition">
+                            <div class="w-6 h-6 md:w-7 md:h-7 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold text-[11px]">1</div>
+                            <p class="font-semibold text-[11px] md:text-sm text-gray-900">Mrs. Jessy Vinu</p>
                         </div>
-                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
-                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">2</div>
-                            <p class="font-bold text-xs md:text-base text-gray-800">Mrs. Nisha Pillai</p>
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-emerald-50 rounded-lg transition">
+                            <div class="w-6 h-6 md:w-7 md:h-7 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold text-[11px]">2</div>
+                            <p class="font-semibold text-[11px] md:text-sm text-gray-900">Mrs. Nisha Pillai</p>
                         </div>
-                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
-                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">3</div>
-                            <p class="font-bold text-xs md:text-base text-gray-800">Rachel Thomas</p>
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-emerald-50 rounded-lg transition">
+                            <div class="w-6 h-6 md:w-7 md:h-7 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold text-[11px]">3</div>
+                            <p class="font-semibold text-[11px] md:text-sm text-gray-900">Rachel Thomas</p>
                         </div>
-                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
-                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">4</div>
-                            <p class="font-bold text-xs md:text-base text-gray-800">Mrs. Soumya R</p>
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-emerald-50 rounded-lg transition">
+                            <div class="w-6 h-6 md:w-7 md:h-7 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold text-[11px]">4</div>
+                            <p class="font-semibold text-[11px] md:text-sm text-gray-900">Mrs. Soumya R</p>
                         </div>
-                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
-                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">5</div>
-                            <p class="font-bold text-xs md:text-base text-gray-800">Mrs. Radhamaniamma</p>
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-emerald-50 rounded-lg transition">
+                            <div class="w-6 h-6 md:w-7 md:h-7 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold text-[11px]">5</div>
+                            <p class="font-semibold text-[11px] md:text-sm text-gray-900">Mrs. Radhamaniamma</p>
                         </div>
-                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
-                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">6</div>
-                            <p class="font-bold text-xs md:text-base text-gray-800">Mr Daniel V Mathew</p>
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-emerald-50 rounded-lg transition">
+                            <div class="w-6 h-6 md:w-7 md:h-7 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold text-[11px]">6</div>
+                            <p class="font-semibold text-[11px] md:text-sm text-gray-900">Mr Daniel V Mathew</p>
                         </div>
-                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
-                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">7</div>
-                            <p class="font-bold text-xs md:text-base text-gray-800">Mrs. Preetha G S</p>
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-emerald-50 rounded-lg transition">
+                            <div class="w-6 h-6 md:w-7 md:h-7 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold text-[11px]">7</div>
+                            <p class="font-semibold text-[11px] md:text-sm text-gray-900">Mrs. Preetha G S</p>
                         </div>
-                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-green-50 rounded-lg transition bg-green-50/50 md:bg-transparent">
-                            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xs md:text-sm">8</div>
-                            <p class="font-bold text-xs md:text-base text-gray-800">Mrs. Devu R Unnithan</p>
+                        <div class="flex items-center gap-2 md:gap-3 p-2 hover:bg-emerald-50 rounded-lg transition">
+                            <div class="w-6 h-6 md:w-7 md:h-7 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold text-[11px]">8</div>
+                            <p class="font-semibold text-[11px] md:text-sm text-gray-900">Mrs. Devu R Unnithan</p>
                         </div>
                     </div>
                 </div>
             </section>
+
         </div>
 
     </main>
 
-    <footer class="bg-gray-900 text-gray-400 py-8 md:py-12 text-center text-sm">
-        <p>&copy; 2025 Savvy Hunt. Organized by the Student Council.</p>
+    <!-- FOOTER (match index, no lock) -->
+    <footer class="bg-slate-950 text-slate-400 pt-16 pb-10 relative z-10" style="border-top-left-radius: 3rem; border-top-right-radius: 3rem;">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h3 class="text-3xl font-bold text-white mb-2 tracking-tight">
+                Savvy Hunt <span class="text-orange-500">2025</span>
+            </h3>
+            <p class="text-sm text-slate-500 mb-1">&copy; 2025 Savvy Hunt. Organized by the Student Council.</p>
+            <p class="text-xs text-slate-500/80">Crafted by the Dev Core & Coordinators of Savvy Hunt.</p>
+        </div>
     </footer>
 
+    <script>
+        // Savvy Bot logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const botContainer = document.getElementById('savvy-bot-container');
+            const botBody = document.getElementById('bot-body');
+            const botEye = document.getElementById('bot-eye');
+            const botPupil = document.getElementById('bot-pupil');
+            const botBubble = document.getElementById('bot-bubble');
+
+            if (!botContainer || !botBody || !botEye || !botPupil || !botBubble) return;
+
+            let isSleeping = false;
+            let idleTimer;
+            let lastScrollY = 0;
+
+            function showBubble(text) {
+                botBubble.textContent = text;
+                botBubble.classList.add('show');
+                setTimeout(() => botBubble.classList.remove('show'), 2600);
+            }
+
+            window.savvySay = function(text) {
+                if (isSleeping) wakeUp();
+                showBubble(text);
+            };
+
+            function wakeUp() {
+                if(isSleeping) {
+                    isSleeping = false;
+                    botEye.classList.remove('sleeping');
+                }
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(goToSleep, 10000);
+            }
+
+            function goToSleep() {
+                isSleeping = true;
+                botEye.classList.add('sleeping');
+                showBubble("Going AFK for a bit 😴");
+            }
+
+            function triggerScan() {
+                botBody.classList.add('scanning');
+                showBubble("Scanning organizers... 🔎");
+                setTimeout(() => botBody.classList.remove('scanning'), 2200);
+            }
+
+            botContainer.addEventListener('click', () => {
+                if(isSleeping) { wakeUp(); showBubble("Back online ⚡"); return; }
+                botBody.style.transform = "scale(0.9)";
+                setTimeout(() => botBody.style.transform = "scale(1)", 150);
+                const clickPhrases = [
+                    "Devs looking clean 😎",
+                    "This team is stacked 💪",
+                    "Respect the organizers 🧡",
+                    "No bugs… for now 👀"
+                ];
+                const txt = clickPhrases[Math.floor(Math.random() * clickPhrases.length)];
+                showBubble(txt);
+                triggerScan();
+            });
+
+            function pickNewPosition() {
+                if(isSleeping || botBody.classList.contains('scanning')) return;
+                // Keep bot in bottom-right region, just subtle drift
+                const baseX = window.innerWidth - 90;
+                const baseY = window.innerHeight - 90;
+                const x = baseX + (Math.random() * 20 - 10);
+                const y = baseY + (Math.random() * 10 - 5);
+                botContainer.style.transform = `translate(${x}px, ${y}px)`;
+            }
+
+            setTimeout(pickNewPosition, 400);
+            setInterval(pickNewPosition, 11000);
+
+            document.addEventListener('mousemove', (e) => {
+                wakeUp();
+                if(!isSleeping && !botBody.classList.contains('scanning')) {
+                    const rect = botEye.getBoundingClientRect();
+                    const cx = rect.left + rect.width/2;
+                    const cy = rect.top + rect.height/2;
+                    const angle = Math.atan2(e.clientY - cy, e.clientX - cx);
+                    const dist = Math.min(4, Math.hypot(e.clientX - cx, e.clientY - cy));
+                    botPupil.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
+                }
+            });
+
+            window.addEventListener('scroll', () => {
+                wakeUp();
+                const st = window.scrollY;
+                if (Math.abs(st - lastScrollY) > 40) {
+                    botBody.classList.add('windblown');
+                } else {
+                    botBody.classList.remove('windblown');
+                }
+                lastScrollY = st;
+            });
+        });
+    </script>
 </body>
 </html>
