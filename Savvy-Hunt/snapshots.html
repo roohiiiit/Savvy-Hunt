@@ -5,34 +5,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Savvy Hunt Snapshots</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Match main site font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+            font-family: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: linear-gradient(145deg,#FFF7ED 0%,#FFEEDD 40%,#FFF4E5 70%);
+            background-attachment: fixed;
+            color: #111827;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* --- PINTEREST MASONRY LAYOUT --- */
+        /* Centered big background text */
+        .bg-parallax-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20vh;
+            font-weight: 900;
+            color: rgba(234, 88, 12, 0.06);
+            white-space: nowrap;
+            pointer-events: none;
+            user-select: none;
+            z-index: 0;
+            letter-spacing: 0.08em;
+        }
+
+        /* HEADER */
+        header.snap-hero {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            padding-top: 2.5rem;
+            padding-bottom: 3rem;
+            background: linear-gradient(120deg,#ff7a1a,#ff5e00,#ea580c,#b63a00);
+            background-size: 200% 200%;
+            animation: heroGradient 8s ease infinite;
+            box-shadow: 0 25px 50px -15px rgba(227,72,0,0.7);
+            border-bottom-left-radius: 3rem;
+            border-bottom-right-radius: 3rem;
+            z-index: 5;
+        }
+
+        @keyframes heroGradient {
+            0%{background-position:0% 50%;}
+            50%{background-position:100% 50%;}
+            100%{background-position:0% 50%;}
+        }
+
+        header.snap-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% -10%, rgba(255,255,255,0.4) 0, transparent 55%),
+                radial-gradient(circle at 80% 0%, rgba(254,243,199,0.45) 0, transparent 60%);
+            pointer-events: none;
+        }
+
+        .snap-hero-inner {
+            position: relative;
+            z-index: 2;
+            max-width: 64rem;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            text-align: center;
+        }
+
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .glass-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-1px);
+        }
+
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Masonry layout */
         .masonry-grid {
-            column-count: 2; /* Mobile Default */
+            column-count: 2;
             column-gap: 10px;
         }
-
         @media (min-width: 768px) {
             .masonry-grid {
                 column-count: 3;
                 column-gap: 20px;
             }
         }
-
         @media (min-width: 1280px) {
             .masonry-grid {
                 column-count: 4;
             }
         }
 
-        /* Image Card */
         .pin-card {
             break-inside: avoid;
             -webkit-column-break-inside: avoid;
@@ -44,6 +126,11 @@
             position: relative;
             width: 100%;
             display: inline-block;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .pin-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(15,23,42,0.15);
         }
 
         @media (min-width: 768px) {
@@ -60,26 +147,6 @@
             display: block;
         }
 
-        /* --- ANIMATIONS --- */
-        @keyframes gradient-flow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .animate-gradient-bg {
-            background: linear-gradient(-45deg, #ea580c, #c2410c, #f59e0b, #ea580c);
-            background-size: 400% 400%;
-            animation: gradient-flow 15s ease infinite;
-        }
-
-        .glass-btn {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
-        }
-
         /* Skeleton Loader */
         .skeleton {
             background: linear-gradient(90deg, #e5e7eb 25%, #d1d5db 50%, #e5e7eb 75%);
@@ -90,19 +157,199 @@
             margin-bottom: 10px;
             display: inline-block;
         }
-
         @keyframes loading {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+
+        /* ===== SAVVY BOT (same as schedule) ===== */
+        #savvy-bot-container {
+            position: fixed;
+            z-index: 110;
+            top: 0;
+            left: 0;
+            width: 60px;
+            height: 60px;
+            transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: auto;
+            cursor: pointer;
+        }
+        .bot-body {
+            width: 48px;
+            height: 48px;
+            margin: 6px;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #fff7ed);
+            border-radius: 50%;
+            box-shadow:
+                inset -3px -3px 8px rgba(234, 88, 12, 0.18),
+                0 8px 20px rgba(0,0,0,0.18),
+                0 0 0 2px rgba(255,255,255,0.9);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: floatOrganic 6s ease-in-out infinite;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .bot-body:active { transform: scale(0.9); }
+        .bot-body.windblown { transform: rotate(-10deg) translateX(-4px); }
+
+        .bot-cheek {
+            position: absolute;
+            top: 28px;
+            width: 6px;
+            height: 4px;
+            background: #fdba74;
+            border-radius: 50%;
+            opacity: 0.8;
+            filter: blur(1px);
+            z-index: 2;
+        }
+        .cheek-left { left: 8px; }
+        .cheek-right { right: 8px; }
+
+        .bot-eye {
+            width: 32px;
+            height: 18px;
+            background: #0f172a;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #ffb46b;
+            box-shadow: inset 0 0 4px #000;
+            z-index: 3;
+            transition: all 0.2s ease;
+        }
+        .bot-pupil {
+            width: 10px;
+            height: 10px;
+            background: #f17500; /* default no glow */
+            border-radius: 50%;
+            position: absolute;
+            top: 4px;
+            left: 11px;
+            box-shadow: none;
+            transition: transform 0.1s, box-shadow 0.15s ease, background 0.15s ease;
+        }
+        .bot-body.scanning .bot-pupil {
+            background: #ff5e00;
+            box-shadow: 0 0 8px #ff5e00;
+        }
+
+        .bot-eye.sleeping {
+            height: 3px;
+            margin-top: 6px;
+            background: #334155;
+            border-color: #475569;
+        }
+        .bot-eye.sleeping .bot-pupil { opacity: 0; }
+
+        .laser-cone {
+            position: absolute;
+            top: 21px;
+            left: 50%;
+            transform: translateX(-50%) perspective(300px) rotateX(18deg);
+            width: 42px;
+            height: 0;
+            background: linear-gradient(to bottom, rgba(255,98,0,0.85) 0%,rgba(255,98,0,0.05) 100%);
+            clip-path: polygon(40% 0, 60% 0, 100% 100%, 0% 100%);
+            opacity: 0;
+            z-index: 50;
+            pointer-events: none;
+            transition: height 0.3s ease-out, opacity 0.3s ease-out;
+            filter: drop-shadow(0 0 6px rgba(255,98,0,1));
+            mix-blend-mode: hard-light;
+        }
+    
+        .bot-antenna {
+            position: absolute;
+            top: -10px;
+            left: 22px;
+            width: 3px;
+            height: 10px;
+            background: #94a3b8;
+            z-index: -1;
+        }
+        .bot-antenna::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -2.5px;
+            width: 8px;
+            height: 8px;
+            background: #f97316;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #f97316;
+        }
+
+        .bot-bubble {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%) scale(0) translateY(10px);
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(8px);
+            padding: 8px 14px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            font-size: 11px;
+            font-weight: 700;
+            color: #c2410c;
+            white-space: nowrap;
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+            border: 1px solid white;
+        }
+        .bot-bubble.show {
+            opacity: 1;
+            transform: translateX(-50%) scale(1) translateY(0);
+        }
+        .bot-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px 5px 0;
+            border-style: solid;
+            border-color: #fff transparent transparent transparent;
+        }
+
+        @keyframes floatOrganic {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(0, -8px) rotate(2deg); }
+            66% { transform: translate(0, -4px) rotate(-2deg); }
+        }
+        @keyframes scanPulse {
+            0% { opacity: 0.7; transform: scaleX(1); }
+            100% { opacity: 1; transform: scaleX(1.2); }
+        }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="min-h-screen">
 
-    <div class="relative animate-gradient-bg py-16 px-4 text-center shadow-2xl mb-8 overflow-hidden">
-        <div class="relative z-10 flex flex-col items-center">
+    <div class="bg-parallax-text">SNAPSHOTS</div>
 
-            <a href="index.html" class="glass-btn text-white font-bold text-sm px-6 py-2.5 rounded-full mb-6 inline-flex items-center gap-2 hover:bg-white/30">
+    <!-- Savvy Bot -->
+    <div id="savvy-bot-container" style="transform: translate(80vw, 75vh);">
+        <div class="bot-bubble" id="bot-bubble">Checking your snaps 📸</div>
+        <div class="bot-body" id="bot-body">
+            <div class="laser-cone"></div>
+            <div class="bot-cheek cheek-left"></div>
+            <div class="bot-cheek cheek-right"></div>
+            <div class="bot-antenna"></div>
+            <div class="bot-eye" id="bot-eye">
+                <div class="bot-pupil" id="bot-pupil"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="snap-hero mb-8 shadow-2xl">
+        <div class="snap-hero-inner flex flex-col items-center">
+
+            <a href="index.html" class="glass-btn text-white font-bold text-sm px-6 py-2.5 rounded-full mb-6 inline-flex items-center gap-2">
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -112,25 +359,21 @@
             <h1 class="text-5xl md:text-7xl font-black text-white mb-3 drop-shadow-md tracking-tight">
                 Snapshots 📸
             </h1>
-            <p class="text-lg text-orange-50 font-medium opacity-90 mb-8">Live uploads from the event</p>
+            <p class="text-lg text-orange-50 font-medium opacity-90 mb-7">
+                Live uploads from the event
+            </p>
 
             <a href="https://drive.google.com/drive/folders/1rb1TuedcIMvP8_wst0VBeIjenopEO-w9?usp=sharing" 
-   target="_blank"
-   class="inline-flex items-center gap-2 bg-white text-orange-600 font-bold px-6 py-3 rounded-full shadow-xl hover:bg-gray-50 hover:scale-105 transition-transform duration-200 text-sm md:text-base">
-    
-    <svg class="w-5 h-5" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
-        <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.9 2.5 3.2 3.3l28.9-50-3.85-6.65c-.8-1.4-1.9-2.5-3.2-3.3l-28.9 50z" fill="#0066da"/>
-        <path d="m43.65 25 -28.9 50h33.5l28.9-50h-33.5z" fill="#00ac47"/>
-        <path d="m73.55 76.8c1.3-.8 2.4-1.9 3.2-3.3l10.55-18.2c.8-1.4 .8-3 0-4.4l-28.9-50h-6.7l28.9 50c.8 1.4 .8 3 0 4.4l-7.65 13.25z" fill="#ea4335"/>
-        <path d="m43.65 25 13.8-23.8c-.8-1.4-2.4-1.9-3.2-3.3l-10.55-18.2c-.8-1.4-2.4-1.9-4-1.9h-21.1l25.1 47.2z" fill="#ffba00"/>
-    </svg>
-    
-    Open in Google Drive ↗
-</a>
+               target="_blank"
+               class="inline-flex items-center gap-2 bg-white text-orange-600 font-bold px-6 py-3 rounded-full shadow-xl hover:bg-gray-50 hover:scale-105 transition-transform duration-200 text-sm md:text-base">
+               
+                Open in Google Drive 
+            </a>
         </div>
-    </div>
+    </header>
 
-    <div class="max-w-7xl mx-auto px-2 pb-20">
+    <!-- MAIN CONTENT -->
+    <div class="max-w-7xl mx-auto px-2 pb-20 relative z-10">
 
         <div id="loading" class="masonry-grid">
             <div class="skeleton h-64"></div>
@@ -146,14 +389,21 @@
         <div id="error-msg" class="hidden text-center py-20 text-gray-500">
             <p>Could not load images. <a href="#" id="fallback-link" class="text-blue-500 underline">View directly on Drive</a></p>
         </div>
-
     </div>
 
-    <script>
-        // ⚠️ PASTE YOUR APPS SCRIPT WEB APP URL HERE ⚠️
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdY84hvM0iAoJtymXFhSIXEcIgIQ79IZMBbgUcgtKuemZQBoCDTzn2Tzn_rYDrx2ap/exec';
+    <!-- FOOTER (same as index, minus lock) -->
+    <footer class="bg-slate-950 text-slate-400 pt-20 pb-10 relative z-10" style="border-top-left-radius: 3rem; border-top-right-radius: 3rem;">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h3 class="text-3xl font-bold text-white mb-2 tracking-tight">
+                Savvy Hunt <span class="text-orange-500">2025</span>
+            </h3>
+            <p class="text-sm text-slate-500 mb-2">&copy; 2025 Savvy Hunt.</p>
+        </div>
+    </footer>
 
-        // ⚠️ PASTE YOUR DRIVE LINK HERE TOO (Fallback) ⚠️
+    <script>
+        // Google Apps Script endpoint & Drive link
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdY84hvM0iAoJtymXFhSIXEcIgIQ79IZMBbgUcgtKuemZQBoCDTzn2Tzn_rYDrx2ap/exec';
         const DRIVE_LINK = 'https://drive.google.com/drive/folders/1rb1TuedcIMvP8_wst0VBeIjenopEO-w9?usp=sharing';
 
         const gallery = document.getElementById('gallery');
@@ -174,13 +424,16 @@
                     loading.classList.add('hidden');
                     errorMsg.innerHTML = "<p>No photos found yet.</p>";
                     errorMsg.classList.remove('hidden');
+                    if (window.savvySay) window.savvySay("No photos yet 😶");
                     return;
                 }
                 renderImages(data);
+                if (window.savvySay) window.savvySay(`Loaded ${data.length} snaps ✅`);
             } catch (error) {
                 console.error('Error:', error);
                 loading.classList.add('hidden');
                 errorMsg.classList.remove('hidden');
+                if (window.savvySay) window.savvySay("Failed to load snaps ⚠️");
             }
         }
 
@@ -224,6 +477,115 @@
         }
 
         fetchImages();
+
+        /* ===== SAVVY BOT LOGIC ===== */
+        document.addEventListener('DOMContentLoaded', () => {
+            const botContainer = document.getElementById('savvy-bot-container');
+            const botBody = document.getElementById('bot-body');
+            const botEye = document.getElementById('bot-eye');
+            const botPupil = document.getElementById('bot-pupil');
+            const botBubble = document.getElementById('bot-bubble');
+
+            if (!botContainer || !botBody || !botEye || !botPupil || !botBubble) return;
+
+            let isSleeping = false;
+            let idleTimer;
+            let lastScrollY = 0;
+
+            function showBubble(text) {
+                botBubble.textContent = text;
+                botBubble.classList.add('show');
+                setTimeout(() => botBubble.classList.remove('show'), 2500);
+            }
+
+            window.savvySay = function(text) {
+                if (isSleeping) wakeUp();
+                showBubble(text);
+            };
+
+            function wakeUp() {
+                if(isSleeping) {
+                    isSleeping = false;
+                    botEye.classList.remove('sleeping');
+                }
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(goToSleep, 10000);
+            }
+
+            function goToSleep() {
+                isSleeping = true;
+                botEye.classList.add('sleeping');
+                showBubble("Power nap… 😴");
+            }
+
+            function triggerScan() {
+                botBody.classList.add('scanning');
+                showBubble("Scanning gallery... 🔎");
+                setTimeout(() => botBody.classList.remove('scanning'), 2200);
+            }
+
+            function pickNewPosition() {
+                if(isSleeping || botBody.classList.contains('scanning')) return;
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                const pad = 60; 
+                const botSize = 60;
+
+                const zones = [
+                    {x: w - pad - botSize, y: h * 0.7},
+                    {x: pad, y: h * 0.7},
+                    {x: w - pad - botSize, y: h * 0.3},
+                    {x: pad, y: h * 0.3}
+                ];
+                const choice = zones[Math.floor(Math.random() * zones.length)];
+                const x = choice.x + (Math.random() * 20 - 10);
+                const y = choice.y + (Math.random() * 20 - 10);
+                botContainer.style.transform = `translate(${x}px, ${y}px)`;
+
+                if(Math.random() > 0.7) setTimeout(triggerScan, 2500);
+            }
+
+            setTimeout(pickNewPosition, 400);
+            setInterval(pickNewPosition, 11000);
+
+            botContainer.addEventListener('click', () => {
+                if(isSleeping) { wakeUp(); showBubble("Back online ⚡"); return; }
+                botBody.style.transform = "scale(0.9)";
+                setTimeout(() => botBody.style.transform = "scale(1)", 150);
+                const clickPhrases = [
+                    "Nice shot 😎",
+                    "Angles on point 📐",
+                    "Good vibes only ✨",
+                    "Who took that one? 🔥"
+                ];
+                const txt = clickPhrases[Math.floor(Math.random() * clickPhrases.length)];
+                showBubble(txt);
+                triggerScan();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                wakeUp();
+                if(!isSleeping && !botBody.classList.contains('scanning')) {
+                    const rect = botEye.getBoundingClientRect();
+                    const cx = rect.left + rect.width/2;
+                    const cy = rect.top + rect.height/2;
+                    const angle = Math.atan2(e.clientY - cy, e.clientX - cx);
+                    const dist = Math.min(4, Math.hypot(e.clientX - cx, e.clientY - cy));
+                    botPupil.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
+                }
+            });
+
+            window.addEventListener('scroll', () => {
+                wakeUp();
+                const st = window.scrollY;
+                if (Math.abs(st - lastScrollY) > 40) {
+                    botBody.classList.add('windblown');
+                } else {
+                    botBody.classList.remove('windblown');
+                }
+                lastScrollY = st;
+            });
+        });
     </script>
 </body>
 </html>
