@@ -7,139 +7,177 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Match index font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
-
+/* ===== SOFT ORANGISH BACKGROUND (not full orange) ===== */
         body {
-            font-family: 'Poppins', sans-serif;
-            /* Subtle gradient background */
-            background: radial-gradient(circle at 50% 0%, #fff7ed, #f3f4f6 60%); 
-            color: #111827;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            overflow-x: hidden;
+            font-family: "Plus Jakarta Sans", system-ui;
+            background: linear-gradient(145deg, #FFF7ED 0%, #FFEEDD 40%, #FFF4E5 70%);
+            background-attachment: fixed;
         }
 
-        /* --- NEW SEXY FLOATING HEADER --- */
-        .header-wrapper {
-            padding: 20px 20px 0 20px;
-            display: flex;
-            justify-content: center;
+
+        /* ===== CENTERED BIG BACKGROUND TEXT ===== */
+        .bg-parallax-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 22vh;
+            font-weight: 900;
+            color: rgba(234, 88, 12, 0.06); /* Very subtle orange */
+            white-space: nowrap;
+            pointer-events: none;
+            user-select: none;
+            z-index: 0;
         }
 
-        .header {
-            width: 100%;
-            max-width: 1000px; /* Compact width for the "Island" look */
-            /* Rich Animated Gradient */
-            background: linear-gradient(120deg, #fb923c, #ea580c, #c2410c);
-            background-size: 200% 200%;
-            animation: gradient-flow 8s ease infinite;
-            
-            border-radius: 30px; /* Pill shape */
-            padding: 40px 20px;
-            text-align: center;
+
+        /* ===== FULL-WIDTH HEADER ===== */
+        header.schedule-hero {
             position: relative;
-            z-index: 10;
-            
-            /* Deep Glowing Shadow */
-            box-shadow: 
-                0 20px 40px -10px rgba(234, 88, 12, 0.5),
-                0 0 0 1px rgba(255,255,255,0.2) inset;
+            width: 100%;
+            overflow: hidden;
+            padding-top: 2.5rem;
+            padding-bottom: 3.5rem;
+            background: linear-gradient(120deg,#ff7a1a,#ff5e00,#ea580c,#b63a00);
+            background-size: 200% 200%;
+            animation: heroGradient 8s ease infinite;
+            border-bottom-left-radius: 3rem;
+            border-bottom-right-radius: 3rem;
+            box-shadow: 0 25px 50px -15px rgba(227,72,0,0.7);
+            z-index: 5;
         }
 
-        @keyframes gradient-flow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        @keyframes heroGradient {
+            0%{background-position:0% 50%;}
+            50%{background-position:100% 50%;}
+            100%{background-position:0% 50%;}
         }
 
-        .header h1 { 
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2); 
-            letter-spacing: -1px;
-            font-size: 2.5rem;
-            line-height: 1.2;
+        header.schedule-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% -10%, rgba(255, 255, 255, 0.4) 0, transparent 55%),
+                radial-gradient(circle at 80% 0%, rgba(254, 243, 199, 0.45) 0, transparent 60%);
+            pointer-events: none;
         }
 
-        /* --- NEW SEARCH BAR STYLE --- */
+        .schedule-hero-inner {
+            position: relative;
+            z-index: 2;
+            max-width: 64rem;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            text-align: center;
+        }
+
+        .back-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #fffbeb;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255,255,255,0.6);
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .back-pill:hover {
+            background: #fefce8;
+            color: #c2410c;
+            transform: translateY(-1px);
+            box-shadow: 0 12px 25px -12px rgba(0, 0, 0, 0.6);
+        }
+
+        .schedule-title {
+            text-shadow: 0 2px 12px rgba(0,0,0,0.45);
+            letter-spacing: -0.05em;
+            font-size: clamp(2.4rem, 4vw, 3.2rem);
+            line-height: 1.1;
+        }
+        .schedule-sub {
+            font-size: 0.9rem;
+            color: #fffbeb;
+            opacity: 0.97;
+            margin-top: 0.4rem;
+            font-weight: 500;
+        }
+
         .search-container {
             max-width: 480px;
-            margin: 30px auto 10px;
+            margin: 2.2rem auto 0;
             position: relative;
-            transform: translateZ(0); /* Fix for Safari flicker */
         }
         
         .search-input {
             width: 100%;
-            padding: 18px 60px 18px 25px;
-            border-radius: 50px;
-            border: none;
-            background: white;
-            color: #374151;
-            font-size: 1rem;
+            padding: 16px 60px 16px 22px;
+            border-radius: 999px;
+            border: 2px solid #fb923c;
+            background: #ffffff;
+            color: #983007;
+            font-size: 0.95rem;
             font-weight: 600;
             outline: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow:
+                0 12px 26px -8px rgba(227,72,0,0.3),
+                0 0 0 1px rgba(255,255,255,0.9);
         }
         
         .search-input::placeholder {
-            color: #9ca3af;
+            color: #ea580c;
             font-weight: 500;
         }
 
         .search-input:focus {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            transform: translateY(-1px);
+            box-shadow:
+                0 20px 40px -20px rgba(124, 45, 18, 0.95),
+                0 0 0 1px #fffbeb,
+                0 0 0 2px #fb923c;
         }
         
         .search-icon-btn {
             position: absolute;
-            right: 8px;
+            right: 7px;
             top: 50%;
             transform: translateY(-50%);
-            background: #ea580c;
+            background: linear-gradient(135deg,#ff7a1a,#ea580c);
             color: white;
-            border-radius: 50%;
-            width: 42px;
-            height: 42px;
+            border-radius: 999px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(234, 88, 12, 0.4);
-            pointer-events: none; /* It's just visual */
-        }
-
-        /* --- BACK BUTTON (Floating Top Left of Header) --- */
-        .back-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(5px);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: white;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.2s ease;
-        }
-        .back-pill:hover {
-            background: white;
-            color: #ea580c;
-            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(227,72,0,0.65);
+            pointer-events: none;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 32px 20px 40px;
+            position: relative;
+            z-index: 2;
         }
 
-        /* --- FLIP CARD CONTAINER --- */
+        /* ===== FLIP CARDS ===== */
         .flip-card {
             background-color: transparent;
             width: 100%;
@@ -155,14 +193,18 @@
             transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             transform-style: preserve-3d;
             border-radius: 24px; 
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1); 
+            box-shadow: 0 18px 45px -16px rgba(227,72,0,0.35);
         }
+
+        .flip-card:hover .flip-card-inner:not(.flipped) {
+    transform: translateY(-5px);
+}
+
 
         .flipped {
             transform: rotateY(180deg);
         }
 
-        /* --- CARD FACES --- */
         .flip-card-front, .flip-card-back {
             position: absolute;
             width: 100%;
@@ -170,62 +212,100 @@
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
             border-radius: 24px;
-            padding: 28px 24px;
+            padding: 26px 22px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
             color: #111827;
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            background: linear-gradient(145deg, #ffffff, #fff7ed);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
         }
 
         .flip-card-front {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             z-index: 2;
             transform: rotateY(0deg);
-            box-shadow: inset 0 0 40px rgba(255,255,255,0.5); 
+            box-shadow:
+                0 0 0 1px rgba(254, 243, 199, 0.95),
+                0 18px 36px -24px rgba(148, 64, 12, 0.4),
+                inset 0 0 26px rgba(255,255,255,0.9);
         }
 
         .flip-card-front.is-results {
-            border: 1px solid rgba(251, 191, 36, 0.5);
-            background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(254, 243, 199, 0.4));
-            box-shadow: inset 0 0 20px rgba(251, 191, 36, 0.15), 0 10px 30px -10px rgba(251, 191, 36, 0.3);
+            border: 2px solid #ffb300;
+            background: linear-gradient(145deg, #ffffff, #ffe782);
+            box-shadow:
+                0 0 0 1px rgba(250, 204, 21, 0.95),
+                0 20px 44px -20px rgba(251, 191, 36, 0.8),
+                inset 0 0 24px rgba(253, 230, 138, 0.7);
         }
 
         .flip-card-back {
-            background: rgba(255, 255, 255, 0.95); 
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             transform: rotateY(180deg);
             z-index: 1;
-            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(254, 243, 199, 0.9),
+                0 18px 36px -24px rgba(124, 45, 18, 0.35),
+                inset 0 0 24px rgba(255, 251, 235, 0.95);
         }
 
-        /* --- BADGES --- */
         .badge-container {
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px; 
+            margin-bottom: 14px; 
             flex-shrink: 0;
         }
 
         .status-badge, .category-pill { 
-            font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
-            padding: 6px 14px; border-radius: 100px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 6px 14px;
+            border-radius: 999px;
+            box-shadow: 0 2px 5px rgba(148, 64, 12, 0.18);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .is-results .status-badge { background: linear-gradient(135deg, #fcd34d, #fbbf24); color: #78350f; border: none; box-shadow: 0 4px 10px rgba(251, 191, 36, 0.3); }
-        .status-live { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
-        .status-soon { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
-        .status-done { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
-        .category-pill { background: white; border: 1px solid #e5e7eb; color: #6b7280; }
+        .status-live {
+            background: #ffdbdb;
+            color: #b91c1c;
+            border: 2px solid #ef4444;
+            position: relative;
+        }
+        .status-live::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: #ef4444;
+            box-shadow: 0 0 10px rgba(239,68,68,0.9);
+        }
 
-        /* --- CONTENT TYPOGRAPHY --- */
+        .status-soon {
+            background: #fef3c7;
+            color: #d97706;
+            border: 1px solid #fde68a;
+        }
+
+        .status-done {
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+        }
+
+        .category-pill {
+            background: white;
+            border: 2px solid #fb923c;
+            color: #9a3412;
+        }
+
         .main-content {
             flex-grow: 1; 
             display: flex;
@@ -235,142 +315,437 @@
             text-align: center;
         }
         .main-content h3 {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 800;
-            color: #1a202c;
+            color: #7c2d12;
             line-height: 1.1;
-            margin-bottom: 12px;
-            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+            letter-spacing: -0.04em;
         }
         .main-content .location {
-            font-size: 1.05rem; color: #4b5563; margin-bottom: 12px;
-            display: flex; align-items: center; gap: 8px; justify-content: center;
+            font-size: 0.95rem;
+            color: #4b5563;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
             font-weight: 500;
         }
         .main-content .teams-registered {
-            font-size: 0.85rem; color: #9ca3af; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+            font-size: 0.8rem;
+            color: #9ca3af;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
         }
 
-        /* --- BUTTONS --- */
         .action-btn {
             width: 100%;
-            padding: 14px; 
-            border-radius: 14px; 
-            font-weight: 700;
-            font-size: 0.95rem;
+            padding: 12px 14px; 
+            border-radius: 16px; 
+            font-weight: 800;
+            font-size: 0.9rem;
             cursor: pointer;
             border: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             margin-top: auto;
             position: relative; 
             overflow: hidden;
             flex-shrink: 0;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .action-btn::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(120deg, rgba(255,255,255,0.22), transparent 40%);
+            transform: translateX(-120%);
+            transition: transform 0.4s ease;
+            pointer-events: none;
         }
 
         .btn-view { 
-            background: linear-gradient(135deg, #fb923c, #ea580c);
+            background: linear-gradient(135deg,#ff7a1a,#ff5e00);
             color: white; 
-            box-shadow: 0 8px 20px -5px rgba(234, 88, 12, 0.4);
+            box-shadow: 0 10px 24px rgba(227,72,0,0.65);
         }
         .btn-view:hover { 
             transform: translateY(-2px); 
-            box-shadow: 0 12px 25px -5px rgba(234, 88, 12, 0.5);
+            box-shadow: 0 14px 28px rgba(227,72,0,0.75);
+        }
+        .btn-view:hover::after {
+            transform: translateX(0%);
         }
         
         .btn-back { 
-            background: white;
-            color: #4b5563; 
-            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            color: #9a3412; 
+            border: 1px solid #fed7aa;
             margin-top: 15px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            box-shadow: 0 6px 12px -6px rgba(124, 45, 18, 0.4);
         }
         .btn-back:hover { 
-            background: #f9fafb;
-            color: #111827;
+            background: #fff7ed;
+            color: #7c2d12;
             transform: translateY(-2px);
-            box-shadow: 0 6px 10px -2px rgba(0,0,0,0.05);
+        }
+        .btn-back:hover::after {
+            transform: translateX(0%);
         }
 
-        /* --- WINNERS LIST --- */
         .winner-row { 
             display: flex; 
             align-items: center; 
             margin-bottom: 10px; 
             background: white;
             padding: 10px 16px; 
-            border-radius: 12px;
+            border-radius: 14px;
             border: 1px solid #f3f4f6;
             width: 100%;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
         }
         .winner-row:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border-color: #e5e7eb;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(148, 64, 12, 0.2);
+            border-color: #fed7aa;
         }
         .winner-row:last-child { margin-bottom: 0; }
         
-        .medal { font-size: 1.5em; margin-right: 16px; flex-shrink: 0; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1)); }
-        .winner-info { display: flex; flex-direction: column; text-align: left; overflow: hidden; }
-        .student-name { font-weight: 700; color: #1f2937; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .school-name { font-size: 0.75rem; color: #6b7280; font-weight: 600; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .medal { 
+            font-size: 1.4em; 
+            margin-right: 12px; 
+            flex-shrink: 0; 
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.18)); 
+        }
+        .winner-info { 
+            display: flex; 
+            flex-direction: column; 
+            text-align: left; 
+            overflow: hidden; 
+        }
+        .student-name { 
+            font-weight: 700; 
+            color: #111827; 
+            font-size: 0.95rem; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+        }
+        .school-name { 
+            font-size: 0.7rem; 
+            color: #6b7280; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+        }
 
+        #status-message {
+            text-align: center;
+            padding: 40px 16px;
+        }
+
+        #no-results {
+            text-align: center;
+            padding: 40px 16px;
+        }
+
+        .return-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #0f172a, #020617);
+            color: #f9fafb;
+            padding: 12px 26px;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-decoration: none;
+            box-shadow: 0 14px 30px -12px rgba(15,23,42,0.95);
+            transition: all 0.25s ease;
+        }
+        .return-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 38px -14px rgba(15,23,42,0.95);
+        }
+        .return-btn span.icon {
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 640px) {
+            header.schedule-hero {
+                border-bottom-left-radius: 2rem;
+                border-bottom-right-radius: 2rem;
+                padding-bottom: 2.8rem;
+            }
+            .flip-card {
+                height: 340px;
+            }
+        }
+
+        /* ===== SAVVY BOT STYLES (glow only when scanning) ===== */
+        #savvy-bot-container {
+            position: fixed;
+            z-index: 110;
+            top: 0;
+            left: 0;
+            width: 60px;
+            height: 60px;
+            transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: auto;
+            cursor: pointer;
+        }
+        .bot-body {
+            width: 48px;
+            height: 48px;
+            margin: 6px;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #fff7ed);
+            border-radius: 50%;
+            box-shadow:
+                inset -3px -3px 8px rgba(234, 88, 12, 0.18),
+                0 8px 20px rgba(0,0,0,0.18),
+                0 0 0 2px rgba(255,255,255,0.9);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: floatOrganic 6s ease-in-out infinite;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .bot-body:active { transform: scale(0.9); }
+        .bot-body.windblown { transform: rotate(-10deg) translateX(-4px); }
+
+        .bot-cheek {
+            position: absolute;
+            top: 28px;
+            width: 6px;
+            height: 4px;
+            background: #fdba74;
+            border-radius: 50%;
+            opacity: 0.8;
+            filter: blur(1px);
+            z-index: 2;
+        }
+        .cheek-left { left: 8px; }
+        .cheek-right { right: 8px; }
+
+        .bot-eye {
+            width: 32px;
+            height: 18px;
+            background: #0f172a;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #ffb46b;
+            box-shadow: inset 0 0 4px #000;
+            z-index: 3;
+            transition: all 0.2s ease;
+        }
+        .bot-pupil {
+            width: 10px;
+            height: 10px;
+            background: #ff7300; /* default dark, no glow */
+            border-radius: 50%;
+            position: absolute;
+            top: 4px;
+            left: 11px;
+            box-shadow: none;
+            transition: transform 0.1s, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        /* Glow only when scanning */
+        .bot-body.scanning .bot-pupil {
+            background: #ff5e00;
+            box-shadow: 0 0 8px #ff5e00;
+        }
+
+        .bot-eye.sleeping {
+            height: 3px;
+            margin-top: 6px;
+            background: #334155;
+            border-color: #475569;
+        }
+        .bot-eye.sleeping .bot-pupil { opacity: 0; }
+
+        .laser-cone {
+            position: absolute;
+            top: 21px;
+            left: 50%;
+            transform: translateX(-50%) perspective(300px) rotateX(18deg);
+            width: 42px;
+            height: 0;
+            background: linear-gradient(to bottom, rgba(255,98,0,0.85) 0%,rgba(255,98,0,0.05) 100%);
+            clip-path: polygon(40% 0, 60% 0, 100% 100%, 0% 100%);
+            opacity: 0;
+            z-index: 50;
+            pointer-events: none;
+            transition: height 0.3s ease-out, opacity 0.3s ease-out;
+            filter: drop-shadow(0 0 6px rgba(255,98,0,1));
+            mix-blend-mode: hard-light;
+        }
+       
+
+        .bot-antenna {
+            position: absolute;
+            top: -10px;
+            left: 22px;
+            width: 3px;
+            height: 10px;
+            background: #94a3b8;
+            z-index: -1;
+        }
+        .bot-antenna::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -2.5px;
+            width: 8px;
+            height: 8px;
+            background: #f97316;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #f97316;
+        }
+
+        .bot-bubble {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%) scale(0) translateY(10px);
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(8px);
+            padding: 8px 14px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            font-size: 11px;
+            font-weight: 700;
+            color: #c2410c;
+            white-space: nowrap;
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+            border: 1px solid white;
+        }
+        .bot-bubble.show {
+            opacity: 1;
+            transform: translateX(-50%) scale(1) translateY(0);
+        }
+        .bot-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px 5px 0;
+            border-style: solid;
+            border-color: #fff transparent transparent transparent;
+        }
+
+        @keyframes floatOrganic {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(0, -8px) rotate(2deg); }
+            66% { transform: translate(0, -4px) rotate(-2deg); }
+        }
+        @keyframes scanPulse {
+            0% { opacity: 0.7; transform: scaleX(1); }
+            100% { opacity: 1; transform: scaleX(1.2); }
+        }
     </style>
 </head>
 <body>
 
-    <div class="header-wrapper">
-        <div class="header">
+    <div class="bg-parallax-text">SCHEDULE</div>
+
+
+    <!-- HEADER + SAVVY -->
+    <header class="schedule-hero">
+        <!-- Savvy Bot -->
+        <div id="savvy-bot-container" style="transform: translate(80vw, 75vh);">
+            <div class="bot-bubble" id="bot-bubble">Full schedule unlocked 🧾</div>
+            <div class="bot-body" id="bot-body">
+                <div class="laser-cone"></div>
+                <div class="bot-cheek cheek-left"></div>
+                <div class="bot-cheek cheek-right"></div>
+                <div class="bot-antenna"></div>
+                <div class="bot-eye" id="bot-eye">
+                    <div class="bot-pupil" id="bot-pupil"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="schedule-hero-inner">
             <a href="index.html" class="back-pill">
-                &larr; Back to Live Page
+                ⟵ Back to Live Page
             </a>
-            
-            <h1 class="text-4xl font-black mb-2 tracking-tight text-white">
+
+            <h1 class="schedule-title text-white font-black mt-4">
                 Event Schedule
             </h1>
-            
-            <!-- SEXY FLOATING SEARCH BAR -->
+            <p class="schedule-sub">
+                Browse all events, venues and categories in one place.
+            </p>
+
             <div class="search-container">
                 <input type="text" id="search-input" class="search-input" placeholder="Find events, venues, or categories...">
                 <div class="search-icon-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
             </div>
         </div>
-    </div>
+    </header>
 
     <div class="container">
-        <div id="status-message" style="text-align: center; padding: 40px;">
+        <div id="status-message">
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mb-4"></div>
             <p class="text-gray-500 font-medium">Loading events...</p>
         </div>
 
         <div id="schedule-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
-            <!-- Cards will be injected here -->
+            <!-- Cards injected here -->
         </div>
         
-        <div id="no-results" style="text-align: center; display: none; padding: 40px;">
+        <div id="no-results" style="display: none;">
             <div class="text-6xl mb-4">🔍</div>
             <h3 class="text-xl font-bold text-gray-700">No events found</h3>
             <p class="text-gray-500">Try adjusting your search terms.</p>
         </div>
 
-        <div style="text-align: center; margin-top: 20px; padding-bottom: 40px;">
-            <a href="index.html" class="inline-block bg-slate-800 text-white px-8 py-3 rounded-full font-bold hover:bg-slate-900 transition shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-                Return to Home
+        <div style="text-align: center; margin-top: 12px; padding-bottom: 32px;">
+            <a href="index.html" class="return-btn">
+                <span class="icon">🏠</span>
+                <span>Return to Home</span>
             </a>
         </div>
     </div>
+
+    <!-- FOOTER (same as index, minus lock) -->
+    <footer class="bg-slate-950 text-slate-400 pt-24 pb-10 -mt-8 relative z-10" style="border-top-left-radius: 3rem; border-top-right-radius: 3rem;">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h3 class="text-3xl font-bold text-white mb-2 tracking-tight">
+                Savvy Hunt <span class="text-orange-500">2025</span>
+            </h3>
+            <p class="text-sm text-slate-500 mb-2">&copy; 2025 Savvy Hunt.</p>
+        </div>
+    </footer>
 
     <script>
         const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
 
         if (typeof window.supabase === 'undefined') {
-            document.getElementById('status-message').innerHTML = `<div class="bg-red-50 text-red-600 px-6 py-4 rounded-xl border border-red-100 shadow-sm font-medium inline-block">Error: Supabase SDK failed to load.</div>`;
+            document.getElementById('status-message').innerHTML = `
+                <div class="bg-red-50 text-red-600 px-6 py-4 rounded-xl border border-red-100 shadow-sm font-medium inline-block">
+                    Error: Supabase SDK failed to load.
+                </div>`;
             throw new Error("Supabase SDK not loaded");
         }
 
@@ -397,17 +772,21 @@
 
             if (error) {
                 msg.innerHTML = `<div class="text-red-600 font-bold">Database Error: ${error.message}</div>`;
+                if (window.savvySay) window.savvySay("Database error ⚠️");
                 return;
             }
 
             if (!data || data.length === 0) {
                 msg.innerHTML = `<div class="text-gray-400 text-xl font-bold">No events found.</div>`;
+                if (window.savvySay) window.savvySay("No events found 🙃");
                 return;
             }
 
             allEvents = data;
             renderEvents(allEvents);
             msg.style.display = 'none';
+
+            if (window.savvySay) window.savvySay("Schedule updated ✅");
         }
 
         function renderEvents(events) {
@@ -536,6 +915,11 @@
                 );
             });
             renderEvents(filteredEvents);
+
+            if (window.savvySay) {
+                if (searchTerm.trim().length === 0) window.savvySay("Showing all events ✨");
+                else window.savvySay(`Filtering by "${searchTerm}" 🔍`);
+            }
         });
 
         loadSchedule();
@@ -544,6 +928,123 @@
             .on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, loadSchedule)
             .subscribe();
 
+        /* ===== SAVVY BOT LOGIC ===== */
+        document.addEventListener('DOMContentLoaded', () => {
+            const botContainer = document.getElementById('savvy-bot-container');
+            const botBody = document.getElementById('bot-body');
+            const botEye = document.getElementById('bot-eye');
+            const botPupil = document.getElementById('bot-pupil');
+            const botBubble = document.getElementById('bot-bubble');
+
+            if (!botContainer || !botBody || !botEye || !botPupil || !botBubble) return;
+
+            let isSleeping = false;
+            let idleTimer;
+            let lastScrollY = 0;
+
+            function showBubble(text) {
+                botBubble.textContent = text;
+                botBubble.classList.add('show');
+                setTimeout(() => botBubble.classList.remove('show'), 2500);
+            }
+
+            // global hook
+            window.savvySay = function(text) {
+                if (isSleeping) wakeUp();
+                showBubble(text);
+            };
+
+            function wakeUp() {
+                if(isSleeping) {
+                    isSleeping = false;
+                    botEye.classList.remove('sleeping');
+                }
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(goToSleep, 10000);
+            }
+
+            function goToSleep() {
+                isSleeping = true;
+                botEye.classList.add('sleeping');
+                showBubble("Short nap… 😴");
+            }
+
+            function triggerScan() {
+                botBody.classList.add('scanning');
+                showBubble("Scanning events... 📡");
+                setTimeout(() => botBody.classList.remove('scanning'), 2200);
+            }
+
+            function pickNewPosition() {
+                if(isSleeping || botBody.classList.contains('scanning')) return;
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                const pad = 60; 
+                const botSize = 60;
+
+                const zones = [
+                    {x: w - pad - botSize, y: h * 0.7},
+                    {x: pad, y: h * 0.7},
+                    {x: w - pad - botSize, y: h * 0.3},
+                    {x: pad, y: h * 0.3}
+                ];
+                const choice = zones[Math.floor(Math.random() * zones.length)];
+                const x = choice.x + (Math.random() * 20 - 10);
+                const y = choice.y + (Math.random() * 20 - 10);
+                botContainer.style.transform = `translate(${x}px, ${y}px)`;
+
+                if(Math.random() > 0.7) setTimeout(triggerScan, 2500);
+            }
+
+            setTimeout(pickNewPosition, 400);
+            setInterval(pickNewPosition, 11000);
+
+            botContainer.addEventListener('click', () => {
+                if(isSleeping) { wakeUp(); showBubble("Back on duty ⚡"); return; }
+                botBody.style.transform = "scale(0.9)";
+                setTimeout(() => botBody.style.transform = "scale(1)", 150);
+                const clickPhrases = [
+                    "Checking stages… 🎭",
+                    "Everything on schedule ⏱️",
+                    "No delays (I hope) 😅",
+                    "So many events today!"
+                ];
+                const txt = clickPhrases[Math.floor(Math.random() * clickPhrases.length)];
+                showBubble(txt);
+                triggerScan();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                wakeUp();
+                if(!isSleeping && !botBody.classList.contains('scanning')) {
+                    const rect = botEye.getBoundingClientRect();
+                    const cx = rect.left + rect.width/2;
+                    const cy = rect.top + rect.height/2;
+                    const angle = Math.atan2(e.clientY - cy, e.clientX - cx);
+                    const dist = Math.min(4, Math.hypot(e.clientX - cx, e.clientY - cy));
+                    botPupil.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
+                }
+            });
+
+            window.addEventListener('scroll', () => {
+                wakeUp();
+                const st = window.scrollY;
+                if (Math.abs(st - lastScrollY) > 40) {
+                    botBody.classList.add('windblown');
+                } else {
+                    botBody.classList.remove('windblown');
+                }
+                lastScrollY = st;
+            });
+
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.addEventListener('focus', () => {
+                    wakeUp();
+                    showBubble("Type to filter events 🔎");
+                });
+            }
+        });
     </script>
 </body>
 </html>
