@@ -6,6 +6,12 @@
 
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Match main site font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
   /* ---------------------------
@@ -16,13 +22,30 @@
   }
 
   body {
-    font-family: "Poppins", "Inter", "Segoe UI", sans-serif;
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     margin: 0;
     padding: 0;
     padding-top: 90px;
-    background: #f9fafb;
+    background: linear-gradient(145deg,#FFF7ED 0%,#FFEEDD 40%,#FFF4E5 70%);
+    background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
     color: #1f2937;
+  }
+
+  /* Centered big background text */
+  .bg-parallax-text {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20vh;
+      font-weight: 900;
+      color: rgba(234, 88, 12, 0.06);
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+      letter-spacing: 0.08em;
   }
 
   /* ============================
@@ -88,6 +111,8 @@
       border-radius: 50px;
       width: fit-content;
       max-width: 95%;
+      position: relative;
+      z-index: 5;
   }
 
   .switch-btn {
@@ -120,6 +145,8 @@
     box-shadow: 0px 6px 25px rgba(0,0,0,0.08);
     border-top: 6px solid #f97316;
     width: 95%;
+    position: relative;
+    z-index: 5;
   }
 
   .scoreboard-title {
@@ -410,11 +437,191 @@
   ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: #f97316; }
 
+  /* ===== SAVVY BOT (from your latest version) ===== */
+  #savvy-bot-container {
+      position: fixed;
+      z-index: 110;
+      top: 0;
+      left: 0;
+      width: 60px;
+      height: 60px;
+      transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: auto;
+      cursor: pointer;
+  }
+  .bot-body {
+      width: 48px;
+      height: 48px;
+      margin: 6px;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #fff7ed);
+      border-radius: 50%;
+      box-shadow:
+          inset -3px -3px 8px rgba(234, 88, 12, 0.18),
+          0 8px 20px rgba(0,0,0,0.18),
+          0 0 0 2px rgba(255,255,255,0.9);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: floatOrganic 6s ease-in-out infinite;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .bot-body:active { transform: scale(0.9); }
+  .bot-body.windblown { transform: rotate(-10deg) translateX(-4px); }
+
+  .bot-cheek {
+      position: absolute;
+      top: 28px;
+      width: 6px;
+      height: 4px;
+      background: #fdba74;
+      border-radius: 50%;
+      opacity: 0.8;
+      filter: blur(1px);
+      z-index: 2;
+  }
+  .cheek-left { left: 8px; }
+  .cheek-right { right: 8px; }
+
+  .bot-eye {
+      width: 32px;
+      height: 18px;
+      background: #0f172a;
+      border-radius: 14px;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #ffb46b;
+      box-shadow: inset 0 0 4px #000;
+      z-index: 3;
+      transition: all 0.2s ease;
+  }
+  .bot-pupil {
+      width: 10px;
+      height: 10px;
+      background: #f17500;
+      border-radius: 50%;
+      position: absolute;
+      top: 4px;
+      left: 11px;
+      box-shadow: none;
+      transition: transform 0.1s, box-shadow 0.15s ease, background 0.15s ease;
+  }
+  .bot-body.scanning .bot-pupil {
+      background: #ff5e00;
+      box-shadow: 0 0 8px #ff5e00;
+  }
+
+  .bot-eye.sleeping {
+      height: 3px;
+      margin-top: 6px;
+      background: #334155;
+      border-color: #475569;
+  }
+  .bot-eye.sleeping .bot-pupil { opacity: 0; }
+
+  .laser-cone {
+      position: absolute;
+      top: 21px;
+      left: 50%;
+      transform: translateX(-50%) perspective(300px) rotateX(18deg);
+      width: 42px;
+      height: 0;
+      background: linear-gradient(to bottom, rgba(255,98,0,0.85) 0%,rgba(255,98,0,0.05) 100%);
+      clip-path: polygon(40% 0, 60% 0, 100% 100%, 0% 100%);
+      opacity: 0;
+      z-index: 50;
+      pointer-events: none;
+      transition: height 0.3s ease-out, opacity 0.3s ease-out;
+      filter: drop-shadow(0 0 6px rgba(255,98,0,1));
+      mix-blend-mode: hard-light;
+  }
+
+  .bot-antenna {
+      position: absolute;
+      top: -10px;
+      left: 22px;
+      width: 3px;
+      height: 10px;
+      background: #94a3b8;
+      z-index: -1;
+  }
+  .bot-antenna::after {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: -2.5px;
+      width: 8px;
+      height: 8px;
+      background: #f97316;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #f97316;
+  }
+
+  .bot-bubble {
+      position: absolute;
+      top: -45px;
+      left: 50%;
+      transform: translateX(-50%) scale(0) translateY(10px);
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(8px);
+      padding: 8px 14px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      font-size: 11px;
+      font-weight: 700;
+      color: #c2410c;
+      white-space: nowrap;
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      border: 1px solid white;
+  }
+  .bot-bubble.show {
+      opacity: 1;
+      transform: translateX(-50%) scale(1) translateY(0);
+  }
+  .bot-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px 5px 0;
+      border-style: solid;
+      border-color: #fff transparent transparent transparent;
+  }
+
+  @keyframes floatOrganic {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(0, -8px) rotate(2deg); }
+      66% { transform: translate(0, -4px) rotate(-2deg); }
+  }
+  @keyframes scanPulse {
+      0% { opacity: 0.7; transform: scaleX(1); }
+      100% { opacity: 1; transform: scaleX(1.2); }
+  }
+
   </style>
 
 </head>
 
 <body>
+
+  
+
+  <!-- Savvy Bot -->
+  <div id="savvy-bot-container" style="transform: translate(80vw, 75vh);">
+      <div class="bot-bubble" id="bot-bubble">Watching the ranks 👀</div>
+      <div class="bot-body" id="bot-body">
+          <div class="laser-cone"></div>
+          <div class="bot-cheek cheek-left"></div>
+          <div class="bot-cheek cheek-right"></div>
+          <div class="bot-antenna"></div>
+          <div class="bot-eye" id="bot-eye">
+              <div class="bot-pupil" id="bot-pupil"></div>
+          </div>
+      </div>
+  </div>
 
   <nav class="navbar">
       <div class="nav-left">
@@ -427,8 +634,8 @@
   </nav>
 
   <div class="switcher-bar" role="tablist" aria-label="View switcher">
-    <button class="switch-btn active" onclick="switchSection(event,'school')" role="tab" aria-selected="true">🏫 School-wise Results</button>
-    <button class="switch-btn" onclick="switchSection(event,'category')" role="tab" aria-selected="false">📊 Category-wise Results</button>
+    <button class="switch-btn active" onclick="switchSection(event,'school')" role="tab" aria-selected="true"> School-wise Results</button>
+    <button class="switch-btn" onclick="switchSection(event,'category')" role="tab" aria-selected="false"> Category-wise Results</button>
   </div>
 
   <div id="schoolSection" class="scoreboard-container" aria-live="polite">
@@ -493,6 +700,16 @@
     </div>
   </div>
 
+  <!-- FOOTER (same as index, no lock) -->
+  <footer class="bg-slate-950 text-slate-400 pt-20 pb-10 relative z-10" style="border-top-left-radius: 3rem; border-top-right-radius: 3rem;">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+          <h3 class="text-3xl font-bold text-white mb-2 tracking-tight">
+              Savvy Hunt <span class="text-orange-500">2025</span>
+          </h3>
+          <p class="text-sm text-slate-500 mb-2">&copy; 2025 Savvy Hunt.</p>
+      </div>
+  </footer>
+
   <script>
     /************************************************************************
      * Supabase / Initialization
@@ -555,10 +772,12 @@
 
       if (error) {
         tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:red;">Error loading scoreboard: ${error.message}</td></tr>`;
+        if (window.savvySay) savvySay("Scoreboard error ⚠️");
         return;
       }
       if (!data || data.length === 0) {
         tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#6b7280;">No teams yet.</td></tr>`;
+        if (window.savvySay) savvySay("No teams yet 😶");
         return;
       }
 
@@ -579,6 +798,8 @@
           </tr>
         `);
       });
+
+      if (window.savvySay) savvySay(`Updated leaderboard (${data.length} teams) ✅`);
     }
 
     /************************************************************************
@@ -593,10 +814,12 @@
 
       if (error) {
         el.innerHTML = `<div style="color:red">Error loading: ${escapeHtml(error.message)}</div>`;
+        if (window.savvySay) savvySay("Error loading category ⚠️");
         return;
       }
       if (!data || data.length === 0) {
         el.innerHTML = `<div style="color:#6b7280">No teams yet.</div>`;
+        if (window.savvySay) savvySay("No category scores yet 😶");
         return;
       }
 
@@ -682,6 +905,116 @@
     setupRealtime();
     loadCategoryTop3('cat1-list', 'cat1');
 
+    /************************************************************************
+     * Savvy Bot Logic (same behavior as snapshots page)
+     ************************************************************************/
+    document.addEventListener('DOMContentLoaded', () => {
+        const botContainer = document.getElementById('savvy-bot-container');
+        const botBody = document.getElementById('bot-body');
+        const botEye = document.getElementById('bot-eye');
+        const botPupil = document.getElementById('bot-pupil');
+        const botBubble = document.getElementById('bot-bubble');
+
+        if (!botContainer || !botBody || !botEye || !botPupil || !botBubble) return;
+
+        let isSleeping = false;
+        let idleTimer;
+        let lastScrollY = 0;
+
+        function showBubble(text) {
+            botBubble.textContent = text;
+            botBubble.classList.add('show');
+            setTimeout(() => botBubble.classList.remove('show'), 2500);
+        }
+
+        window.savvySay = function(text) {
+            if (isSleeping) wakeUp();
+            showBubble(text);
+        };
+
+        function wakeUp() {
+            if(isSleeping) {
+                isSleeping = false;
+                botEye.classList.remove('sleeping');
+            }
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(goToSleep, 10000);
+        }
+
+        function goToSleep() {
+            isSleeping = true;
+            botEye.classList.add('sleeping');
+            showBubble("Power nap… 😴");
+        }
+
+        function triggerScan() {
+            botBody.classList.add('scanning');
+            showBubble("Re-checking ranks... 🔎");
+            setTimeout(() => botBody.classList.remove('scanning'), 2200);
+        }
+
+        function pickNewPosition() {
+            if(isSleeping || botBody.classList.contains('scanning')) return;
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const pad = 60; 
+            const botSize = 60;
+
+            const zones = [
+                {x: w - pad - botSize, y: h * 0.7},
+                {x: pad, y: h * 0.7},
+                {x: w - pad - botSize, y: h * 0.3},
+                {x: pad, y: h * 0.3}
+            ];
+            const choice = zones[Math.floor(Math.random() * zones.length)];
+            const x = choice.x + (Math.random() * 20 - 10);
+            const y = choice.y + (Math.random() * 20 - 10);
+            botContainer.style.transform = `translate(${x}px, ${y}px)`;
+
+            if(Math.random() > 0.7) setTimeout(triggerScan, 2500);
+        }
+
+        setTimeout(pickNewPosition, 400);
+        setInterval(pickNewPosition, 11000);
+
+        botContainer.addEventListener('click', () => {
+            if(isSleeping) { wakeUp(); showBubble("Back online ⚡"); return; }
+            botBody.style.transform = "scale(0.9)";
+            setTimeout(() => botBody.style.transform = "scale(1)", 150);
+            const clickPhrases = [
+                "Tight race up here 😎",
+                "Scores refreshed 🔁",
+                "Who are you cheering for? ✨",
+                "Top spots are hot 🔥"
+            ];
+            const txt = clickPhrases[Math.floor(Math.random() * clickPhrases.length)];
+            showBubble(txt);
+            triggerScan();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            wakeUp();
+            if(!isSleeping && !botBody.classList.contains('scanning')) {
+                const rect = botEye.getBoundingClientRect();
+                const cx = rect.left + rect.width/2;
+                const cy = rect.top + rect.height/2;
+                const angle = Math.atan2(e.clientY - cy, e.clientX - cx);
+                const dist = Math.min(4, Math.hypot(e.clientX - cx, e.clientY - cy));
+                botPupil.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
+            }
+        });
+
+        window.addEventListener('scroll', () => {
+            wakeUp();
+            const st = window.scrollY;
+            if (Math.abs(st - lastScrollY) > 40) {
+                botBody.classList.add('windblown');
+            } else {
+                botBody.classList.remove('windblown');
+            }
+            lastScrollY = st;
+        });
+    });
   </script>
 </body>
 </html>
