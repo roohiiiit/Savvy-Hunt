@@ -774,7 +774,7 @@
     }
 
     /************************************************************************
-     * Main leaderboard loader with TIED RANK LOGIC
+     * Main leaderboard loader with DENSE RANK LOGIC (1, 1, 2)
      ************************************************************************/
     async function loadScoreboard() {
       const { data, error } = await db
@@ -796,14 +796,14 @@
         return;
       }
 
-      // Rank Calculation Logic
+      // Rank Calculation Logic - DENSE RANKING
       let currentRank = 1;
       data.forEach((row, index) => {
-        // Standard Competition Ranking: 
         // If this is not the first row, check if the score is different from previous
         if (index > 0) {
             if (row.total < data[index - 1].total) {
-                currentRank = index + 1;
+                // Score is lower, so rank increments by 1 (1, 1, 2)
+                currentRank++; 
             }
             // If row.total === data[index - 1].total, currentRank stays the same (tie)
         }
@@ -829,7 +829,7 @@
     }
 
     /************************************************************************
-     * Category top-3 loader with TIED RANK LOGIC
+     * Category top-3 loader with DENSE RANK LOGIC (1, 1, 2)
      ************************************************************************/
     async function loadCategoryTop3(tableListId, columnName) {
       const el = document.getElementById(tableListId);
@@ -857,7 +857,7 @@
 
       el.innerHTML = '';
       
-      // Rank Logic for Category Cards
+      // Rank Logic for Category Cards - DENSE RANKING
       let currentRank = 1;
 
       top3.forEach((row, idx) => {
@@ -866,7 +866,7 @@
             const prevScore = Number(sorted[idx - 1][columnName] || 0);
             const currScore = Number(row[columnName] || 0);
             if (currScore < prevScore) {
-                currentRank = idx + 1;
+                currentRank++; // Increment by 1 for next rank
             }
         } else {
             currentRank = 1;
