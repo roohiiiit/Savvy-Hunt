@@ -6,12 +6,24 @@
     <title>Savvy Hunt Snapshots</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Match main site font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
+        /* Force disable selection */
+        *, *::before, *::after {
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+        }
+        input, textarea {
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
+        }
         body {
             font-family: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background: linear-gradient(145deg,#FFF7ED 0%,#FFEEDD 40%,#FFF4E5 70%);
@@ -23,315 +35,84 @@
             overflow-x: hidden;
         }
 
-        /* Centered big background text */
         .bg-parallax-text {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 20vh;
-            font-weight: 900;
-            color: rgba(234, 88, 12, 0.06);
-            white-space: nowrap;
-            pointer-events: none;
-            user-select: none;
-            z-index: 0;
-            letter-spacing: 0.08em;
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 20vh; font-weight: 900; color: rgba(234, 88, 12, 0.06);
+            white-space: nowrap; pointer-events: none; user-select: none; z-index: 0; letter-spacing: 0.08em;
         }
 
-        /* HEADER */
+        /* Hero & Header */
         header.snap-hero {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            padding-top: 2.5rem;
-            padding-bottom: 3rem;
-            background: linear-gradient(120deg,#ff7a1a,#ff5e00,#ea580c,#b63a00);
-            background-size: 200% 200%;
-            animation: heroGradient 8s ease infinite;
-            box-shadow: 0 25px 50px -15px rgba(227,72,0,0.7);
-            border-bottom-left-radius: 3rem;
-            border-bottom-right-radius: 3rem;
-            z-index: 5;
+            position: relative; width: 100%; overflow: hidden; padding-top: 2.5rem; padding-bottom: 3rem;
+            background: linear-gradient(120deg,#ff7a1a,#ff5e00,#ea580c,#b63a00); background-size: 200% 200%;
+            animation: heroGradient 8s ease infinite; box-shadow: 0 25px 50px -15px rgba(227,72,0,0.7);
+            border-bottom-left-radius: 3rem; border-bottom-right-radius: 3rem; z-index: 5;
         }
-
-        @keyframes heroGradient {
-            0%{background-position:0% 50%;}
-            50%{background-position:100% 50%;}
-            100%{background-position:0% 50%;}
-        }
-
+        @keyframes heroGradient { 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
         header.snap-hero::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(circle at 20% -10%, rgba(255,255,255,0.4) 0, transparent 55%),
-                radial-gradient(circle at 80% 0%, rgba(254,243,199,0.45) 0, transparent 60%);
+            content: ""; position: absolute; inset: 0;
+            background: radial-gradient(circle at 20% -10%, rgba(255,255,255,0.4) 0, transparent 55%), radial-gradient(circle at 80% 0%, rgba(254,243,199,0.45) 0, transparent 60%);
             pointer-events: none;
         }
+        .snap-hero-inner { position: relative; z-index: 2; max-width: 64rem; margin: 0 auto; padding: 0 1.5rem; text-align: center; }
+        .glass-btn { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); transition: all 0.3s ease; }
+        .glass-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
 
-        .snap-hero-inner {
-            position: relative;
-            z-index: 2;
-            max-width: 64rem;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-            text-align: center;
-        }
-
-        .glass-btn {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .glass-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-1px);
-        }
-
-        @keyframes gradient-flow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Masonry layout */
-        .masonry-grid {
-            column-count: 2;
-            column-gap: 10px;
-        }
-        @media (min-width: 768px) {
-            .masonry-grid {
-                column-count: 3;
-                column-gap: 20px;
-            }
-        }
-        @media (min-width: 1280px) {
-            .masonry-grid {
-                column-count: 4;
-            }
-        }
+        /* Grid */
+        .masonry-grid { column-count: 2; column-gap: 10px; }
+        @media (min-width: 768px) { .masonry-grid { column-count: 3; column-gap: 20px; } }
+        @media (min-width: 1280px) { .masonry-grid { column-count: 4; } }
 
         .pin-card {
-            break-inside: avoid;
-            -webkit-column-break-inside: avoid;
-            margin-bottom: 10px;
-            border-radius: 12px;
-            overflow: hidden;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            position: relative;
-            width: 100%;
-            display: inline-block;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            break-inside: avoid; margin-bottom: 10px; border-radius: 12px; overflow: hidden; background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); position: relative; width: 100%; display: inline-block;
+            transition: box-shadow 0.2s ease;
         }
-        .pin-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(15,23,42,0.15);
+        .pin-card:hover { 
+            box-shadow: 0 10px 25px rgba(15,23,42,0.15); 
         }
+        @media (min-width: 768px) { .pin-card { margin-bottom: 20px; border-radius: 16px; } }
 
-        @media (min-width: 768px) {
-            .pin-card {
-                margin-bottom: 20px;
-                border-radius: 16px;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            }
-        }
-
-        .pin-image {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        /* Skeleton Loader */
         .skeleton {
-            background: linear-gradient(90deg, #e5e7eb 25%, #d1d5db 50%, #e5e7eb 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 12px;
-            width: 100%;
-            margin-bottom: 10px;
-            display: inline-block;
+            background: linear-gradient(90deg, #e5e7eb 25%, #d1d5db 50%, #e5e7eb 75%); background-size: 200% 100%;
+            animation: loading 1.5s infinite; border-radius: 12px; width: 100%; margin-bottom: 10px; display: inline-block;
         }
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
+        @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-        /* ===== SAVVY BOT (same as schedule) ===== */
-        #savvy-bot-container {
-            position: fixed;
-            z-index: 110;
-            top: 0;
-            left: 0;
-            width: 60px;
-            height: 60px;
-            transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: auto;
-            cursor: pointer;
-        }
-        .bot-body {
-            width: 48px;
-            height: 48px;
-            margin: 6px;
-            background: radial-gradient(circle at 30% 30%, #ffffff, #fff7ed);
-            border-radius: 50%;
-            box-shadow:
-                inset -3px -3px 8px rgba(234, 88, 12, 0.18),
-                0 8px 20px rgba(0,0,0,0.18),
-                0 0 0 2px rgba(255,255,255,0.9);
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: floatOrganic 6s ease-in-out infinite;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .bot-body:active { transform: scale(0.9); }
-        .bot-body.windblown { transform: rotate(-10deg) translateX(-4px); }
+        /* --- BEAUTIFUL VIEWER ANIMATIONS --- */
+        .viewer-bg-enter { opacity: 0; backdrop-filter: blur(0px); }
+        .viewer-bg-enter-active { opacity: 1; backdrop-filter: blur(24px); transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .viewer-bg-exit { opacity: 1; backdrop-filter: blur(24px); }
+        .viewer-bg-exit-active { opacity: 0; backdrop-filter: blur(0px); transition: all 0.4s ease-out; }
 
-        .bot-cheek {
-            position: absolute;
-            top: 28px;
-            width: 6px;
-            height: 4px;
-            background: #fdba74;
-            border-radius: 50%;
-            opacity: 0.8;
-            filter: blur(1px);
-            z-index: 2;
-        }
-        .cheek-left { left: 8px; }
-        .cheek-right { right: 8px; }
+        .zoom-enter { transform: scale(0.92) translateY(10px); opacity: 0; }
+        .zoom-enter-active { transform: scale(1) translateY(0); opacity: 1; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .zoom-exit { transform: scale(1) translateY(0); opacity: 1; }
+        .zoom-exit-active { transform: scale(0.95) translateY(10px); opacity: 0; transition: all 0.3s ease-in; }
 
-        .bot-eye {
-            width: 32px;
-            height: 18px;
-            background: #0f172a;
-            border-radius: 14px;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid #ffb46b;
-            box-shadow: inset 0 0 4px #000;
-            z-index: 3;
-            transition: all 0.2s ease;
-        }
-        .bot-pupil {
-            width: 10px;
-            height: 10px;
-            background: #f17500; /* default no glow */
-            border-radius: 50%;
-            position: absolute;
-            top: 4px;
-            left: 11px;
-            box-shadow: none;
-            transition: transform 0.1s, box-shadow 0.15s ease, background 0.15s ease;
-        }
-        .bot-body.scanning .bot-pupil {
-            background: #ff5e00;
-            box-shadow: 0 0 8px #ff5e00;
-        }
+        .dock-enter { transform: translate(-50%, 100%); opacity: 0; }
+        .dock-enter-active { transform: translate(-50%, 0); opacity: 1; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s; }
+        .dock-exit-active { transform: translate(-50%, 100%); opacity: 0; transition: all 0.3s ease-in; }
 
-        .bot-eye.sleeping {
-            height: 3px;
-            margin-top: 6px;
-            background: #334155;
-            border-color: #475569;
-        }
-        .bot-eye.sleeping .bot-pupil { opacity: 0; }
-
-        .laser-cone {
-            position: absolute;
-            top: 21px;
-            left: 50%;
-            transform: translateX(-50%) perspective(300px) rotateX(18deg);
-            width: 42px;
-            height: 0;
-            background: linear-gradient(to bottom, rgba(255,98,0,0.85) 0%,rgba(255,98,0,0.05) 100%);
-            clip-path: polygon(40% 0, 60% 0, 100% 100%, 0% 100%);
-            opacity: 0;
-            z-index: 50;
-            pointer-events: none;
-            transition: height 0.3s ease-out, opacity 0.3s ease-out;
-            filter: drop-shadow(0 0 6px rgba(255,98,0,1));
-            mix-blend-mode: hard-light;
-        }
-    
-        .bot-antenna {
-            position: absolute;
-            top: -10px;
-            left: 22px;
-            width: 3px;
-            height: 10px;
-            background: #94a3b8;
-            z-index: -1;
-        }
-        .bot-antenna::after {
-            content: '';
-            position: absolute;
-            top: -5px;
-            left: -2.5px;
-            width: 8px;
-            height: 8px;
-            background: #f97316;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #f97316;
-        }
-
-        .bot-bubble {
-            position: absolute;
-            top: -45px;
-            left: 50%;
-            transform: translateX(-50%) scale(0) translateY(10px);
-            background: rgba(255, 255, 255, 0.97);
-            backdrop-filter: blur(8px);
-            padding: 8px 14px;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            font-size: 11px;
-            font-weight: 700;
-            color: #c2410c;
-            white-space: nowrap;
-            opacity: 0;
-            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-            pointer-events: none;
-            border: 1px solid white;
-        }
-        .bot-bubble.show {
-            opacity: 1;
-            transform: translateX(-50%) scale(1) translateY(0);
-        }
-        .bot-bubble::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px 5px 0;
-            border-style: solid;
-            border-color: #fff transparent transparent transparent;
-        }
-
-        @keyframes floatOrganic {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(0, -8px) rotate(2deg); }
-            66% { transform: translate(0, -4px) rotate(-2deg); }
-        }
-        @keyframes scanPulse {
-            0% { opacity: 0.7; transform: scaleX(1); }
-            100% { opacity: 1; transform: scaleX(1.2); }
-        }
+        /* SAVVY BOT CSS */
+        #savvy-bot-container { position: fixed; z-index: 110; top: 0; left: 0; width: 60px; height: 60px; transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: auto; cursor: pointer; }
+        .bot-body { width: 48px; height: 48px; margin: 6px; background: radial-gradient(circle at 30% 30%, #ffffff, #fff7ed); border-radius: 50%; box-shadow: inset -3px -3px 8px rgba(234, 88, 12, 0.18), 0 8px 20px rgba(0,0,0,0.18), 0 0 0 2px rgba(255,255,255,0.9); position: relative; display: flex; align-items: center; justify-content: center; animation: floatOrganic 6s ease-in-out infinite; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .bot-body:active { transform: scale(0.9); } .bot-body.windblown { transform: rotate(-10deg) translateX(-4px); }
+        .bot-cheek { position: absolute; top: 28px; width: 6px; height: 4px; background: #fdba74; border-radius: 50%; opacity: 0.8; filter: blur(1px); z-index: 2; } .cheek-left { left: 8px; } .cheek-right { right: 8px; }
+        .bot-eye { width: 32px; height: 18px; background: #0f172a; border-radius: 14px; position: relative; overflow: hidden; border: 2px solid #ffb46b; box-shadow: inset 0 0 4px #000; z-index: 3; transition: all 0.2s ease; }
+        .bot-pupil { width: 10px; height: 10px; background: #f17500; border-radius: 50%; position: absolute; top: 4px; left: 11px; transition: transform 0.1s, box-shadow 0.15s ease, background 0.15s ease; }
+        .bot-body.scanning .bot-pupil { background: #ff5e00; box-shadow: 0 0 8px #ff5e00; }
+        .bot-eye.sleeping { height: 3px; margin-top: 6px; background: #334155; border-color: #475569; } .bot-eye.sleeping .bot-pupil { opacity: 0; }
+        .laser-cone { position: absolute; top: 21px; left: 50%; transform: translateX(-50%) perspective(300px) rotateX(18deg); width: 42px; height: 0; background: linear-gradient(to bottom, rgba(255,98,0,0.85) 0%,rgba(255,98,0,0.05) 100%); clip-path: polygon(40% 0, 60% 0, 100% 100%, 0% 100%); opacity: 0; z-index: 50; pointer-events: none; transition: height 0.3s ease-out, opacity 0.3s ease-out; filter: drop-shadow(0 0 6px rgba(255,98,0,1)); mix-blend-mode: hard-light; }
+        .bot-antenna { position: absolute; top: -10px; left: 22px; width: 3px; height: 10px; background: #94a3b8; z-index: -1; } .bot-antenna::after { content: ''; position: absolute; top: -5px; left: -2.5px; width: 8px; height: 8px; background: #f97316; border-radius: 50%; box-shadow: 0 0 8px #f97316; }
+        .bot-bubble { position: absolute; top: -45px; left: 50%; transform: translateX(-50%) scale(0) translateY(10px); background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(8px); padding: 8px 14px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); font-size: 11px; font-weight: 700; color: #c2410c; white-space: nowrap; opacity: 0; transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; border: 1px solid white; }
+        .bot-bubble.show { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); } .bot-bubble::after { content: ''; position: absolute; bottom: -5px; left: 50%; margin-left: -5px; border-width: 5px 5px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
+        @keyframes floatOrganic { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 33% { transform: translate(0, -8px) rotate(2deg); } 66% { transform: translate(0, -4px) rotate(-2deg); } }
     </style>
 </head>
 <body class="min-h-screen">
-
     <div class="bg-parallax-text">SNAPSHOTS</div>
 
-    <!-- Savvy Bot -->
     <div id="savvy-bot-container" style="transform: translate(80vw, 75vh);">
         <div class="bot-bubble" id="bot-bubble">Checking your snaps 📸</div>
         <div class="bot-body" id="bot-body">
@@ -339,87 +120,99 @@
             <div class="bot-cheek cheek-left"></div>
             <div class="bot-cheek cheek-right"></div>
             <div class="bot-antenna"></div>
-            <div class="bot-eye" id="bot-eye">
-                <div class="bot-pupil" id="bot-pupil"></div>
-            </div>
+            <div class="bot-eye" id="bot-eye"><div class="bot-pupil" id="bot-pupil"></div></div>
         </div>
     </div>
 
-    <!-- HEADER -->
     <header class="snap-hero mb-8 shadow-2xl">
         <div class="snap-hero-inner flex flex-col items-center">
-
             <a href="index.html" class="glass-btn text-white font-bold text-sm px-6 py-2.5 rounded-full mb-6 inline-flex items-center gap-2">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Back to Home
             </a>
-
-            <h1 class="text-5xl md:text-7xl font-black text-white mb-3 drop-shadow-md tracking-tight">
-                Snapshots 
-            </h1>
-            <p class="text-lg text-orange-50 font-medium opacity-90 mb-7">
-                Live uploads from the event
+            <h1 class="text-5xl md:text-7xl font-black text-white mb-3 drop-shadow-md tracking-tight">Snapshots</h1>
+            <p class="text-lg text-orange-50 font-medium opacity-90">Live uploads from the event</p>
+            
+            <p class="text-sm text-orange-200 mt-2 mb-7 font-medium animate-pulse">
+                ✨ Click on any image to view or download
             </p>
 
-            <a href="https://drive.google.com/drive/folders/1rb1TuedcIMvP8_wst0VBeIjenopEO-w9?usp=sharing" 
-               target="_blank"
-               class="inline-flex items-center gap-2 bg-white text-orange-600 font-bold px-6 py-3 rounded-full shadow-xl hover:bg-gray-50 hover:scale-105 transition-transform duration-200 text-sm md:text-base">
-               
-                Open in Google Drive 
+            <a href="https://drive.google.com/drive/folders/1rb1TuedcIMvP8_wst0VBeIjenopEO-w9?usp=sharing" target="_blank" class="inline-flex items-center gap-2 bg-white text-orange-600 font-bold px-6 py-3 rounded-full shadow-xl hover:bg-gray-50 hover:scale-105 transition-transform duration-200 text-sm md:text-base">
+               Open in Google Drive 
             </a>
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
     <div class="max-w-7xl mx-auto px-2 pb-20 relative z-10">
-
         <div id="loading" class="masonry-grid">
-            <div class="skeleton h-64"></div>
-            <div class="skeleton h-40"></div>
-            <div class="skeleton h-80"></div>
-            <div class="skeleton h-52"></div>
-            <div class="skeleton h-60"></div>
-            <div class="skeleton h-44"></div>
+            <div class="skeleton h-64"></div><div class="skeleton h-40"></div><div class="skeleton h-80"></div>
+            <div class="skeleton h-52"></div><div class="skeleton h-60"></div><div class="skeleton h-44"></div>
         </div>
-
         <div id="gallery" class="masonry-grid hidden"></div>
-
         <div id="error-msg" class="hidden text-center py-20 text-gray-500">
             <p>Could not load images. <a href="#" id="fallback-link" class="text-blue-500 underline">View directly on Drive</a></p>
         </div>
     </div>
 
-    <!-- FOOTER (same as index, minus lock) -->
+    <div id="image-viewer" class="fixed inset-0 z-[200] hidden">
+        
+        <div id="viewer-backdrop" class="absolute inset-0 bg-black/90 transition-all duration-500" onclick="closeViewer()"></div>
+
+        <div class="absolute inset-0 flex flex-col items-center justify-center p-4 pointer-events-none">
+            
+            <div class="relative group">
+                <div class="absolute -inset-1 bg-white/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                
+                <img id="viewer-img" src="" 
+                    class="pointer-events-auto relative z-10 max-h-[82vh] max-w-[95vw] md:max-w-[85vw] w-auto h-auto rounded-lg shadow-[0_20px_50px_-12px_rgba(0,0,0,0.8)] border border-white/10 object-contain transition-transform duration-300" 
+                    onclick="event.stopPropagation()"
+                    alt="Preview">
+            </div>
+            
+            <div id="viewer-dock" class="pointer-events-auto fixed bottom-8 left-1/2 flex items-center gap-2 p-1.5 rounded-full border border-white/10 bg-[#1c1c1e]/90 backdrop-blur-xl shadow-2xl transition-all duration-500">
+                
+                <button id="viewer-download-btn" class="group relative flex items-center gap-2 px-4 py-2 rounded-full bg-white/90 text-black font-semibold text-sm hover:bg-white transition-all active:scale-95 shadow-sm">
+                    <span>Save Photo</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                </button>
+
+                <div class="w-px h-5 bg-white/20 mx-1"></div>
+
+                <button onclick="closeViewer()" class="group flex items-center justify-center w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all active:scale-95 border border-white/5 hover:border-white/20">
+                    <svg class="w-5 h-5 text-gray-300 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <footer class="bg-slate-950 text-slate-400 pt-20 pb-10 relative z-10" style="border-top-left-radius: 3rem; border-top-right-radius: 3rem;">
         <div class="max-w-7xl mx-auto px-6 text-center">
-            <h3 class="text-3xl font-bold text-white mb-2 tracking-tight">
-                Savvy Hunt <span class="text-orange-500">2025</span>
-            </h3>
+            <h3 class="text-3xl font-bold text-white mb-2 tracking-tight">Savvy Hunt <span class="text-orange-500">2025</span></h3>
             <p class="text-sm text-slate-500 mb-2">&copy; 2025 Savvy Hunt.</p>
         </div>
     </footer>
 
     <script>
-        // Google Apps Script endpoint & Drive link
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdY84hvM0iAoJtymXFhSIXEcIgIQ79IZMBbgUcgtKuemZQBoCDTzn2Tzn_rYDrx2ap/exec';
         const DRIVE_LINK = 'https://drive.google.com/drive/folders/1rb1TuedcIMvP8_wst0VBeIjenopEO-w9?usp=sharing';
 
         const gallery = document.getElementById('gallery');
         const loading = document.getElementById('loading');
         const errorMsg = document.getElementById('error-msg');
+        
+        // Viewer Elements
+        const viewer = document.getElementById('image-viewer');
+        const viewerBackdrop = document.getElementById('viewer-backdrop');
+        const viewerImg = document.getElementById('viewer-img');
+        const viewerDock = document.getElementById('viewer-dock');
+        const viewerDlBtn = document.getElementById('viewer-download-btn');
 
-        // Set fallback link
-        if (document.getElementById('fallback-link')) {
-            document.getElementById('fallback-link').href = DRIVE_LINK;
-        }
+        if (document.getElementById('fallback-link')) document.getElementById('fallback-link').href = DRIVE_LINK;
 
         async function fetchImages() {
             try {
                 const response = await fetch(SCRIPT_URL);
                 const data = await response.json();
-
                 if (!data || data.length === 0) {
                     loading.classList.add('hidden');
                     errorMsg.innerHTML = "<p>No photos found yet.</p>";
@@ -430,7 +223,6 @@
                 renderImages(data);
                 if (window.savvySay) window.savvySay(`Loaded ${data.length} snaps ✅`);
             } catch (error) {
-                console.error('Error:', error);
                 loading.classList.add('hidden');
                 errorMsg.classList.remove('hidden');
                 if (window.savvySay) window.savvySay("Failed to load snaps ⚠️");
@@ -443,148 +235,134 @@
 
             images.forEach(img => {
                 const card = document.createElement('div');
-                card.className = 'pin-card group relative';
+                card.className = 'pin-card group relative cursor-pointer'; 
+                const downloadUrl = `https://drive.google.com/uc?export=download&id=${img.id}`;
+                const filename = `SavvySnap_${img.id}.jpg`;
 
-                const downloadLink = `https://drive.google.com/uc?export=download&id=${img.id}`;
+                // Clicking the whole card opens the viewer
+                card.onclick = () => openViewer(img.url, downloadUrl, filename);
 
                 card.innerHTML = `
                     <img src="${img.url}" alt="Snapshot" class="pin-image w-full h-auto block" loading="lazy">
-                    
-                    <div class="absolute bottom-0 left-0 right-0 p-3 flex justify-end gap-2 z-20
-                                bg-gradient-to-t from-black/60 to-transparent
-                                transition-opacity duration-300
-                                opacity-100 
-                                md:opacity-0 md:group-hover:opacity-100">
-                        
-                        <a href="${img.url}" target="_blank" 
-                           class="bg-white text-gray-900 p-2.5 rounded-full shadow-md hover:scale-110 transition flex items-center justify-center">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                        </a>
-
-                        <a href="${downloadLink}" 
-                           class="bg-blue-600 text-white p-2.5 rounded-full shadow-md hover:bg-blue-700 hover:scale-110 transition flex items-center justify-center">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                        </a>
+                    <div class="absolute bottom-0 left-0 right-0 p-3 flex justify-end gap-2 z-20 bg-gradient-to-t from-black/60 to-transparent transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+                        <button class="bg-white/20 backdrop-blur-md text-white p-2 rounded-full hover:bg-white/40 transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        </button>
                     </div>
                 `;
                 gallery.appendChild(card);
             });
         }
 
+        // --- FETCH & SPINNER DOWNLOAD ---
+        async function forceDownload(btn, url, filename) {
+            if (window.savvySay) window.savvySay("Downloading... 📥");
+            
+            const originalHTML = btn.innerHTML;
+            // Spinner HTML
+            btn.innerHTML = `<svg class="animate-spin w-4 h-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Saving...</span>`;
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(blobUrl);
+                if (window.savvySay) window.savvySay("Saved! ✅");
+            } catch (error) {
+                console.error("Fetch failed, falling back to new tab:", error);
+                if (window.savvySay) window.savvySay("Opening download... ↗️");
+                window.open(url, '_blank');
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        }
+
+        // --- VIEWER LOGIC ---
+        function openViewer(imgUrl, dlUrl, filename) {
+            viewerImg.src = imgUrl;
+            
+            // Set up download button
+            viewerDlBtn.onclick = function() {
+                forceDownload(this, dlUrl, filename);
+            };
+
+            viewer.classList.remove('hidden');
+            
+            // Trigger Animations
+            requestAnimationFrame(() => {
+                viewerBackdrop.classList.add('viewer-bg-enter-active');
+                viewerBackdrop.classList.remove('viewer-bg-exit-active');
+                
+                viewerImg.classList.add('zoom-enter-active');
+                viewerImg.classList.remove('zoom-exit-active');
+
+                viewerDock.classList.add('dock-enter-active');
+                viewerDock.classList.remove('dock-exit-active');
+            });
+
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeViewer() {
+            // Exit Animations
+            viewerBackdrop.classList.remove('viewer-bg-enter-active');
+            viewerBackdrop.classList.add('viewer-bg-exit-active');
+            
+            viewerImg.classList.remove('zoom-enter-active');
+            viewerImg.classList.add('zoom-exit-active');
+            
+            viewerDock.classList.remove('dock-enter-active');
+            viewerDock.classList.add('dock-exit-active');
+
+            setTimeout(() => {
+                viewer.classList.add('hidden');
+                viewerImg.src = '';
+                document.body.style.overflow = '';
+            }, 400); 
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if(e.key === "Escape" && !viewer.classList.contains('hidden')) closeViewer();
+        });
+
         fetchImages();
 
-        /* ===== SAVVY BOT LOGIC ===== */
+        // Savvy Bot (Unchanged)
         document.addEventListener('DOMContentLoaded', () => {
             const botContainer = document.getElementById('savvy-bot-container');
             const botBody = document.getElementById('bot-body');
             const botEye = document.getElementById('bot-eye');
             const botPupil = document.getElementById('bot-pupil');
             const botBubble = document.getElementById('bot-bubble');
-
-            if (!botContainer || !botBody || !botEye || !botPupil || !botBubble) return;
-
-            let isSleeping = false;
-            let idleTimer;
-            let lastScrollY = 0;
-
-            function showBubble(text) {
-                botBubble.textContent = text;
-                botBubble.classList.add('show');
-                setTimeout(() => botBubble.classList.remove('show'), 2500);
-            }
-
-            window.savvySay = function(text) {
-                if (isSleeping) wakeUp();
-                showBubble(text);
-            };
-
-            function wakeUp() {
-                if(isSleeping) {
-                    isSleeping = false;
-                    botEye.classList.remove('sleeping');
-                }
-                clearTimeout(idleTimer);
-                idleTimer = setTimeout(goToSleep, 10000);
-            }
-
-            function goToSleep() {
-                isSleeping = true;
-                botEye.classList.add('sleeping');
-                showBubble("Power nap… 😴");
-            }
-
-            function triggerScan() {
-                botBody.classList.add('scanning');
-                showBubble("Scanning gallery... 🔎");
-                setTimeout(() => botBody.classList.remove('scanning'), 2200);
-            }
-
+            if (!botContainer) return;
+            let isSleeping = false; let idleTimer; let lastScrollY = 0;
+            function showBubble(text) { botBubble.textContent = text; botBubble.classList.add('show'); setTimeout(() => botBubble.classList.remove('show'), 2500); }
+            window.savvySay = function(text) { if (isSleeping) wakeUp(); showBubble(text); };
+            function wakeUp() { if(isSleeping) { isSleeping = false; botEye.classList.remove('sleeping'); } clearTimeout(idleTimer); idleTimer = setTimeout(goToSleep, 10000); }
+            function goToSleep() { isSleeping = true; botEye.classList.add('sleeping'); showBubble("Power nap… 😴"); }
+            function triggerScan() { botBody.classList.add('scanning'); showBubble("Scanning gallery... 🔎"); setTimeout(() => botBody.classList.remove('scanning'), 2200); }
             function pickNewPosition() {
                 if(isSleeping || botBody.classList.contains('scanning')) return;
-                const w = window.innerWidth;
-                const h = window.innerHeight;
-                const pad = 60; 
-                const botSize = 60;
-
-                const zones = [
-                    {x: w - pad - botSize, y: h * 0.7},
-                    {x: pad, y: h * 0.7},
-                    {x: w - pad - botSize, y: h * 0.3},
-                    {x: pad, y: h * 0.3}
-                ];
+                const w = window.innerWidth; const h = window.innerHeight; const pad = 60; const botSize = 60;
+                const zones = [{x: w - pad - botSize, y: h * 0.7}, {x: pad, y: h * 0.7}, {x: w - pad - botSize, y: h * 0.3}, {x: pad, y: h * 0.3}];
                 const choice = zones[Math.floor(Math.random() * zones.length)];
-                const x = choice.x + (Math.random() * 20 - 10);
-                const y = choice.y + (Math.random() * 20 - 10);
+                const x = choice.x + (Math.random() * 20 - 10); const y = choice.y + (Math.random() * 20 - 10);
                 botContainer.style.transform = `translate(${x}px, ${y}px)`;
-
                 if(Math.random() > 0.7) setTimeout(triggerScan, 2500);
             }
-
-            setTimeout(pickNewPosition, 400);
-            setInterval(pickNewPosition, 11000);
-
-            botContainer.addEventListener('click', () => {
-                if(isSleeping) { wakeUp(); showBubble("Back online ⚡"); return; }
-                botBody.style.transform = "scale(0.9)";
-                setTimeout(() => botBody.style.transform = "scale(1)", 150);
-                const clickPhrases = [
-                    "Nice shot 😎",
-                    "Angles on point 📐",
-                    "Good vibes only ✨",
-                    "Who took that one? 🔥"
-                ];
-                const txt = clickPhrases[Math.floor(Math.random() * clickPhrases.length)];
-                showBubble(txt);
-                triggerScan();
-            });
-
-            document.addEventListener('mousemove', (e) => {
-                wakeUp();
-                if(!isSleeping && !botBody.classList.contains('scanning')) {
-                    const rect = botEye.getBoundingClientRect();
-                    const cx = rect.left + rect.width/2;
-                    const cy = rect.top + rect.height/2;
-                    const angle = Math.atan2(e.clientY - cy, e.clientX - cx);
-                    const dist = Math.min(4, Math.hypot(e.clientX - cx, e.clientY - cy));
-                    botPupil.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
-                }
-            });
-
-            window.addEventListener('scroll', () => {
-                wakeUp();
-                const st = window.scrollY;
-                if (Math.abs(st - lastScrollY) > 40) {
-                    botBody.classList.add('windblown');
-                } else {
-                    botBody.classList.remove('windblown');
-                }
-                lastScrollY = st;
-            });
+            setTimeout(pickNewPosition, 400); setInterval(pickNewPosition, 11000);
+            botContainer.addEventListener('click', () => { if(isSleeping) { wakeUp(); showBubble("Back online ⚡"); return; } botBody.style.transform = "scale(0.9)"; setTimeout(() => botBody.style.transform = "scale(1)", 150); const clickPhrases = ["Nice shot 😎", "Angles on point 📐", "Good vibes only ✨", "Who took that one? 🔥"]; showBubble(clickPhrases[Math.floor(Math.random() * clickPhrases.length)]); triggerScan(); });
+            document.addEventListener('mousemove', (e) => { wakeUp(); if(!isSleeping && !botBody.classList.contains('scanning')) { const rect = botEye.getBoundingClientRect(); const cx = rect.left + rect.width/2; const cy = rect.top + rect.height/2; const angle = Math.atan2(e.clientY - cy, e.clientX - cx); const dist = Math.min(4, Math.hypot(e.clientX - cx, e.clientY - cy)); botPupil.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`; } });
+            window.addEventListener('scroll', () => { wakeUp(); const st = window.scrollY; if (Math.abs(st - lastScrollY) > 40) botBody.classList.add('windblown'); else botBody.classList.remove('windblown'); lastScrollY = st; });
         });
     </script>
 </body>

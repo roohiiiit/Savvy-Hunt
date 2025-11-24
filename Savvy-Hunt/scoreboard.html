@@ -31,6 +31,21 @@
     -webkit-font-smoothing: antialiased;
     color: #1f2937;
   }
+  /* Force disable selection on EVERYTHING */
+            *, *::before, *::after {
+                -webkit-user-select: none !important;
+                -moz-user-select: none !important;
+                -ms-user-select: none !important;
+                user-select: none !important;
+            }
+
+            /* Allow selection ONLY on input fields (so people can contact you) */
+            input, textarea {
+                -webkit-user-select: text !important;
+                -moz-user-select: text !important;
+                -ms-user-select: text !important;
+                user-select: text !important;
+            }
 
   /* Centered big background text */
   .bg-parallax-text {
