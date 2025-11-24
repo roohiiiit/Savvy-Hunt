@@ -761,6 +761,22 @@
                 lastScrollY = st;
             });
         });
+        
+            // Disable Right Click
+            document.addEventListener('contextmenu', event => event.preventDefault());
+
+            // Disable Key combinations
+            document.addEventListener('keydown', event => {
+                if (event.ctrlKey || event.metaKey) {
+                const charCode = String.fromCharCode(event.which).toLowerCase();
+                if (charCode === 'c' || charCode === 'u' || charCode === 's') {
+                    event.preventDefault();
+                }
+                }
+            });
+
+        
     </script>
+    
 </body>
 </html>
