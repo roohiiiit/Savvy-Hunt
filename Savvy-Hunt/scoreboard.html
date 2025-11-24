@@ -15,7 +15,7 @@
 
   <style>
   /* ---------------------------
-    Base / layout
+     Base / layout
   --------------------------- */
   * {
     box-sizing: border-box;
@@ -64,7 +64,7 @@
   }
 
   /* ============================
-    NAVBAR
+     NAVBAR
   ============================ */
   .navbar {
       width: 100%;
@@ -114,7 +114,7 @@
   }
 
   /* ============================
-    SWITCHER BAR
+     SWITCHER BAR
   ============================ */
   .switcher-bar {
       display: flex;
@@ -149,7 +149,7 @@
   }
 
   /* ============================
-    SCOREBOARD CONTAINER
+     SCOREBOARD CONTAINER
   ============================ */
   .scoreboard-container {
     max-width: 1100px;
@@ -174,7 +174,7 @@
   }
 
   /* ============================
-    TABLE
+     TABLE
   ============================ */
   .table-wrapper {
       width: 100%;
@@ -252,7 +252,7 @@
   }
 
   /* ============================
-    CATEGORY BUTTONS
+     CATEGORY BUTTONS
   ============================ */
   .category-buttons {
     display: flex;
@@ -289,7 +289,7 @@
   }
 
   /* ============================
-    TOP-3 CARDS & ANIMATION
+     TOP-3 CARDS & ANIMATION
   ============================ */
   .top3-grid {
     display: grid;
@@ -394,7 +394,7 @@
   }
 
   /* ============================
-    MOBILE FIXES
+     MOBILE FIXES
   ============================ */
   @media (max-width: 768px) {
     .navbar {
@@ -774,7 +774,7 @@
     }
 
     /************************************************************************
-     * Main leaderboard loader
+     * Main leaderboard loader with TIED RANK LOGIC
      ************************************************************************/
     async function loadScoreboard() {
       const { data, error } = await db
@@ -796,10 +796,21 @@
         return;
       }
 
+      // Rank Calculation Logic
+      let currentRank = 1;
       data.forEach((row, index) => {
+        // Standard Competition Ranking: 
+        // If this is not the first row, check if the score is different from previous
+        if (index > 0) {
+            if (row.total < data[index - 1].total) {
+                currentRank = index + 1;
+            }
+            // If row.total === data[index - 1].total, currentRank stays the same (tie)
+        }
+
         tbody.insertAdjacentHTML('beforeend', `
           <tr>
-            <td class="scoreboard-rank">${index + 1}</td>
+            <td class="scoreboard-rank">${currentRank}</td>
             <td>${escapeHtml(row.name || '')}</td>
             <td>${Number(row.cat1 || 0)}</td>
             <td>${Number(row.cat2 || 0)}</td>
@@ -818,7 +829,7 @@
     }
 
     /************************************************************************
-     * Category top-3 loader
+     * Category top-3 loader with TIED RANK LOGIC
      ************************************************************************/
     async function loadCategoryTop3(tableListId, columnName) {
       const el = document.getElementById(tableListId);
@@ -838,26 +849,54 @@
         return;
       }
 
+      // Sort by category score
       const sorted = data.slice().sort((a, b) => (Number(b[columnName] || 0) - Number(a[columnName] || 0)));
+      
+      // Just take top 3 for display, but we calculate rank correctly
       const top3 = sorted.slice(0, 3);
 
-      const styleMap = [
-        { cls: 'gold', emoji: '🥇', label: '1' },
-        { cls: 'silver', emoji: '🥈', label: '2' },
-        { cls: 'bronze', emoji: '🥉', label: '3' }
-      ];
-
       el.innerHTML = '';
+      
+      // Rank Logic for Category Cards
+      let currentRank = 1;
+
       top3.forEach((row, idx) => {
-        const s = styleMap[idx] || { cls: 'silver', emoji: `#${idx+1}`, label: String(idx+1) };
+        // Same ranking logic as main table
+        if (idx > 0) {
+            const prevScore = Number(sorted[idx - 1][columnName] || 0);
+            const currScore = Number(row[columnName] || 0);
+            if (currScore < prevScore) {
+                currentRank = idx + 1;
+            }
+        } else {
+            currentRank = 1;
+        }
+
+        // Determine badge style based on Rank (not just index)
+        let badgeClass = 'bronze';
+        let badgeEmoji = '🥉';
+        
+        if (currentRank === 1) {
+            badgeClass = 'gold';
+            badgeEmoji = '🥇';
+        } else if (currentRank === 2) {
+            badgeClass = 'silver';
+            badgeEmoji = '🥈';
+        } else if (currentRank === 3) {
+            badgeClass = 'bronze';
+            badgeEmoji = '🥉';
+        } else {
+             badgeEmoji = `#${currentRank}`;
+        }
+
         const scoreDisplay = Number(row[columnName] || 0).toLocaleString();
 
         el.insertAdjacentHTML('beforeend', `
-          <div class="pod" role="article" aria-label="Rank ${idx+1} - ${escapeHtml(row.name || '')}">
-            <div class="badge ${s.cls}" title="Rank ${idx+1}">${s.emoji}</div>
+          <div class="pod" role="article" aria-label="Rank ${currentRank} - ${escapeHtml(row.name || '')}">
+            <div class="badge ${badgeClass}" title="Rank ${currentRank}">${badgeEmoji}</div>
             <div class="meta">
               <h4>${escapeHtml(row.name || '—')}</h4>
-              <p style="margin-top:6px;color:#9CA3AF;font-weight:600">Rank ${idx+1}</p>
+              <p style="margin-top:6px;color:#9CA3AF;font-weight:600">Rank ${currentRank}</p>
             </div>
             <div class="score-pill" aria-hidden="true">${scoreDisplay}</div>
           </div>
@@ -866,7 +905,7 @@
 
       if (top3.length < 3) {
         for (let i = top3.length; i < 3; i++) {
-          const s = styleMap[i] || { cls: 'silver', emoji: `#${i+1}`, label: String(i+1) };
+          const s = { cls: 'silver', emoji: `#${i+1}`, label: String(i+1) };
           el.insertAdjacentHTML('beforeend', `
             <div class="pod" style="opacity:0.6">
               <div class="badge ${s.cls}">${s.emoji}</div>
