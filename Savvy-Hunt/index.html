@@ -479,7 +479,6 @@
     <div class="scroll-line-track"><div class="scroll-line-fill" id="scroll-fill"></div></div>
     <div class="bg-parallax-text" id="big-parallax-text">SAVVY HUNT 2025</div>
 
-    <!-- SAVVY BOT -->
     <div id="savvy-bot-container" style="transform: translate(80vw, 80vh);">
         <div class="bot-bubble" id="bot-bubble">Online! 🟠</div>
         <div class="bot-body" id="bot-body">
@@ -491,7 +490,6 @@
         </div>
     </div>
 
-    <!-- HERO SECTION -->
     <section id="hero-section" class="relative min-h-[65vh] md:min-h-[90vh] flex flex-col justify-center items-center text-white text-center rounded-b-[3rem] overflow-hidden shadow-2xl z-10 pt-16 pb-8 md:py-0">
         <div class="absolute inset-0 bg-[#0f172a] bg-top bg-no-repeat bg-cover" style="background-image: url('assests/bg.png');"></div>
         <div class="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/50 to-slate-900/95"></div>
@@ -513,7 +511,6 @@
 
     <div class="max-w-7xl mx-auto p-4 md:p-12 relative -mt-12 z-20">
         
-        <!-- LIVE EVENTS SECTION (FLIP CARDS) -->
         <section id="live-events" class="text-center mb-40 pt-24">
             <span class="inline-block py-1 px-3 rounded-full bg-orange-50 text-orange-600 text-xs font-bold tracking-widest mb-4 border border-orange-200 opacity-0 animate-fade-in-up [animation-delay:1000ms]">LIVE FEED</span>
             <h2 class="text-4xl md:text-8xl font-extrabold mb-6 text-slate-900 opacity-0 animate-fade-in-up [animation-delay:1100ms] tracking-tighter">Real-Time <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 pb-2 pr-1">Updates</span></h2>
@@ -532,7 +529,6 @@
             </div>
         </section>
 
-        <!-- SCOREBOARD PREVIEW -->
         <section id="scoreboard-section" class="hover-trigger card bg-white/90 p-8 md:p-20 mb-40 opacity-0 animate-fade-in-up [animation-delay:200ms] relative overflow-hidden" data-bot-say="Calculating stats... 🧮">
              <div class="absolute top-0 right-0 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse parallax-layer" data-speed="-0.08"></div>
              <div class="absolute bottom-0 left-0 w-80 h-80 bg-orange-100/40 rounded-full blur-3xl -ml-20 -mb-20 animate-pulse parallax-layer" data-speed="0.06" style="animation-delay: 1.5s"></div>
@@ -548,7 +544,6 @@
              </div>
         </section>
 
-        <!-- GALLERY SECTION -->
         <section id="gallery-section" class="mb-40 px-2">
             <div class="text-center max-w-3xl mx-auto mb-12">
                 <h2 class="text-4xl md:text-7xl font-black mb-4 tracking-tighter text-slate-900"><span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 pb-2 pr-1">Snapshots</span></h2>
@@ -573,7 +568,6 @@
              </div>
         </section>
 
-        <!-- ABOUT SECTION -->
         <section id="about-section" class="mb-32 px-2 md:px-4 relative z-20">
              <div class="bg-white/80 backdrop-blur-xl rounded-[3rem] p-8 md:p-20 lg:flex lg:items-center lg:gap-20 shadow-2xl border border-white">
                 <div class="lg:w-1/2">
@@ -1020,7 +1014,6 @@
                 <div class="flip-card opacity-0 animate-fade-in-up" style="animation-delay: ${i*150}ms">
                     <div class="flip-card-inner" id="${uniqueId}">
                         
-                        <!-- FRONT OF CARD -->
                         <div class="flip-card-front ${frontCardClass}">
                             <div class="badge-container">
                                 <span class="status-badge ${badgeClass}">${badgeText}</span>
@@ -1043,7 +1036,6 @@
                             </button>
                         </div>
 
-                        <!-- BACK OF CARD -->
                         <div class="flip-card-back">
                             <div class="w-full flex-grow flex flex-col justify-center">
                                 <h4 class="text-slate-800 font-black uppercase text-xs border-b-2 border-orange-100 pb-3 mb-4 tracking-wider text-left flex items-center gap-2">
@@ -1073,7 +1065,23 @@
                 .limit(3);
 
             scoreContainer.innerHTML = "";
-            if(data) data.forEach((r, i) => {
+            
+            // FILTER: Only keep teams with a score greater than 0
+            const activeTeams = data ? data.filter(r => r.total > 0) : [];
+
+            // CHECK: If no one has scores yet, show the message
+            if(activeTeams.length === 0) {
+                scoreContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-10 opacity-70 text-center">
+                        <div class="text-4xl mb-2">⏳</div>
+                        <p class="text-slate-500 font-bold text-lg">Nothing to see here yet.</p>
+                        <p class="text-orange-500 font-medium text-sm">Events in progress...</p>
+                    </div>`;
+                return;
+            }
+
+            // RENDER: Show the list if we have valid scores
+            activeTeams.forEach((r, i) => {
                 let c = ['text-orange-600','text-blue-600','text-yellow-600'][i] || 'text-slate-600';
                 let icon = ['🏆','⚡','🌟'][i] || '#';
                 scoreContainer.innerHTML += `
