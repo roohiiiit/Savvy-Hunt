@@ -8,7 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Match index font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -197,8 +196,8 @@
         }
 
         .flip-card:hover .flip-card-inner:not(.flipped) {
-    transform: translateY(-5px);
-}
+            transform: translateY(-5px);
+        }
 
 
         .flipped {
@@ -412,16 +411,19 @@
             transform: translateX(0%);
         }
 
+        /* COMPACT ROW STYLES FOR BACK OF CARD */
         .winner-row { 
             display: flex; 
             align-items: center; 
-            margin-bottom: 10px; 
+            margin-bottom: 4px; /* Compact */
             background: white;
-            padding: 10px 16px; 
-            border-radius: 14px;
+            padding: 6px 10px; /* Compact */
+            border-radius: 12px;
             border: 1px solid #f3f4f6;
             width: 100%;
             transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+            flex-shrink: 1;
+            min-height: 0;
         }
         .winner-row:hover {
             transform: translateY(-1px);
@@ -431,8 +433,8 @@
         .winner-row:last-child { margin-bottom: 0; }
         
         .medal { 
-            font-size: 1.4em; 
-            margin-right: 12px; 
+            font-size: 1.2em; /* Slightly smaller */
+            margin-right: 8px; 
             flex-shrink: 0; 
             filter: drop-shadow(0 2px 2px rgba(0,0,0,0.18)); 
         }
@@ -445,13 +447,13 @@
         .student-name { 
             font-weight: 700; 
             color: #111827; 
-            font-size: 0.95rem; 
+            font-size: 0.85rem; 
             white-space: nowrap; 
             overflow: hidden; 
             text-overflow: ellipsis; 
         }
         .school-name { 
-            font-size: 0.7rem; 
+            font-size: 0.6rem; 
             color: #6b7280; 
             font-weight: 600; 
             text-transform: uppercase; 
@@ -606,7 +608,7 @@
             filter: drop-shadow(0 0 6px rgba(255,98,0,1));
             mix-blend-mode: hard-light;
         }
-       
+        
 
         .bot-antenna {
             position: absolute;
@@ -679,9 +681,7 @@
     <div class="bg-parallax-text">SCHEDULE</div>
 
 
-    <!-- HEADER + SAVVY -->
     <header class="schedule-hero">
-        <!-- Savvy Bot -->
         <div id="savvy-bot-container" style="transform: translate(80vw, 75vh);">
             <div class="bot-bubble" id="bot-bubble">Full schedule unlocked 🧾</div>
             <div class="bot-body" id="bot-body">
@@ -725,8 +725,7 @@
         </div>
 
         <div id="schedule-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
-            <!-- Cards injected here -->
-        </div>
+            </div>
         
         <div id="no-results" style="display: none;">
             <div class="text-6xl mb-4">🔍</div>
@@ -742,7 +741,6 @@
         </div>
     </div>
 
-    <!-- FOOTER (same as index, minus lock) -->
     <footer class="bg-slate-950 text-slate-400 pt-24 pb-10 -mt-8 relative z-10" style="border-top-left-radius: 3rem; border-top-right-radius: 3rem;">
         <div class="max-w-7xl mx-auto px-6 text-center">
             <h3 class="text-3xl font-bold text-white mb-2 tracking-tight">
@@ -840,36 +838,37 @@
                     btnText = 'View Details';
                 }
 
-                const student1 = event.student_1 || 'TBA';
-                const school1 = event.winner_1 || 'TBA';
-                const student2 = event.student_2 || '-';
-                const school2 = event.winner_2 || '-';
-                const student3 = event.student_3 || '-';
-                const school3 = event.winner_3 || '-';
+                // --- MULTI-WINNER LOGIC ---
+                let winnersListHTML = '';
 
-                const winnersHTML = `
-                    <div class="winner-row">
-                        <span class="medal">🥇</span>
-                        <div class="winner-info">
-                            <span class="student-name">${student1}</span>
-                            <span class="school-name">${school1}</span>
-                        </div>
-                    </div>
-                    <div class="winner-row">
-                        <span class="medal">🥈</span>
-                        <div class="winner-info">
-                            <span class="student-name">${student2}</span>
-                            <span class="school-name">${school2}</span>
-                        </div>
-                    </div>
-                    <div class="winner-row">
-                        <span class="medal">🥉</span>
-                        <div class="winner-info">
-                            <span class="student-name">${student3}</span>
-                            <span class="school-name">${school3}</span>
-                        </div>
-                    </div>
-                `;
+                if (isResults) {
+                    const generateRows = (list, medal) => {
+                        if(!list || list.length === 0) return '';
+                        return list.map(w => `
+                            <div class="winner-row">
+                                <span class="medal">${medal}</span>
+                                <div class="winner-info">
+                                    <span class="student-name">${w.name || 'TBA'}</span>
+                                    <span class="school-name">${w.school || ''}</span>
+                                </div>
+                            </div>
+                        `).join('');
+                    };
+
+                    if (event.result_json) {
+                        const r = event.result_json;
+                        winnersListHTML += generateRows(r.p1, '🥇');
+                        winnersListHTML += generateRows(r.p2, '🥈');
+                        winnersListHTML += generateRows(r.p3, '🥉');
+                    } else {
+                        const p1 = [{ name: event.student_1, school: event.winner_1 }];
+                        const p2 = [{ name: event.student_2, school: event.winner_2 }];
+                        const p3 = [{ name: event.student_3, school: event.winner_3 }];
+                        if(event.winner_1) winnersListHTML += generateRows(p1, '🥇');
+                        if(event.winner_2) winnersListHTML += generateRows(p2, '🥈');
+                        if(event.winner_3) winnersListHTML += generateRows(p3, '🥉');
+                    }
+                }
 
                 const waitingHTML = `
                     <div class="flex flex-col items-center justify-center h-48 text-center text-gray-400">
@@ -902,13 +901,15 @@
                             </button>
                         </div>
                         <div class="flip-card-back">
-                            <div class="w-full flex-grow flex flex-col justify-center">
-                                <h4 class="text-slate-800 font-black uppercase text-xs border-b-2 border-orange-100 pb-3 mb-4 tracking-wider text-left flex items-center gap-2">
+                            <div class="w-full flex-grow flex flex-col justify-center" style="overflow: hidden;">
+                                <h4 class="text-slate-800 font-black uppercase text-xs border-b-2 border-orange-100 pb-3 mb-2 tracking-wider text-left flex items-center gap-2 shrink-0">
                                     <span class="text-lg">🏆</span> Winners Podium
                                 </h4>
-                                ${isResults ? winnersHTML : waitingHTML}
+                                <div style="display:flex; flex-direction:column; gap:4px; flex-grow:1; justify-content:center;">
+                                    ${isResults ? winnersListHTML : waitingHTML}
+                                </div>
                             </div>
-                            <button onclick="toggleFlip('${uniqueId}')" class="action-btn btn-back">
+                            <button onclick="toggleFlip('${uniqueId}')" class="action-btn btn-back shrink-0">
                                 &larr; Back to Info
                             </button>
                         </div>

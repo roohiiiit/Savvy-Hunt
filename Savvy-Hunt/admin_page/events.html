@@ -8,16 +8,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <script>
         if (!sessionStorage.getItem('savvy_admin_auth')) {
             window.location.href = 'login.html';
         }
     </script>
+
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
@@ -37,11 +39,17 @@
             transform: scale(0.95); transition: transform 0.3s ease;
         }
         .modal-show .modal-content { transform: scale(1); }
+
+        /* Fade In for new rows */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
     </style>
 </head>
 <body class="text-slate-800">
 
-    <!-- Top Navigation -->
     <nav class="bg-white border-b border-slate-200 px-6 py-4 sticky top-0 z-40 shadow-sm">
         <div class="max-w-5xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
@@ -63,7 +71,6 @@
 
     <div class="max-w-5xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
         
-        <!-- LEFT COLUMN: ADD EVENT FORM -->
         <div class="lg:col-span-1">
             <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sticky top-24">
                 <h2 class="text-lg font-bold mb-1 flex items-center gap-2">
@@ -113,15 +120,12 @@
                             <option value="cat3">Category 3</option>
                             <option value="cat4">Category 4</option>
                             <option value="cat5">Category 5</option>
-                            <option value="common_cat">Common Catgory</option>
+                            <option value="common_cat">Common Category</option>
                         </select>
                         <p class="text-[10px] text-slate-400 mt-1 text-right">* Required for scoreboard logic</p>
                     </div>
 
                     <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-3 rounded-xl shadow-md hover:shadow-lg hover:scale-[1.02] transition-all active:scale-95 flex justify-center items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
                         Publish Event
                     </button>
 
@@ -129,7 +133,6 @@
             </div>
         </div>
 
-        <!-- RIGHT COLUMN: EVENT LIST -->
         <div class="lg:col-span-2">
             <div class="flex justify-between items-end mb-6">
                 <div>
@@ -142,75 +145,69 @@
             </div>
 
             <div id="event-list" class="space-y-4">
-                <!-- Events are injected here -->
                 <div class="text-center py-12">
                     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-4"></div>
                     <p class="text-slate-400 text-sm">Fetching events...</p>
                 </div>
             </div>
         </div>
-
     </div>
 
-    <!-- RESULTS MODAL (Improved UI) -->
     <div id="resultsModal" class="modal-overlay">
-        <div class="modal-content bg-white rounded-2xl shadow-2xl w-[90%] max-w-md overflow-hidden">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl w-[90%] max-w-lg overflow-hidden max-h-[90vh] flex flex-col">
             
-            <!-- Modal Header -->
-            <div class="bg-gradient-to-r from-slate-900 to-slate-800 p-6 text-white text-center relative">
+            <div class="bg-gradient-to-r from-slate-900 to-slate-800 p-6 text-white text-center relative shrink-0">
                 <h2 class="text-2xl font-bold">🏆 Publish Winners</h2>
                 <p class="text-slate-300 text-sm mt-1">For <span id="modal-category-display" class="text-orange-400 font-mono">CATEGORY</span></p>
                 <button onclick="closeModal()" class="absolute top-4 right-4 text-white/50 hover:text-white transition">✕</button>
             </div>
 
-            <!-- Modal Body -->
-            <div class="p-6 space-y-4">
+            <div class="p-6 space-y-6 overflow-y-auto custom-scrollbar">
                 <input type="hidden" id="result-event-id">
                 <input type="hidden" id="result-event-category">
 
-                <!-- 1st Place -->
-                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold text-yellow-700 uppercase tracking-wider">🥇 1st Place (10 pts)</span>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span id="lbl-p1" class="text-xs font-bold text-yellow-700 uppercase tracking-wider bg-yellow-100 px-2 py-1 rounded border border-yellow-200">🥇 1st Place</span>
+                        <button type="button" onclick="addWinnerRow(1)" class="text-[10px] font-bold text-slate-400 hover:text-green-600 transition flex items-center gap-1 border border-dashed border-slate-300 px-2 py-1 rounded">
+                            <span>+ ADD TIE</span>
+                        </button>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="text" id="student-1" placeholder="Student Name" class="text-sm border border-yellow-200 rounded px-2 py-1.5 focus:ring-1 focus:ring-yellow-500 outline-none w-full">
-                        <select id="winner-1" class="school-select text-sm border border-yellow-200 rounded px-2 py-1.5 focus:ring-1 focus:ring-yellow-500 outline-none w-full bg-white"><option value="">Select School</option></select>
-                    </div>
+                    <div id="container-1" class="space-y-2"></div>
                 </div>
 
-                <!-- 2nd Place -->
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">🥈 2nd Place (5 pts)</span>
+                <hr class="border-slate-100">
+
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span id="lbl-p2" class="text-xs font-bold text-slate-600 uppercase tracking-wider bg-slate-100 px-2 py-1 rounded border border-slate-200">🥈 2nd Place</span>
+                        <button type="button" onclick="addWinnerRow(2)" class="text-[10px] font-bold text-slate-400 hover:text-green-600 transition flex items-center gap-1 border border-dashed border-slate-300 px-2 py-1 rounded">
+                            <span>+ ADD TIE</span>
+                        </button>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="text" id="student-2" placeholder="Student Name" class="text-sm border border-slate-300 rounded px-2 py-1.5 focus:ring-1 focus:ring-slate-500 outline-none w-full">
-                        <select id="winner-2" class="school-select text-sm border border-slate-300 rounded px-2 py-1.5 focus:ring-1 focus:ring-slate-500 outline-none w-full bg-white"><option value="">Select School</option></select>
-                    </div>
+                    <div id="container-2" class="space-y-2"></div>
                 </div>
 
-                <!-- 3rd Place -->
-                <div class="bg-orange-50 border border-orange-200 rounded-xl p-3">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold text-orange-700 uppercase tracking-wider">🥉 3rd Place (3 pts)</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="text" id="student-3" placeholder="Student Name" class="text-sm border border-orange-200 rounded px-2 py-1.5 focus:ring-1 focus:ring-orange-500 outline-none w-full">
-                        <select id="winner-3" class="school-select text-sm border border-orange-200 rounded px-2 py-1.5 focus:ring-1 focus:ring-orange-500 outline-none w-full bg-white"><option value="">Select School</option></select>
-                    </div>
-                </div>
+                <hr class="border-slate-100">
 
-                <!-- Actions -->
-                <div class="grid grid-cols-2 gap-3 mt-4">
-                    <button onclick="closeModal()" class="py-3 rounded-lg border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition">Cancel</button>
-                    <button onclick="saveResults()" class="py-3 rounded-lg bg-green-600 text-white font-bold hover:bg-green-700 shadow-lg shadow-green-200 transition">Confirm & Save</button>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span id="lbl-p3" class="text-xs font-bold text-orange-700 uppercase tracking-wider bg-orange-100 px-2 py-1 rounded border border-orange-200">🥉 3rd Place</span>
+                        <button type="button" onclick="addWinnerRow(3)" class="text-[10px] font-bold text-slate-400 hover:text-green-600 transition flex items-center gap-1 border border-dashed border-slate-300 px-2 py-1 rounded">
+                            <span>+ ADD TIE</span>
+                        </button>
+                    </div>
+                    <div id="container-3" class="space-y-2"></div>
                 </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-100 grid grid-cols-2 gap-3 bg-white shrink-0 z-10">
+                <button onclick="closeModal()" class="py-3 rounded-lg border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition">Cancel</button>
+                <button onclick="saveResults()" class="py-3 rounded-lg bg-green-600 text-white font-bold hover:bg-green-700 shadow-lg shadow-green-200 transition">Confirm & Save</button>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPTS -->
     <script>
         // --- CONFIG ---
         const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
@@ -219,14 +216,16 @@
 
         const list = document.getElementById('event-list');
         let schoolList = [];
+        let schoolOptionsHTML = '<option value="">Select School</option>';
 
         // --- LOAD DATA ---
         async function loadSchools() {
             const { data } = await db.from('scoreboard').select('name');
             if (data) {
                 schoolList = data.map(s => s.name);
-                const options = '<option value="">School...</option>' + schoolList.map(s => `<option value="${s}">${s}</option>`).join('');
-                document.querySelectorAll('.school-select').forEach(el => el.innerHTML = options);
+                schoolOptionsHTML = '<option value="">Select School</option>' + 
+                                    schoolList.map(s => `<option value="${s}">${s}</option>`).join('');
+                document.querySelectorAll('.school-select').forEach(el => el.innerHTML = schoolOptionsHTML);
             }
         }
 
@@ -244,7 +243,6 @@
                     <div class="text-center py-12 border-2 border-dashed border-slate-200 rounded-xl">
                         <p class="text-4xl mb-2">📭</p>
                         <p class="text-slate-400 font-medium">No events yet.</p>
-                        <p class="text-xs text-slate-300">Use the form on the left to create one.</p>
                     </div>`;
                 return;
             }
@@ -255,11 +253,38 @@
                 const isFinished = ev.status === 'Finished' ? 'selected' : '';
                 const isPublished = ev.status === 'Results Published' ? 'selected' : '';
 
-                // Status Badge Logic
+                // Badge Logic
                 let statusClass = "bg-slate-100 text-slate-600";
                 if(ev.status === 'Live') statusClass = "bg-red-100 text-red-600 border-red-200";
-                if(ev.status === 'Soon') statusClass = "bg-yellow-100 text-yellow-700 border-yellow-200";
                 if(ev.status === 'Results Published') statusClass = "bg-green-100 text-green-700 border-green-200";
+
+                // Results Preview Generator
+                let previewHTML = '';
+                if (ev.status === 'Results Published') {
+                    let r = ev.result_json;
+                    // Backward compatibility
+                    if (!r) {
+                        r = {
+                            p1: [{ name: ev.student_1, school: ev.winner_1 }],
+                            p2: [{ name: ev.student_2, school: ev.winner_2 }],
+                            p3: [{ name: ev.student_3, school: ev.winner_3 }]
+                        };
+                    }
+
+                    const s1 = r.p1?.[0]?.school || 'TBA';
+                    const s2 = r.p2?.[0]?.school || '-';
+                    const s3 = r.p3?.[0]?.school || '-';
+                    const extra1 = (r.p1?.length > 1) ? `<sup class="text-orange-500 font-bold">+${r.p1.length-1}</sup>` : '';
+
+                    previewHTML = `
+                        <div class="mt-4 pt-3 border-t border-slate-50 flex gap-4 text-xs text-slate-600">
+                            <span>🥇 <b>${s1}</b>${extra1}</span>
+                            <span class="opacity-30">|</span>
+                            <span>🥈 <b>${s2}</b></span>
+                            <span class="opacity-30">|</span>
+                            <span>🥉 <b>${s3}</b></span>
+                        </div>`;
+                }
 
                 list.innerHTML += `
                     <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-all group relative">
@@ -278,7 +303,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Actions -->
                             <div class="flex items-center gap-2">
                                 <select onchange="updateStatus('${ev.id}', this.value)" class="text-xs border border-slate-200 bg-slate-50 rounded px-2 py-1.5 focus:ring-1 focus:ring-orange-500 outline-none cursor-pointer hover:bg-white transition">
                                     <option value="Live" ${isLive}>🔴 Live</option>
@@ -287,9 +311,7 @@
                                     <option value="Results Published" ${isPublished}>🏁 Results</option>
                                 </select>
                                 
-                                <button onclick="openModal('${ev.id}', '${ev.category}')" class="p-1.5 text-slate-400 hover:text-yellow-600 hover:bg-yellow-50 rounded transition" title="Edit Results">
-                                    🏆
-                                </button>
+                                <button onclick="openModal('${ev.id}', '${ev.category}')" class="p-1.5 text-slate-400 hover:text-yellow-600 hover:bg-yellow-50 rounded transition" title="Edit Results">🏆</button>
                                 
                                 <button onclick="deleteEvent('${ev.id}')" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition" title="Delete">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -298,41 +320,76 @@
                                 </button>
                             </div>
                         </div>
-                        
-                        <!-- Mini Results Preview if published -->
-                        ${ev.status === 'Results Published' ? `
-                            <div class="mt-4 pt-3 border-t border-slate-50 flex gap-4 text-xs text-slate-600">
-                                <span>🥇 <b>${ev.student_1 || 'TBA'}</b> (${ev.winner_1})</span>
-                                <span class="opacity-50">|</span>
-                                <span>🥈 <b>${ev.student_2 || '-'}</b></span>
-                                <span class="opacity-50">|</span>
-                                <span>🥉 <b>${ev.student_3 || '-'}</b></span>
-                            </div>
-                        ` : ''}
+                        ${previewHTML}
                     </div>
                 `;
             });
         }
 
-        // --- LOGIC FUNCTIONS ---
+        // --- DYNAMIC FORM LOGIC ---
+
+        function addWinnerRow(place, studentVal = '', schoolVal = '') {
+            const container = document.getElementById(`container-${place}`);
+            const rowId = `row-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            
+            let theme = "border-slate-200 bg-slate-50 focus-within:border-slate-400"; 
+            if(place === 1) theme = "border-yellow-200 bg-yellow-50 focus-within:border-yellow-400";
+            if(place === 3) theme = "border-orange-200 bg-orange-50 focus-within:border-orange-400";
+
+            const html = `
+                <div id="${rowId}" class="winner-row grid grid-cols-[1fr_1fr_auto] gap-2 items-center p-2 rounded-lg border ${theme} animate-fade-in transition-colors">
+                    <input type="text" value="${studentVal}" placeholder="Student Name" class="w-input text-sm border border-transparent bg-white/50 rounded px-2 py-1.5 outline-none focus:bg-white focus:ring-1 focus:ring-slate-300 w-full">
+                    <select class="w-select text-sm border border-transparent bg-white/50 rounded px-2 py-1.5 outline-none focus:bg-white focus:ring-1 focus:ring-slate-300 w-full cursor-pointer">
+                        ${schoolOptionsHTML}
+                    </select>
+                    <button onclick="removeRow('${rowId}')" class="text-slate-400 hover:text-red-500 px-1 transition-colors" title="Remove">✕</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+            if (schoolVal) container.lastElementChild.querySelector('select').value = schoolVal;
+        }
+
+        window.removeRow = (id) => document.getElementById(id).remove();
+
+        // --- CORE FUNCTIONS ---
+
         window.openModal = async (id, cat) => {
-            if (!cat || !cat.startsWith('cat')) {
-                alert("⚠️ Invalid Category. Please recreate this event.");
-                return;
-            }
+            if (!cat) { alert("⚠️ Invalid Category."); return; }
+            
             document.getElementById('result-event-id').value = id;
             document.getElementById('result-event-category').value = cat;
             document.getElementById('modal-category-display').innerText = cat.toUpperCase();
             
-            // Load existing data
+            // Update Labels based on Category (Updated Logic)
+            if (cat === 'common_cat') {
+                document.getElementById('lbl-p1').innerText = '🥇 1st Place (10 pts)';
+                document.getElementById('lbl-p2').innerText = '🥈 2nd Place (6 pts)';
+                document.getElementById('lbl-p3').innerText = '🥉 3rd Place (2 pt)';
+            } else {
+                document.getElementById('lbl-p1').innerText = '🥇 1st Place (5 pts)';
+                document.getElementById('lbl-p2').innerText = '🥈 2nd Place (3 pts)';
+                document.getElementById('lbl-p3').innerText = '🥉 3rd Place (1 pts)';
+            }
+
+            // Reset containers
+            [1,2,3].forEach(n => document.getElementById(`container-${n}`).innerHTML = '');
+
+            // Load data
             const { data } = await db.from('live_events').select('*').eq('id', id).single();
             if(data) {
-                document.getElementById('student-1').value = data.student_1 || '';
-                document.getElementById('winner-1').value = data.winner_1 || '';
-                document.getElementById('student-2').value = data.student_2 || '';
-                document.getElementById('winner-2').value = data.winner_2 || '';
-                document.getElementById('student-3').value = data.student_3 || '';
-                document.getElementById('winner-3').value = data.winner_3 || '';
+                if (data.result_json) {
+                    const r = data.result_json;
+                    if(r.p1) r.p1.forEach(w => addWinnerRow(1, w.name, w.school));
+                    if(r.p2) r.p2.forEach(w => addWinnerRow(2, w.name, w.school));
+                    if(r.p3) r.p3.forEach(w => addWinnerRow(3, w.name, w.school));
+                } 
+                else {
+                    if(data.winner_1) addWinnerRow(1, data.student_1, data.winner_1); else addWinnerRow(1);
+                    if(data.winner_2) addWinnerRow(2, data.student_2, data.winner_2); else addWinnerRow(2);
+                    if(data.winner_3) addWinnerRow(3, data.student_3, data.winner_3); else addWinnerRow(3);
+                }
+            } else {
+                addWinnerRow(1); addWinnerRow(2); addWinnerRow(3);
             }
 
             document.getElementById('resultsModal').classList.add('modal-show');
@@ -340,44 +397,55 @@
 
         window.closeModal = () => document.getElementById('resultsModal').classList.remove('modal-show');
 
-        window.updateStatus = async (id, newStatus) => {
-            await db.from('live_events').update({ status: newStatus }).eq('id', id);
-            if (newStatus === 'Results Published') {
-                const { data } = await db.from('live_events').select('category').eq('id', id).single();
-                openModal(id, data.category);
-            } else {
-                loadEvents(); // Just refresh if not opening modal
-            }
-        };
+        function getWinners(place) {
+            const rows = document.getElementById(`container-${place}`).querySelectorAll('.winner-row');
+            let data = [];
+            rows.forEach(row => {
+                const name = row.querySelector('.w-input').value.trim();
+                const school = row.querySelector('.w-select').value;
+                if(school) data.push({ name, school });
+            });
+            return data;
+        }
 
         window.saveResults = async () => {
             const eventId = document.getElementById('result-event-id').value;
             const categoryCol = document.getElementById('result-event-category').value;
             
-            const s1 = document.getElementById('student-1').value;
-            const w1 = document.getElementById('winner-1').value;
-            const s2 = document.getElementById('student-2').value;
-            const w2 = document.getElementById('winner-2').value;
-            const s3 = document.getElementById('student-3').value;
-            const w3 = document.getElementById('winner-3').value;
+            const p1 = getWinners(1);
+            const p2 = getWinners(2);
+            const p3 = getWinners(3);
 
-            if(!w1 || !w2 || !w3) { alert("Please select all 3 schools."); return; }
+            if(p1.length === 0 || p2.length === 0 || p3.length === 0) {
+                alert("Please select at least one school for every place."); return;
+            }
 
-            // 1. Update Event
+            // 1. DETERMINE POINTS
+            let pts1 = 5, pts2 = 3, pts3 = 1; // Default (cat1 - cat5)
+            
+            if (categoryCol === 'common_cat') {
+                pts1 = 10; 
+                pts2 = 6; 
+                pts3 = 2; 
+            }
+
+            // 2. Save to DB
             const { error } = await db.from('live_events').update({
-                student_1: s1, winner_1: w1,
-                student_2: s2, winner_2: w2,
-                student_3: s3, winner_3: w3,
-                status: 'Results Published'
+                result_json: { p1, p2, p3 },
+                status: 'Results Published',
+                student_1: p1[0]?.name || '', winner_1: p1[0]?.school || '',
+                student_2: p2[0]?.name || '', winner_2: p2[0]?.school || '',
+                student_3: p3[0]?.name || '', winner_3: p3[0]?.school || '',
             }).eq('id', eventId);
 
-            if (error) { alert(error.message); return; }
+            if (error) { alert("DB Error: " + error.message); return; }
 
-            // 2. Add Points
+            // 3. Add Points
             try {
-                await addPoints(w1, categoryCol, 10);
-                await addPoints(w2, categoryCol, 5);
-                await addPoints(w3, categoryCol, 3);
+                for (const w of p1) await addPoints(w.school, categoryCol, pts1);
+                for (const w of p2) await addPoints(w.school, categoryCol, pts2);
+                for (const w of p3) await addPoints(w.school, categoryCol, pts3);
+                
                 closeModal();
                 loadEvents();
             } catch (err) {
@@ -386,8 +454,9 @@
         }
 
         async function addPoints(school, cat, pts) {
+            if(!school) return;
             const { data } = await db.from('scoreboard').select(`id, ${cat}, total`).eq('name', school).single();
-            if(!data) throw new Error(`School '${school}' not found`);
+            if(!data) throw new Error(`School '${school}' not found or category '${cat}' missing in scoreboard table.`);
             
             await db.from('scoreboard').update({ 
                 [cat]: (data[cat] || 0) + pts,
@@ -395,12 +464,12 @@
             }).eq('id', data.id);
         }
 
+        // --- EVENT HANDLERS ---
         document.getElementById('add-event-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button');
             const originalText = btn.innerHTML;
-            btn.innerHTML = 'Publishing...';
-            btn.disabled = true;
+            btn.innerHTML = 'Publishing...'; btn.disabled = true;
 
             const newEvent = {
                 name: document.getElementById('event-name').value,
@@ -411,30 +480,24 @@
             };
 
             const { error } = await db.from('live_events').insert([newEvent]);
-            
-            btn.innerHTML = originalText;
-            btn.disabled = false;
+            btn.innerHTML = originalText; btn.disabled = false;
 
             if(error) alert("Error: " + error.message);
-            else {
-                e.target.reset();
-                loadEvents();
-            }
+            else { e.target.reset(); loadEvents(); }
         });
 
-        window.deleteEvent = async (id) => {
-            if(!confirm('Delete this event? Points will be reversed.')) return;
-            
-            // Reverse Points Logic (simplified for safety)
-            const { data: ev } = await db.from('live_events').select('*').eq('id', id).single();
-            if (ev && ev.status === 'Results Published') {
-                try {
-                    if(ev.winner_1) await addPoints(ev.winner_1, ev.category, -10);
-                    if(ev.winner_2) await addPoints(ev.winner_2, ev.category, -5);
-                    if(ev.winner_3) await addPoints(ev.winner_3, ev.category, -3);
-                } catch(e) { console.log("Points reversal warning:", e); }
+        window.updateStatus = async (id, newStatus) => {
+            await db.from('live_events').update({ status: newStatus }).eq('id', id);
+            if (newStatus === 'Results Published') {
+                const { data } = await db.from('live_events').select('category').eq('id', id).single();
+                openModal(id, data.category);
+            } else {
+                loadEvents();
             }
+        };
 
+        window.deleteEvent = async (id) => {
+            if(!confirm('Delete this event?')) return;
             await db.from('live_events').delete().eq('id', id);
             loadEvents();
         };
