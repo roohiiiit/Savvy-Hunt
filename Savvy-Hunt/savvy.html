@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cute Bot - Three.js</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #00e5ff;
+      height: 100%;
+      width: 100%;
+    }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <!-- Core three.js (classic build) -->
+  <script src="https://unpkg.com/three@0.159.0/build/three.min.js"></script>
+  <!-- Extra geometry: RoundedBoxGeometry (for smooth body/arms) -->
+  <script src="https://unpkg.com/three@0.159.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
+
+  <script>
+    // ---------- BASIC RENDERER / CAMERA ----------
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x00e5ff);
+
+    const camera = new THREE.PerspectiveCamera(
+      35,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      100
+    );
+    camera.position.set(0, 2.2, 7.5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.physicallyCorrectLights = true;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+    document.body.appendChild(renderer.domElement);
+
+    // ---------- LIGHTS ----------
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x88bbff, 0.9);
+    scene.add(hemi);
+
+    const key = new THREE.DirectionalLight(0xffffff, 2.2);
+    key.position.set(5, 10, 5);
+    key.castShadow = false;
+    scene.add(key);
+
+    const fill = new THREE.DirectionalLight(0x7fdcff, 0.9);
+    fill.position.set(-3, 4, -4);
+    scene.add(fill);
+
+    const rim = new THREE.PointLight(0x66aaff, 4, 15);
+    rim.position.set(0, 3.5, -4);
+    scene.add(rim);
+
+    // ---------- MATERIALS ----------
+    const bodyMat = new THREE.MeshPhysicalMaterial({
+      color: 0xe9edf5,
+      roughness: 0.75,
+      metalness: 0.05,
+      clearcoat: 0.1,
+      clearcoatRoughness: 0.7
+    });
+
+    const accentMat = new THREE.MeshPhysicalMaterial({
+      color: 0x04c6c6,
+      roughness: 0.6,
+      metalness: 0.1
+    });
+
+    const visorMat = new THREE.MeshPhysicalMaterial({
+      color: 0x04163e,
+      roughness: 0.25,
+      metalness: 1.0,
+      transparent: true,
+      opacity: 0.98,
+      reflectivity: 1.0,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.15
+    });
+
+    const eyeMat = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      emissive: 0x5ffbff,
+      emissiveIntensity: 3.0,
+      roughness: 0.1,
+      metalness: 0.0
+    });
+
+    const mouthMat = new THREE.MeshStandardMaterial({
+      color: 0x8fe7ff,
+      roughness: 0.3,
+      metalness: 0
+    });
+
+    // ---------- ROBOT CREATION ----------
+    function createCuteBot() {
+      const bot = new THREE.Group();
+      bot.name = "cuteBot";
+      bot.position.y = 0.4;
+
+      // ===== BODY =====
+      const bodyGroup = new THREE.Group();
+      bodyGroup.name = "bodyGroup";
+
+      // Torso: rounded box instead of sphere
+      const torsoGeo = new THREE.RoundedBoxGeometry(1.9, 2.2, 1.4, 8, 0.6);
+      const torso = new THREE.Mesh(torsoGeo, bodyMat);
+      torso.position.set(0, 1.4, 0);
+      bodyGroup.add(torso);
+
+      // Lower belly (smooth transition to "tail")
+      const bellyGeo = new THREE.RoundedBoxGeometry(1.35, 1.1, 1.1, 6, 0.5);
+      const belly = new THREE.Mesh(bellyGeo, bodyMat);
+      belly.position.set(0, 0.55, 0);
+      bodyGroup.add(belly);
+
+      const tailGeo = new THREE.SphereGeometry(0.6, 48, 48);
+      const tail = new THREE.Mesh(tailGeo, bodyMat);
+      tail.scale.set(0.85, 1.1, 0.85);
+      tail.position.set(0, -0.1, 0);
+      bodyGroup.add(tail);
+
+      // Belly plate
+      const plateGeo = new THREE.SphereGeometry(0.95, 48, 48);
+      const plate = new THREE.Mesh(plateGeo, accentMat);
+      plate.scale.set(1.0, 0.7, 0.25);
+      plate.position.set(0, 0.9, 0.86);
+      bodyGroup.add(plate);
+
+      bot.add(bodyGroup);
+
+      // ===== HEAD =====
+      const headGroup = new THREE.Group();
+      headGroup.name = "headGroup";
+      headGroup.position.set(0, 2.7, 0);
+
+      const headShellGeo = new THREE.RoundedBoxGeometry(2.3, 1.7, 1.7, 8, 0.8);
+      const headShell = new THREE.Mesh(headShellGeo, bodyMat);
+      headGroup.add(headShell);
+
+      // Visor: big smooth sphere section
+      const visorGeo = new THREE.SphereGeometry(1.4, 64, 64, 0, Math.PI * 2, 0.2, Math.PI - 0.4);
+      const visor = new THREE.Mesh(visorGeo, visorMat);
+      visor.scale.set(1.2, 1.0, 1.05);
+      visor.position.set(0, 0.02, 0.9);
+      headGroup.add(visor);
+
+      // Eyes: glowing curved capsules
+      const eyeGeo = new THREE.SphereGeometry(0.12, 32, 32);
+
+      const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
+      leftEye.position.set(-0.45, 0.12, 1.11);
+      headGroup.add(leftEye);
+
+      const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
+      rightEye.position.set(0.45, 0.12, 1.11);
+      headGroup.add(rightEye);
+
+      // Small eye "smile" arcs (just for extra cuteness)
+      const eyeArcGeo = new THREE.TorusGeometry(0.22, 0.03, 16, 40, Math.PI * 0.7);
+
+      const leftArc = new THREE.Mesh(eyeArcGeo, eyeMat);
+      leftArc.rotation.set(Math.PI / 2, 0, Math.PI * 0.9);
+      leftArc.position.set(-0.45, 0.09, 1.09);
+      headGroup.add(leftArc);
+
+      const rightArc = new THREE.Mesh(eyeArcGeo, eyeMat);
+      rightArc.rotation.set(Math.PI / 2, 0, -Math.PI * 0.9);
+      rightArc.position.set(0.45, 0.09, 1.09);
+      headGroup.add(rightArc);
+
+      // Mouth: soft smile curve
+      const mouthGeo = new THREE.TorusGeometry(0.42, 0.04, 16, 40, Math.PI * 0.75);
+      const mouth = new THREE.Mesh(mouthGeo, mouthMat);
+      mouth.rotation.set(Math.PI / 2, 0, Math.PI);
+      mouth.position.set(0, -0.25, 1.05);
+      headGroup.add(mouth);
+
+      // Top bump
+      const bumpGeo = new THREE.RoundedBoxGeometry(0.75, 0.35, 0.9, 6, 0.3);
+      const bump = new THREE.Mesh(bumpGeo, bodyMat);
+      bump.position.set(0, 0.9, 0);
+      headGroup.add(bump);
+
+      // Ears + fins
+      const earGeo = new THREE.RoundedBoxGeometry(0.35, 0.35, 0.8, 4, 0.15);
+      const leftEar = new THREE.Mesh(earGeo, bodyMat);
+      leftEar.position.set(-1.35, 0, 0.1);
+      headGroup.add(leftEar);
+
+      const rightEar = leftEar.clone();
+      rightEar.position.x *= -1;
+      headGroup.add(rightEar);
+
+      const finGeo = new THREE.RoundedBoxGeometry(0.2, 0.9, 0.4, 4, 0.18);
+      const leftFin = new THREE.Mesh(finGeo, accentMat);
+      leftFin.position.set(-1.55, 0.25, 0.05);
+      headGroup.add(leftFin);
+
+      const rightFin = leftFin.clone();
+      rightFin.position.x *= -1;
+      headGroup.add(rightFin);
+
+      bot.add(headGroup);
+
+      // ===== ARMS (segmented, non-intersecting) =====
+      const armRadius = 0.32;
+      const upperLen = 0.85;
+      const lowerLen = 0.8;
+
+      // left arm pivot at shoulder
+      const leftArmGroup = new THREE.Group();
+      leftArmGroup.name = "leftArmGroup";
+      leftArmGroup.position.set(-1.15, 1.6, 0.3);
+
+      const shoulderGeo = new THREE.SphereGeometry(0.33, 32, 32);
+      const leftShoulder = new THREE.Mesh(shoulderGeo, bodyMat);
+      leftArmGroup.add(leftShoulder);
+
+      // upper arm
+      const upperGeo = new THREE.RoundedBoxGeometry(armRadius * 1.4, upperLen, armRadius * 1.2, 6, 0.3);
+      const upperArm = new THREE.Mesh(upperGeo, bodyMat);
+      upperArm.position.set(0, -upperLen / 2 - 0.05, 0);
+      leftArmGroup.add(upperArm);
+
+      // elbow pivot as sub-group
+      const leftElbowGroup = new THREE.Group();
+      leftElbowGroup.position.set(0, -upperLen - 0.1, 0);
+      leftArmGroup.add(leftElbowGroup);
+
+      const elbowGeo = new THREE.SphereGeometry(0.28, 32, 32);
+      const leftElbow = new THREE.Mesh(elbowGeo, bodyMat);
+      leftElbowGroup.add(leftElbow);
+
+      const lowerGeo = new THREE.RoundedBoxGeometry(armRadius * 1.2, lowerLen, armRadius * 1.1, 6, 0.28);
+      const leftForearm = new THREE.Mesh(lowerGeo, bodyMat);
+      leftForearm.position.set(0, -lowerLen / 2 - 0.05, 0);
+      leftElbowGroup.add(leftForearm);
+
+      const handGeo = new THREE.SphereGeometry(0.42, 32, 32);
+      const leftHand = new THREE.Mesh(handGeo, accentMat);
+      leftHand.position.set(0, -lowerLen - 0.1, 0);
+      leftElbowGroup.add(leftHand);
+
+      bot.add(leftArmGroup);
+
+      // right arm = mirrored
+      const rightArmGroup = leftArmGroup.clone(true);
+      rightArmGroup.name = "rightArmGroup";
+      rightArmGroup.position.x *= -1;
+      rightArmGroup.children.forEach(c => {
+        // mirror rotations if needed later
+      });
+      bot.add(rightArmGroup);
+
+      // store refs for your future animations
+      bot.userData = {
+        bodyGroup,
+        headGroup,
+        leftArmGroup,
+        rightArmGroup,
+        leftElbowGroup,
+        rightElbowGroup: rightArmGroup.children[2], // same index as leftElbowGroup
+        eyes: { leftEye, rightEye },
+        visor,
+      };
+
+      return bot;
+    }
+
+    const cuteBot = createCuteBot();
+    scene.add(cuteBot);
+
+    // Expose for your own animation/dialogue scripts later
+    window.cuteBot = cuteBot;
+
+    // ---------- SIMPLE IDLE ANIMATION ----------
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+
+      // hover
+      cuteBot.position.y = 0.2 + 0.15 * Math.sin(t * 1.4);
+
+      // head bob
+      cuteBot.userData.headGroup.rotation.x = 0.06 * Math.sin(t * 1.8);
+      cuteBot.userData.headGroup.rotation.y = 0.08 * Math.sin(t * 1.1);
+
+      // arm swing (kept moderate so no intersections)
+      cuteBot.userData.leftArmGroup.rotation.z = -0.35 + 0.25 * Math.sin(t * 2.0);
+      cuteBot.userData.rightArmGroup.rotation.z = 0.35 + 0.25 * Math.sin(t * 2.1);
+
+      // gentle spin to show 3D
+      cuteBot.rotation.y += 0.2 * clock.getDelta();
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // ---------- RESIZE ----------
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
