@@ -360,11 +360,11 @@
             document.getElementById('result-event-category').value = cat;
             document.getElementById('modal-category-display').innerText = cat.toUpperCase();
             
-            // Update Labels based on Category (Updated Logic)
+            // Update Labels based on Category
             if (cat === 'common_cat') {
                 document.getElementById('lbl-p1').innerText = '🥇 1st Place (10 pts)';
                 document.getElementById('lbl-p2').innerText = '🥈 2nd Place (6 pts)';
-                document.getElementById('lbl-p3').innerText = '🥉 3rd Place (2 pt)';
+                document.getElementById('lbl-p3').innerText = '🥉 3rd Place (2 pts)';
             } else {
                 document.getElementById('lbl-p1').innerText = '🥇 1st Place (5 pts)';
                 document.getElementById('lbl-p2').innerText = '🥈 2nd Place (3 pts)';
@@ -426,7 +426,7 @@
             if (categoryCol === 'common_cat') {
                 pts1 = 10; 
                 pts2 = 6; 
-                pts3 = 2; 
+                pts3 = 2;
             }
 
             // 2. Save to DB
