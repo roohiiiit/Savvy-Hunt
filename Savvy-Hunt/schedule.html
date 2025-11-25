@@ -43,7 +43,7 @@
             width: 100%;
             overflow: hidden;
             padding-top: 2.5rem;
-            padding-bottom: 3.5rem;
+            padding-bottom: 7rem; /* INCREASED: Extra space for the toggle */
             background: linear-gradient(120deg,#ff7a1a,#ff5e00,#ea580c,#b63a00);
             background-size: 200% 200%;
             animation: heroGradient 8s ease infinite;
@@ -67,11 +67,12 @@
                 radial-gradient(circle at 20% -10%, rgba(255, 255, 255, 0.4) 0, transparent 55%),
                 radial-gradient(circle at 80% 0%, rgba(254, 243, 199, 0.45) 0, transparent 60%);
             pointer-events: none;
+            z-index: 1; /* Low z-index so content sits above */
         }
 
         .schedule-hero-inner {
             position: relative;
-            z-index: 2;
+            z-index: 10; /* High z-index to ensure visibility */
             max-width: 64rem;
             margin: 0 auto;
             padding: 0 1.5rem;
@@ -120,6 +121,7 @@
             max-width: 480px;
             margin: 2.2rem auto 0;
             position: relative;
+            z-index: 20;
         }
         
         .search-input {
@@ -167,6 +169,56 @@
             box-shadow: 0 6px 14px rgba(227,72,0,0.65);
             pointer-events: none;
         }
+
+        /* ===== TOGGLE SWITCH ===== */
+        .toggle-wrapper {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 20; /* Force it on top */
+        }
+        
+        .toggle-container {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(8px);
+            padding: 6px;
+            border-radius: 999px;
+            display: inline-flex;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .toggle-btn {
+            padding: 10px 24px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: none;
+            outline: none;
+            position: relative;
+            z-index: 2;
+            white-space: nowrap;
+        }
+
+        .toggle-btn.active {
+            background-color: #ffffff;
+            color: #ea580c;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .toggle-btn.inactive {
+            background-color: transparent;
+            color: rgba(255, 255, 255, 0.95); /* Made brighter */
+        }
+        .toggle-btn.inactive:hover {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
 
         .container {
             max-width: 1200px;
@@ -501,10 +553,18 @@
             header.schedule-hero {
                 border-bottom-left-radius: 2rem;
                 border-bottom-right-radius: 2rem;
-                padding-bottom: 2.8rem;
+                padding-bottom: 5rem; /* INCREASED: Ensure mobile also has space */
             }
             .flip-card {
                 height: 340px;
+            }
+            /* Adjust toggle for mobile */
+            .toggle-wrapper {
+                margin-top: 1.5rem;
+            }
+            .toggle-btn {
+                padding: 8px 16px;
+                font-size: 0.8rem;
             }
         }
 
@@ -715,6 +775,19 @@
                     </svg>
                 </div>
             </div>
+
+            <!-- TOGGLE SWITCH CONTAINER -->
+            <div class="toggle-wrapper">
+                <div class="toggle-container">
+                    <button onclick="setTab('upcoming')" id="tab-upcoming" class="toggle-btn active">
+                        Upcoming & Live
+                    </button>
+                    <button onclick="setTab('results')" id="tab-results" class="toggle-btn inactive">
+                        Results & Winners
+                    </button>
+                </div>
+            </div>
+            
         </div>
     </header>
 
@@ -730,7 +803,7 @@
         <div id="no-results" style="display: none;">
             <div class="text-6xl mb-4">🔍</div>
             <h3 class="text-xl font-bold text-gray-700">No events found</h3>
-            <p class="text-gray-500">Try adjusting your search terms.</p>
+            <p class="text-gray-500">Try adjusting your search terms or switching tabs.</p>
         </div>
 
         <div style="text-align: center; margin-top: 12px; padding-bottom: 32px;">
@@ -765,6 +838,30 @@
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         let allEvents = [];
+        let currentTab = 'upcoming'; // 'upcoming' or 'results'
+
+        // --- TAB SWITCHING LOGIC ---
+        window.setTab = function(tab) {
+            currentTab = tab;
+            const btnUp = document.getElementById('tab-upcoming');
+            const btnRes = document.getElementById('tab-results');
+
+            if(tab === 'upcoming') {
+                btnUp.classList.remove('inactive');
+                btnUp.classList.add('active');
+                btnRes.classList.remove('active');
+                btnRes.classList.add('inactive');
+                if(window.savvySay) window.savvySay("Showing Upcoming Events 📅");
+            } else {
+                btnRes.classList.remove('inactive');
+                btnRes.classList.add('active');
+                btnUp.classList.remove('active');
+                btnUp.classList.add('inactive');
+                if(window.savvySay) window.savvySay("Showing Winners 🏆");
+            }
+            
+            filterAndRender();
+        }
 
         window.toggleFlip = function(cardId) {
             const cardInner = document.getElementById(cardId);
@@ -796,10 +893,39 @@
             }
 
             allEvents = data;
-            renderEvents(allEvents);
+            filterAndRender(); // Replaces renderEvents(allEvents)
             msg.style.display = 'none';
 
             if (window.savvySay) window.savvySay("Schedule updated ✅");
+        }
+
+        // New consolidated Filter Function
+        function filterAndRender() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            
+            const filteredEvents = allEvents.filter(event => {
+                // 1. Check Tab Logic
+                let matchesTab = false;
+                if (currentTab === 'upcoming') {
+                    // Show everything NOT published. 
+                    // Assuming 'Live', 'Soon', 'Done' (waiting for results) are all here.
+                    matchesTab = (event.status !== 'Results Published');
+                } else {
+                    // Only show published results
+                    matchesTab = (event.status === 'Results Published');
+                }
+
+                // 2. Check Search Logic
+                const matchesSearch = (
+                    event.name.toLowerCase().includes(searchTerm) ||
+                    (event.location && event.location.toLowerCase().includes(searchTerm)) ||
+                    (event.category && event.category.toLowerCase().includes(searchTerm))
+                );
+
+                return matchesTab && matchesSearch;
+            });
+
+            renderEvents(filteredEvents);
         }
 
         function renderEvents(events) {
@@ -922,16 +1048,8 @@
         }
 
         document.getElementById('search-input').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const filteredEvents = allEvents.filter(event => {
-                return (
-                    event.name.toLowerCase().includes(searchTerm) ||
-                    (event.location && event.location.toLowerCase().includes(searchTerm)) ||
-                    (event.category && event.category.toLowerCase().includes(searchTerm))
-                );
-            });
-            renderEvents(filteredEvents);
-
+            filterAndRender(); // Now uses consolidated filter
+            const searchTerm = e.target.value;
             if (window.savvySay) {
                 if (searchTerm.trim().length === 0) window.savvySay("Showing all events ✨");
                 else window.savvySay(`Filtering by "${searchTerm}" 🔍`);
