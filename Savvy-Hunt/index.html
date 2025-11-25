@@ -45,7 +45,6 @@
                 }
             }
         }
-        
     </script>
 
     <style>
@@ -57,7 +56,16 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+<<<<<<< HEAD
         /* --- 1. FLIP CARD STYLES --- */
+=======
+        /* --- VIEW TRANSITION HOOKS (Added This) --- */
+        #gallery-card-1 { view-transition-name: snap-card-1; }
+        #gallery-card-2 { view-transition-name: snap-card-2; }
+        #gallery-card-3 { view-transition-name: snap-card-3; }
+
+        /* --- 1. FLIP CARD STYLES (Ported for Index Page) --- */
+>>>>>>> 7965308389c22733d22f09de16d61092d7705a6c
         .flip-card {
             background-color: transparent;
             width: 100%;
@@ -305,6 +313,7 @@
                 <p class="text-slate-600 text-lg">Moments captured in time.</p>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 px-2 mb-12">
+<<<<<<< HEAD
                 <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[-3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group" data-bot-say="Nice pic! 📸">
                     <img src="assests/group2.jpg" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x800/orange/white?text=Snapshot'">
                 </div>
@@ -312,11 +321,23 @@
                     <img src="assests/group1.jpg" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x800/orange/white?text=Snapshot'">
                 </div>
                 <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group" data-bot-say="So cool! ✨">
+=======
+                <div id="gallery-card-1" class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[-3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group" data-bot-say="Nice pic! 📸">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10"></div>
+                    <img src="assests/group2.jpg" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x800/orange/white?text=Snapshot'">
+                </div>
+                <div id="gallery-card-2" class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform translate-y-[-40px] z-20 bg-gray-200 relative hover:translate-y-[-50px] hover:scale-105 transition duration-500 group" data-bot-say="Look at that! 👀">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10"></div>
+                    <img src="assests/group1.jpg" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x800/orange/white?text=Snapshot'">
+                </div>
+                <div id="gallery-card-3" class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group" data-bot-say="So cool! ✨">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10"></div>
+>>>>>>> 7965308389c22733d22f09de16d61092d7705a6c
                     <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600&auto=format&fit=crop&q=60" class="w-full h-full object-cover">
                 </div>
             </div>
              <div class="text-center">
-                <a href="snapshots.html" class="btn-alive px-12 sm:w-auto">Open Gallery</a>
+                <a href="snapshots.html" id="open-gallery-btn" class="btn-alive px-12 sm:w-auto">Open Gallery</a>
              </div>
         </section>
 
@@ -346,8 +367,314 @@
     </footer>
 
     <script>
+<<<<<<< HEAD
         // --- TEXT ANIMATION & BOT & HERO PARTICLES (Shortened for brevity - paste original scripts here if needed) ---
         // I kept the core logic but focusing on the Event Fetching Logic below.
+=======
+        // --- 1. VIEW TRANSITION TRIGGER ---
+        const galleryBtn = document.getElementById('open-gallery-btn');
+        if (galleryBtn) {
+            galleryBtn.addEventListener('click', (e) => {
+                if (!document.startViewTransition) return;
+                e.preventDefault();
+                document.startViewTransition(() => {
+                    window.location.href = 'snapshots.html';
+                });
+            });
+        }
+
+        // --- SAVVY BOT INTELLIGENCE (reactive + Supabase mood) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const botContainer = document.getElementById('savvy-bot-container');
+            const botBody = document.getElementById('bot-body');
+            const botEye = document.getElementById('bot-eye');
+            const botPupil = document.getElementById('bot-pupil');
+            const botBubble = document.getElementById('bot-bubble');
+            
+            let isSleeping = false;
+            let idleTimer;
+            let lastScrollY = 0;
+            let lastScrollCheckTime = Date.now();
+            let clickCount = 0;
+
+            const tileMessages = {
+                'hero-section': "Ready to start? 🚀",
+                'live-events': "Incoming data... 📡",
+                'scoreboard-section': "Who is winning? 🏆",
+                'gallery-section': "Say cheese! 📸",
+                'about-section': "About The Team. 📜"
+            };
+
+            const sectionModes = {
+                'hero-section': 'mode-hero',
+                'live-events': 'mode-live',
+                'scoreboard-section': 'mode-score',
+                'gallery-section': 'mode-gallery',
+                'about-section': 'mode-about'
+            };
+
+            const botModeClasses = ['mode-hero','mode-live','mode-score','mode-gallery','mode-about'];
+            const moodClasses = ['mood-hyped','mood-waiting','mood-proud','mood-idle'];
+
+            function setBotMode(modeClass) {
+                botBody.classList.remove(...botModeClasses);
+                if (modeClass) botBody.classList.add(modeClass);
+            }
+
+            // Global mood setter used by Supabase-based logic
+            window.savvySetMood = function(mood, context = {}) {
+                if (!botBody) return;
+                botBody.classList.remove(...moodClasses);
+                const cls = 'mood-' + mood;
+                if (moodClasses.includes(cls)) {
+                    botBody.classList.add(cls);
+                }
+                if (!isSleeping && context.reason) {
+                    showBubble(context.reason);
+                }
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !isSleeping) {
+                        const msg = tileMessages[entry.target.id];
+                        if (msg) showBubble(msg);
+
+                        const mode = sectionModes[entry.target.id];
+                        if (mode) setBotMode(mode);
+                    }
+                });
+            }, { threshold: 0.5 }); 
+
+            Object.keys(tileMessages).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) observer.observe(el);
+            });
+
+            const clickPhrases = [
+                "Beep boop! 🤖",
+                "Stop poking! 💢",
+                "System OK. ✅",
+                "I'm watching... 👀"
+            ];
+
+            botContainer.addEventListener('click', () => {
+                if (isSleeping) { 
+                    wakeUp(); 
+                    return; 
+                }
+
+                clickCount++;
+                botBody.style.transform = "scale(0.9)";
+                setTimeout(() => botBody.style.transform = "scale(1)", 150);
+
+                if (clickCount >= 3) {
+                    showBubble("Okay okay, I'm here! 😤");
+                    clickCount = 0;
+                } else {
+                    const txt = clickPhrases[Math.floor(Math.random() * clickPhrases.length)];
+                    showBubble(txt);
+                }
+            });
+
+            function pickNewPosition() {
+                if(isSleeping || botBody.classList.contains('scanning')) return;
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                const pad = 60; 
+                const botSize = 60;
+                const zones = [
+                    {x: pad, y: pad + 80},              
+                    {x: w - pad - botSize, y: pad + 80},
+                    {x: pad, y: h - 120},               
+                    {x: w - pad - botSize, y: h - 120}, 
+                    {x: pad, y: h/2},                   
+                    {x: w - pad - botSize, y: h/2}      
+                ];
+                const choice = zones[Math.floor(Math.random() * zones.length)];
+                const x = choice.x + (Math.random() * 30 - 15);
+                const y = choice.y + (Math.random() * 30 - 15);
+                botContainer.style.transform = `translate(${x}px, ${y}px)`;
+
+                if(Math.random() > 0.75) setTimeout(triggerScan, 2500);
+            }
+            setInterval(pickNewPosition, 10000);
+            setTimeout(pickNewPosition, 200);
+
+            function triggerScan() {
+                botBody.classList.add('scanning');
+                showBubble("Scanning area... 🔍", { withTyping: true });
+                setTimeout(() => botBody.classList.remove('scanning'), 3000);
+            }
+
+            function showBubble(text, options = {}) {
+                const { withTyping = false } = options;
+                if (withTyping) {
+                    botBubble.classList.add('rich');
+                    botBubble.innerHTML = `<span>${text}</span><span class="typing-dots"><span></span><span></span><span></span></span>`;
+                } else {
+                    botBubble.classList.remove('rich');
+                    botBubble.textContent = text;
+                }
+                botBubble.classList.add('show');
+                setTimeout(() => botBubble.classList.remove('show'), 3000);
+            }
+
+            function wakeUp() {
+                if(isSleeping) {
+                    isSleeping = false;
+                    botEye.classList.remove('sleeping');
+                    botBody.classList.add('awake');
+                    showBubble("I'm awake! 😳");
+                }
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(goToSleep, 10000);
+            }
+            function goToSleep() {
+                isSleeping = true;
+                botEye.classList.add('sleeping');
+                botBody.classList.remove('awake');
+                showBubble("Powering down... 😴");
+            }
+
+            document.addEventListener('mousemove', (e) => {
+                wakeUp();
+                if(!isSleeping && !botBody.classList.contains('scanning')) {
+                    const rect = botEye.getBoundingClientRect();
+                    const cx = rect.left + rect.width/2;
+                    const cy = rect.top + rect.height/2;
+                    const angle = Math.atan2(e.clientY - cy, e.clientX - cx);
+                    const dist = Math.min(4, Math.hypot(e.clientX - cx, e.clientY - cy));
+                    botPupil.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
+                }
+            });
+
+            const pText = document.getElementById('big-parallax-text');
+            const scrollFill = document.getElementById('scroll-fill');
+            const parallaxLayers = document.querySelectorAll('.parallax-layer');
+
+            window.addEventListener('scroll', () => {
+                resetSleepTimer();
+                const st = window.scrollY;
+                const now = Date.now();
+                const delta = Math.abs(st - lastScrollY);
+                const dt = now - lastScrollCheckTime;
+
+                // fast scroll detection -> playful comment
+                if (dt < 400 && delta > 250 && !isSleeping && Math.random() < 0.3) {
+                    showBubble("Slow down, speedrunner! 🏃💨");
+                }
+
+                lastScrollCheckTime = now;
+
+                if (Math.abs(st - lastScrollY) > 40) {
+                    botBody.classList.add('windblown');
+                } else {
+                    botBody.classList.remove('windblown');
+                }
+                lastScrollY = st;
+
+                if(pText && window.innerWidth > 768) {
+                    pText.style.transform = `translateY(-50%) translateX(${st * 0.2}px)`;
+                }
+
+                const total = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                if (scrollFill && total > 0) {
+                    scrollFill.style.height = (st / total * 100) + "%";
+                }
+
+                parallaxLayers.forEach(layer => {
+                    const speed = parseFloat(layer.dataset.speed || '-0.05');
+                    layer.style.transform = `translate3d(0, ${st * speed}px, 0)`;
+                });
+            });
+
+            function resetSleepTimer() {
+                if(isSleeping) wakeUp();
+                else {
+                    clearTimeout(idleTimer);
+                    idleTimer = setTimeout(goToSleep, 10000);
+                }
+            }
+
+            document.querySelectorAll('.hover-trigger').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    const txt = el.getAttribute('data-bot-say');
+                    if(txt) showBubble(txt);
+                });
+            });
+        });
+
+        // --- TEXT ANIMATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const titleContainer = document.getElementById('hero-title');
+            const phrases = [
+                { text: "Welcome to the", color: "text-white" },
+                { break: true },
+                { text: "Savvy", color: "text-orange-500" },
+                { text: "Hunt!", color: "text-orange-500" }
+            ];
+            let delayCounter = 150;
+            phrases.forEach(phrase => {
+                if (phrase.break) titleContainer.appendChild(document.createElement('br'));
+                else {
+                    const spanWrapper = document.createElement('span');
+                    phrase.text.split(' ').forEach(word => {
+                        const wordSpan = document.createElement('span');
+                        wordSpan.textContent = word + '\u00A0';
+                        wordSpan.className = `blur-word ${phrase.color}`;
+                        wordSpan.style.transitionDelay = `${delayCounter}ms`;
+                        spanWrapper.appendChild(wordSpan);
+                        delayCounter += 150;
+                    });
+                    titleContainer.appendChild(spanWrapper);
+                }
+            });
+            setTimeout(() => document.querySelectorAll('.blur-word').forEach(span => span.classList.add('visible')), 100);
+        });
+
+        // --- HERO PARTICLES ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('hero-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            window.addEventListener('resize', resize); resize();
+            class Particle {
+                constructor() {
+                    this.x=Math.random()*canvas.width;
+                    this.y=Math.random()*canvas.height;
+                    this.size=Math.random()*3+1;
+                    this.speedX=Math.random()-0.5;
+                    this.speedY=Math.random()-0.5;
+                    this.color=Math.random()>0.6?'rgba(255,255,255,0.8)':'rgba(249,115,22,0.8)';
+                }
+                update() {
+                    this.x+=this.speedX;
+                    this.y+=this.speedY;
+                    if(this.x>canvas.width)this.x=0;
+                    if(this.x<0)this.x=canvas.width;
+                    if(this.y>canvas.height)this.y=0;
+                    if(this.y<0)this.y=canvas.height;
+                }
+                draw() {
+                    ctx.fillStyle=this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+                    ctx.fill();
+                }
+            }
+            function init() {
+                for(let i=0; i<(window.innerWidth<768?40:80); i++) particles.push(new Particle());
+            }
+            function animate() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                particles.forEach(p=>{p.update();p.draw();});
+                requestAnimationFrame(animate);
+            }
+            init(); animate();
+        });
+>>>>>>> 7965308389c22733d22f09de16d61092d7705a6c
 
         // --- SUPABASE & FLIP CARDS ---
         const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
