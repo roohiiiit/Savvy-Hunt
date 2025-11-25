@@ -11,6 +11,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
+        /* --- ADDED: VIEW TRANSITION HOOKS --- */
+        /* These link to the names in index.html so the images "fly" here */
+        #skeleton-1 { view-transition-name: snap-card-1; }
+        #skeleton-2 { view-transition-name: snap-card-2; }
+        #skeleton-3 { view-transition-name: snap-card-3; }
+
         /* Force disable selection */
         *, *::before, *::after {
             -webkit-user-select: none !important;
@@ -145,8 +151,12 @@
 
     <div class="max-w-7xl mx-auto px-2 pb-20 relative z-10">
         <div id="loading" class="masonry-grid">
-            <div class="skeleton h-64"></div><div class="skeleton h-40"></div><div class="skeleton h-80"></div>
-            <div class="skeleton h-52"></div><div class="skeleton h-60"></div><div class="skeleton h-44"></div>
+            <div id="skeleton-1" class="skeleton h-64"></div>
+            <div id="skeleton-2" class="skeleton h-40"></div>
+            <div id="skeleton-3" class="skeleton h-80"></div>
+            <div class="skeleton h-52"></div>
+            <div class="skeleton h-60"></div>
+            <div class="skeleton h-44"></div>
         </div>
         <div id="gallery" class="masonry-grid hidden"></div>
         <div id="error-msg" class="hidden text-center py-20 text-gray-500">

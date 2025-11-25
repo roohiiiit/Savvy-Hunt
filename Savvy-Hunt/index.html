@@ -45,7 +45,6 @@
                 }
             }
         }
-        
     </script>
 
     <style>
@@ -56,6 +55,11 @@
             overscroll-behavior-y: none;
             -webkit-tap-highlight-color: transparent;
         }
+
+        /* --- VIEW TRANSITION HOOKS (Added This) --- */
+        #gallery-card-1 { view-transition-name: snap-card-1; }
+        #gallery-card-2 { view-transition-name: snap-card-2; }
+        #gallery-card-3 { view-transition-name: snap-card-3; }
 
         /* --- 1. FLIP CARD STYLES (Ported for Index Page) --- */
         .flip-card {
@@ -550,21 +554,21 @@
                 <p class="text-slate-600 text-lg">Moments captured in time.</p>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 px-2 mb-12">
-                <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[-3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group" data-bot-say="Nice pic! 📸">
+                <div id="gallery-card-1" class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[-3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group" data-bot-say="Nice pic! 📸">
                     <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10"></div>
                     <img src="assests/group2.jpg" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x800/orange/white?text=Snapshot'">
                 </div>
-                <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform translate-y-[-40px] z-20 bg-gray-200 relative hover:translate-y-[-50px] hover:scale-105 transition duration-500 group" data-bot-say="Look at that! 👀">
+                <div id="gallery-card-2" class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform translate-y-[-40px] z-20 bg-gray-200 relative hover:translate-y-[-50px] hover:scale-105 transition duration-500 group" data-bot-say="Look at that! 👀">
                     <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10"></div>
                     <img src="assests/group1.jpg" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x800/orange/white?text=Snapshot'">
                 </div>
-                <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group" data-bot-say="So cool! ✨">
+                <div id="gallery-card-3" class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group" data-bot-say="So cool! ✨">
                     <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10"></div>
                     <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600&auto=format&fit=crop&q=60" class="w-full h-full object-cover">
                 </div>
             </div>
              <div class="text-center">
-                <a href="snapshots.html" class="btn-alive px-12 sm:w-auto">Open Gallery</a>
+                <a href="snapshots.html" id="open-gallery-btn" class="btn-alive px-12 sm:w-auto">Open Gallery</a>
              </div>
         </section>
 
@@ -599,6 +603,18 @@
     </footer>
 
     <script>
+        // --- 1. VIEW TRANSITION TRIGGER ---
+        const galleryBtn = document.getElementById('open-gallery-btn');
+        if (galleryBtn) {
+            galleryBtn.addEventListener('click', (e) => {
+                if (!document.startViewTransition) return;
+                e.preventDefault();
+                document.startViewTransition(() => {
+                    window.location.href = 'snapshots.html';
+                });
+            });
+        }
+
         // --- SAVVY BOT INTELLIGENCE (reactive + Supabase mood) ---
         document.addEventListener('DOMContentLoaded', () => {
             const botContainer = document.getElementById('savvy-bot-container');
