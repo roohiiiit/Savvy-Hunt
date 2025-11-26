@@ -56,26 +56,45 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- 1. INFINITE CAROUSEL STYLES (NEW) --- */
+        /* --- 1. INFINITE CAROUSEL STYLES (FIXED) --- */
         @keyframes marquee {
             0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+            100% { transform: translateX(-50%); } 
         }
 
         .marquee-container {
             mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
             -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+            width: 100%;
+            overflow: hidden;
+            
+            /* Center the Chairman (First Card) initially */
+            padding-left: calc(50vw - 160px); 
+            box-sizing: border-box;
         }
 
         .marquee-track {
             display: flex;
-            width: max-content; /* Ensure track is as wide as its content */
-            animation: marquee 30s linear infinite;
+            width: max-content; 
+            animation: marquee 40s linear infinite; 
         }
 
-        /* Pause animation when hovering to read names */
-        .marquee-track:hover {
-            animation-play-state: paused;
+        /* HIGHLIGHT EFFECTS */
+        .marquee-card {
+            transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+            opacity: 0.5; 
+            filter: grayscale(40%) blur(1px);
+            transform: scale(0.9);
+        }
+
+        /* When active (in center) - Activated via JS */
+        .marquee-card.active-center {
+            opacity: 1;
+            filter: grayscale(0%) blur(0px);
+            transform: scale(1.1) translateY(-10px);
+            z-index: 20;
+            box-shadow: 0 30px 60px -15px rgba(249, 115, 22, 0.3); 
+            border-color: rgba(251, 191, 36, 0.5); 
         }
 
         /* --- 2. FLIP CARD STYLES --- */
@@ -164,6 +183,39 @@
         .btn-back { background: white; color: #4b5563; border: 1px solid #e5e7eb; margin-top: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .btn-back:hover { background: #f9fafb; color: #111827; transform: translateY(-2px); box-shadow: 0 6px 10px -2px rgba(0,0,0,0.05); }
 
+        /* NEW BUTTON STYLE: FLOWING GRADIENT */
+        .btn-flow {
+            background: linear-gradient(-45deg, #f97316, #ea580c, #db2777, #f97316);
+            background-size: 300%;
+            animation: gradient-flow 4s ease infinite;
+            position: relative;
+            z-index: 1;
+            border: 2px solid rgba(255,255,255,0.4);
+        }
+        
+        .btn-flow::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: inherit;
+            border-radius: 9999px;
+            z-index: -1;
+            filter: blur(15px);
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+        
+        .btn-flow:hover::before {
+            opacity: 0.8;
+            filter: blur(20px);
+        }
+
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         /* WINNERS LIST (Compact) */
         .winner-row { 
             display: flex; 
@@ -198,7 +250,7 @@
 
         #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
 
-        /* Existing Button Styles (Kept same) */
+        /* Existing Button Styles */
         .btn-alive {
             position: relative;
             display: inline-flex;
@@ -229,7 +281,7 @@
         }
         .btn-alive-secondary:active { box-shadow: 0 4px 15px -5px rgba(59, 130, 246, 0.7); }
 
-        /* Bot CSS (Kept same) */
+        /* Bot CSS */
         #savvy-bot-container { position: fixed; z-index: 100; top: 0; left: 0; width: 60px; height: 60px; transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: auto; cursor: pointer; perspective: 800px; }
         .bot-body { width: 48px; height: 48px; margin: 6px; background: radial-gradient(circle at 30% 20%, #ffffff, #ffe4cc 55%, #fdba74 100%); border-radius: 50%; box-shadow: inset -4px -6px 10px rgba(124, 45, 18, 0.25), inset 5px 6px 10px rgba(255, 255, 255, 0.9), 0 10px 22px rgba(0,0,0,0.25), 0 0 0 2px rgba(255,255,255,0.9); position: relative; display: flex; align-items: center; justify-content: center; animation: float-organic 6s ease-in-out infinite; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; transform-style: preserve-3d; }
         .bot-body:active { transform: scale(0.9); } 
@@ -347,6 +399,34 @@
              </div>
         </section>
 
+        <section id="about-section" class="mb-40 px-2 md:px-4 relative z-20 opacity-0 animate-fade-in-up">
+             <div class="bg-white/80 backdrop-blur-xl rounded-[3rem] p-8 md:p-20 lg:flex lg:items-center lg:gap-20 shadow-2xl border border-white">
+                <div class="lg:w-1/2">
+                    <h2 class="text-3xl md:text-5xl font-black mb-6 text-slate-900 tracking-tight">What is <span class="text-orange-500">Savvy Hunt?</span></h2>
+                    <p class="text-lg text-slate-600 mb-10 leading-relaxed">More than a competition—it's a pursuit of excellence. Watch as schools compete for glory in real-time.</p>
+                    
+                    <a href="about.html" class="btn-flow group hover-trigger inline-flex items-center justify-center px-10 py-5 font-black text-white rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-orange-500/40" data-bot-say="Meet the squad! ✨">
+                        <span class="text-lg tracking-wide uppercase">Meet The Creators</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6 ml-3 transition-transform duration-300 group-hover:translate-x-2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        </svg>
+                    </a>
+
+                </div>
+                <div class="lg:w-1/2 mt-12 lg:mt-0">
+                    <div class="bg-gradient-to-br from-orange-50 to-white rounded-[2.5rem] p-10 border border-orange-100 shadow-lg transform rotate-2 hover:rotate-0 transition duration-500">
+                        <h3 class="text-2xl font-bold mb-4 text-slate-900">Student Organized</h3>
+                        <p class="text-base text-slate-600 mb-6">Proudly run by the School Media Club.</p>
+                        <div class="flex gap-2">
+                            <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce"></div>
+                            <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce" style="animation-delay: 0.2s"></div>
+                            <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce" style="animation-delay: 0.4s"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="gallery-section" class="mb-40 px-2">
             <div class="text-center max-w-3xl mx-auto mb-12">
                 <h2 class="text-4xl md:text-7xl font-black mb-4 tracking-tighter text-slate-900"><span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 pb-2 pr-1">Snapshots</span></h2>
@@ -371,136 +451,171 @@
              </div>
         </section>
 
-        <section id="about-section" class="mb-32 px-2 md:px-4 relative z-20">
-             <div class="bg-white/80 backdrop-blur-xl rounded-[3rem] p-8 md:p-20 lg:flex lg:items-center lg:gap-20 shadow-2xl border border-white">
-                <div class="lg:w-1/2">
-                    <h2 class="text-3xl md:text-5xl font-black mb-6 text-slate-900 tracking-tight">What is <span class="text-orange-500">Savvy Hunt?</span></h2>
-                    <p class="text-lg text-slate-600 mb-10 leading-relaxed">More than a competition—it's a pursuit of excellence. Watch as schools compete for glory in real-time.</p>
-                    <a href="about.html" class="text-orange-600 font-bold hover:text-orange-700 flex items-center gap-2 text-lg group hover-trigger" data-bot-say="Learn more! 📚">About The Team<span class="group-hover:translate-x-1 transition-transform">→</span></a>
-                </div>
-                <div class="lg:w-1/2 mt-12 lg:mt-0">
-                    <div class="bg-gradient-to-br from-orange-50 to-white rounded-[2.5rem] p-10 border border-orange-100 shadow-lg transform rotate-2 hover:rotate-0 transition duration-500">
-                        <h3 class="text-2xl font-bold mb-4 text-slate-900">Student Organized</h3>
-                        <p class="text-base text-slate-600 mb-6">Proudly run by the School Media Club.</p>
-                        <div class="flex gap-2">
-                            <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce"></div>
-                            <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce" style="animation-delay: 0.2s"></div>
-                            <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce" style="animation-delay: 0.4s"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <section id="leadership-section" class="mb-40 relative z-20 opacity-0 animate-fade-in-up" style="animation-delay: 0.2s;">
+            
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-full bg-gradient-to-r from-transparent via-orange-200/20 to-transparent blur-3xl pointer-events-none -z-10"></div>
 
-        <!-- --- LEADERSHIP CAROUSEL SECTION (Added) --- -->
-        <section id="leadership-section" class="mb-40 px-2 md:px-4 relative z-20 opacity-0 animate-fade-in-up" style="animation-delay: 0.2s;">
-            <div class="text-center max-w-3xl mx-auto mb-12">
-                <h2 class="text-3xl md:text-5xl font-black mb-4 text-slate-900 tracking-tight">School <span class="text-orange-500">Leadership</span></h2>
-                <p class="text-slate-600">The visionaries behind the institution.</p>
+            <div class="text-center max-w-3xl mx-auto mb-16 px-4">
+                <h2 class="text-4xl md:text-6xl font-black mb-4 text-slate-900 tracking-tight">School <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600">Leadership</span></h2>
+                <p class="text-lg text-slate-500 font-medium">The visionaries guiding our path to excellence.</p>
             </div>
 
-            <!-- Carousel Wrapper -->
-            <div class="marquee-container overflow-hidden w-full max-w-[100vw] py-4">
-                <!-- Track (Moving Part) -->
-                <div class="marquee-track gap-6 px-4">
+            <div class="marquee-container overflow-hidden w-full max-w-[100vw] py-14"> 
+                <div class="marquee-track gap-10 px-4" id="leadership-track">
                     
-                    <!-- --- SET 1 --- -->
-                    <article class="w-[280px] flex-shrink-0 bg-white p-6 rounded-[2rem] text-center border-t-[6px] border-blue-400 shadow-xl hover:scale-105 transition-transform duration-300">
-                        <div class="w-24 h-24 mx-auto rounded-full bg-gray-200 mb-4 overflow-hidden border-4 border-orange-100 shadow-lg">
-                            <img src="assests/chairman.jpg" class="w-full h-full object-cover" alt="Sir Dr. Geevargheese Yohannan" onerror="this.src='https://placehold.co/150x150/orange/white?text=Chair'">
+                    <article class="marquee-card group relative w-[320px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/80 shadow-lg" 
+                             data-comment="A visionary leader! 🫡 Hon. Chairman Sir.">
+                        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-orange-100/80 to-transparent rounded-t-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="relative z-10 flex flex-col items-center text-center">
+                            <div class="relative w-32 h-32 mb-6">
+                                <div class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
+                                    <img src="assests/chairman.jpg" class="w-full h-full object-cover" alt="Chairman" onerror="this.src='https://placehold.co/150x150/orange/white?text=CH'">
+                                </div>
+                            </div>
+                            <span class="inline-block px-4 py-1.5 rounded-full bg-orange-50 text-orange-700 text-[10px] font-extrabold uppercase tracking-widest mb-4 border border-orange-100">Hon. Chairman</span>
+                            <h3 class="text-xl font-black text-slate-900 leading-tight mb-2">Sir Dr. GEEVARGHESE YOHANNAN</h3>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">MGM Group of Institutions</p>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-1 leading-tight">Sir Dr. GEEVARGHESE YOHANNAN</h3>
-                        <p class="text-blue-600 font-bold uppercase text-[10px] tracking-widest mt-2">Hon. Chairman</p>
-                        <p class="text-slate-400 text-[10px] font-semibold uppercase tracking-widest">MGM Group of Institutions</p>
                     </article>
 
-                    <article class="w-[280px] flex-shrink-0 bg-white p-6 rounded-[2rem] text-center border-t-[6px] border-blue-400 shadow-xl hover:scale-105 transition-transform duration-300">
-                        <div class="w-24 h-24 mx-auto rounded-full bg-gray-200 mb-4 overflow-hidden border-4 border-orange-100 shadow-lg">
-                            <img src="assests/alfa.jpg" class="w-full h-full object-cover" alt="Mrs. Alfa Mary" onerror="this.src='https://placehold.co/150x150/orange/white?text=COO'">
+                    <article class="marquee-card group relative w-[320px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/80 shadow-lg"
+                             data-comment="Respects to Mrs. Alfa Mary, our COO! 🌟">
+                        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-blue-100/80 to-transparent rounded-t-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="relative z-10 flex flex-col items-center text-center">
+                            <div class="relative w-32 h-32 mb-6">
+                                <div class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
+                                    <img src="assests/alfa.jpg" class="w-full h-full object-cover" alt="COO" onerror="this.src='https://placehold.co/150x150/orange/white?text=COO'">
+                                </div>
+                            </div>
+                            <span class="inline-block px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 text-[10px] font-extrabold uppercase tracking-widest mb-4 border border-blue-100">COO</span>
+                            <h3 class="text-xl font-black text-slate-900 leading-tight mb-2">Mrs. ALFA MARY</h3>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">MGM Group of Schools</p>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-1 leading-tight">Mrs. ALFA MARY</h3>
-                        <p class="text-blue-600 font-bold uppercase text-[10px] tracking-widest mt-2">COO</p>
-                        <p class="text-slate-400 text-[10px] font-semibold uppercase tracking-widest">MGM Group of Schools</p>
                     </article>
 
-                    <article class="w-[280px] flex-shrink-0 bg-white p-6 rounded-[2rem] text-center border-t-[6px] border-blue-400 shadow-xl hover:scale-105 transition-transform duration-300">
-                        <div class="w-24 h-24 mx-auto rounded-full bg-gray-200 mb-4 overflow-hidden border-4 border-orange-100 shadow-lg">
-                            <img src="assests/julie.jpg" class="w-full h-full object-cover" alt="Mrs. Julie Koshy" onerror="this.src='https://placehold.co/150x150/orange/white?text=Principal'">
+                    <article class="marquee-card group relative w-[320px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/80 shadow-lg"
+                             data-comment="Our guiding light, Principal Mrs. Julie Koshy! 🎓">
+                        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-rose-100/80 to-transparent rounded-t-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="relative z-10 flex flex-col items-center text-center">
+                            <div class="relative w-32 h-32 mb-6">
+                                <div class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
+                                    <img src="assests/julie.jpg" class="w-full h-full object-cover" alt="Principal" onerror="this.src='https://placehold.co/150x150/orange/white?text=PR'">
+                                </div>
+                            </div>
+                            <span class="inline-block px-4 py-1.5 rounded-full bg-rose-50 text-rose-700 text-[10px] font-extrabold uppercase tracking-widest mb-4 border border-rose-100">Principal</span>
+                            <h3 class="text-xl font-black text-slate-900 leading-tight mb-2">Mrs. JULIE KOSHY</h3>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">MGM RPS</p>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-1 leading-tight">Mrs. JULIE KOSHY</h3>
-                        <p class="text-blue-600 font-bold uppercase text-[10px] tracking-widest mt-2">Principal</p>
-                        <p class="text-slate-400 text-[10px] font-semibold uppercase tracking-widest">MGM RPS</p>
                     </article>
 
-                    <article class="w-[280px] flex-shrink-0 bg-white p-6 rounded-[2rem] text-center border-t-[6px] border-blue-400 shadow-xl hover:scale-105 transition-transform duration-300">
-                        <div class="w-24 h-24 mx-auto rounded-full bg-gray-200 mb-4 overflow-hidden border-4 border-orange-100 shadow-lg">
-                            <img src="assests/jessy.jpg" class="w-full h-full object-cover" alt="Mrs. Jessy Vinu" onerror="this.src='https://placehold.co/150x150/orange/white?text=VP'">
+                    <article class="marquee-card group relative w-[320px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/80 shadow-lg"
+                             data-comment="Mrs. Jessy Vinu, leading the way! ✨">
+                        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-slate-200/80 to-transparent rounded-t-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="relative z-10 flex flex-col items-center text-center">
+                            <div class="relative w-32 h-32 mb-6">
+                                <div class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
+                                    <img src="assests/jessy.jpg" class="w-full h-full object-cover" alt="VP" onerror="this.src='https://placehold.co/150x150/orange/white?text=VP'">
+                                </div>
+                            </div>
+                            <span class="inline-block px-4 py-1.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-extrabold uppercase tracking-widest mb-4 border border-slate-200">Vice Principal</span>
+                            <h3 class="text-xl font-black text-slate-900 leading-tight mb-2">Mrs. JESSY VINU</h3>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">MGM RPS</p>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-1 leading-tight">Mrs. JESSY VINU</h3>
-                        <p class="text-blue-600 font-bold uppercase text-[10px] tracking-widest mt-2">Vice Principal</p>
-                        <p class="text-slate-400 text-[10px] font-semibold uppercase tracking-widest">MGM RPS</p>
                     </article>
 
-                    <article class="w-[280px] flex-shrink-0 bg-white p-6 rounded-[2rem] text-center border-t-[6px] border-blue-400 shadow-xl hover:scale-105 transition-transform duration-300">
-                        <div class="w-24 h-24 mx-auto rounded-full bg-gray-200 mb-4 overflow-hidden border-4 border-orange-100 shadow-lg">
-                            <img src="assests/sunil.jpg" class="w-full h-full object-cover" alt="Mr. Sunil Kumar" onerror="this.src='https://placehold.co/150x150/orange/white?text=Admin'">
+                    <article class="marquee-card group relative w-[320px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/80 shadow-lg"
+                             data-comment="Mr. Sunil Kumar, keeping things running! ⚙️">
+                        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-emerald-100/80 to-transparent rounded-t-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="relative z-10 flex flex-col items-center text-center">
+                            <div class="relative w-32 h-32 mb-6">
+                                <div class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
+                                    <img src="assests/sunil.jpg" class="w-full h-full object-cover" alt="Admin" onerror="this.src='https://placehold.co/150x150/orange/white?text=AM'">
+                                </div>
+                            </div>
+                            <span class="inline-block px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-extrabold uppercase tracking-widest mb-4 border border-emerald-100">Admin. Manager</span>
+                            <h3 class="text-xl font-black text-slate-900 leading-tight mb-2">Mr. SUNIL KUMAR</h3>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">MGM Group of Schools</p>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-1 leading-tight">Mr. SUNIL KUMAR</h3>
-                        <p class="text-blue-600 font-bold uppercase text-[10px] tracking-widest mt-2">Administrative Manager</p>
-                        <p class="text-slate-400 text-[10px] font-semibold uppercase tracking-widest">MGM Group of Schools</p>
                     </article>
 
-
-                    <!-- --- SET 2 (Duplicate for Infinite Loop) --- -->
-                    <article class="w-[280px] flex-shrink-0 bg-white p-6 rounded-[2rem] text-center border-t-[6px] border-blue-400 shadow-xl hover:scale-105 transition-transform duration-300">
-                        <div class="w-24 h-24 mx-auto rounded-full bg-gray-200 mb-4 overflow-hidden border-4 border-orange-100 shadow-lg">
-                            <img src="assests/chairman.jpg" class="w-full h-full object-cover" alt="Sir Dr. Geevargheese Yohannan" onerror="this.src='https://placehold.co/150x150/orange/white?text=Chair'">
+                    <article class="marquee-card group relative w-[320px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/80 shadow-lg" 
+                             data-comment="A visionary leader! 🫡 Hon. Chairman Sir.">
+                        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-orange-100/80 to-transparent rounded-t-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="relative z-10 flex flex-col items-center text-center">
+                            <div class="relative w-32 h-32 mb-6">
+                                <div class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
+                                    <img src="assests/chairman.jpg" class="w-full h-full object-cover" alt="Chairman" onerror="this.src='https://placehold.co/150x150/orange/white?text=CH'">
+                                </div>
+                            </div>
+                            <span class="inline-block px-4 py-1.5 rounded-full bg-orange-50 text-orange-700 text-[10px] font-extrabold uppercase tracking-widest mb-4 border border-orange-100">Hon. Chairman</span>
+                            <h3 class="text-xl font-black text-slate-900 leading-tight mb-2">Sir Dr. GEEVARGHESE YOHANNAN</h3>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">MGM Group of Institutions</p>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-1 leading-tight">Sir Dr. GEEVARGHESE YOHANNAN</h3>
-                        <p class="text-blue-600 font-bold uppercase text-[10px] tracking-widest mt-2">Hon. Chairman</p>
-                        <p class="text-slate-400 text-[10px] font-semibold uppercase tracking-widest">MGM Group of Institutions</p>
                     </article>
 
-                    <article class="w-[280px] flex-shrink-0 bg-white p-6 rounded-[2rem] text-center border-t-[6px] border-blue-400 shadow-xl hover:scale-105 transition-transform duration-300">
-                        <div class="w-24 h-24 mx-auto rounded-full bg-gray-200 mb-4 overflow-hidden border-4 border-orange-100 shadow-lg">
-                            <img src="assests/alfa.jpg" class="w-full h-full object-cover" alt="Mrs. Alfa Mary" onerror="this.src='https://placehold.co/150x150/orange/white?text=COO'">
+                    <article class="marquee-card group relative w-[320px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/80 shadow-lg"
+                             data-comment="Respects to Mrs. Alfa Mary, our COO! 🌟">
+                        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-blue-100/80 to-transparent rounded-t-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="relative z-10 flex flex-col items-center text-center">
+                            <div class="relative w-32 h-32 mb-6">
+                                <div class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
+                                    <img src="assests/alfa.jpg" class="w-full h-full object-cover" alt="COO" onerror="this.src='https://placehold.co/150x150/orange/white?text=COO'">
+                                </div>
+                            </div>
+                            <span class="inline-block px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 text-[10px] font-extrabold uppercase tracking-widest mb-4 border border-blue-100">COO</span>
+                            <h3 class="text-xl font-black text-slate-900 leading-tight mb-2">Mrs. ALFA MARY</h3>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">MGM Group of Schools</p>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-1 leading-tight">Mrs. ALFA MARY</h3>
-                        <p class="text-blue-600 font-bold uppercase text-[10px] tracking-widest mt-2">COO</p>
-                        <p class="text-slate-400 text-[10px] font-semibold uppercase tracking-widest">MGM Group of Schools</p>
                     </article>
 
-                    <article class="w-[280px] flex-shrink-0 bg-white p-6 rounded-[2rem] text-center border-t-[6px] border-blue-400 shadow-xl hover:scale-105 transition-transform duration-300">
-                        <div class="w-24 h-24 mx-auto rounded-full bg-gray-200 mb-4 overflow-hidden border-4 border-orange-100 shadow-lg">
-                            <img src="assests/julie.jpg" class="w-full h-full object-cover" alt="Mrs. Julie Koshy" onerror="this.src='https://placehold.co/150x150/orange/white?text=Principal'">
+                    <article class="marquee-card group relative w-[320px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/80 shadow-lg"
+                             data-comment="Our guiding light, Principal Mrs. Julie Koshy! 🎓">
+                        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-rose-100/80 to-transparent rounded-t-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="relative z-10 flex flex-col items-center text-center">
+                            <div class="relative w-32 h-32 mb-6">
+                                <div class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
+                                    <img src="assests/julie.jpg" class="w-full h-full object-cover" alt="Principal" onerror="this.src='https://placehold.co/150x150/orange/white?text=PR'">
+                                </div>
+                            </div>
+                            <span class="inline-block px-4 py-1.5 rounded-full bg-rose-50 text-rose-700 text-[10px] font-extrabold uppercase tracking-widest mb-4 border border-rose-100">Principal</span>
+                            <h3 class="text-xl font-black text-slate-900 leading-tight mb-2">Mrs. JULIE KOSHY</h3>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">MGM RPS</p>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-1 leading-tight">Mrs. JULIE KOSHY</h3>
-                        <p class="text-blue-600 font-bold uppercase text-[10px] tracking-widest mt-2">Principal</p>
-                        <p class="text-slate-400 text-[10px] font-semibold uppercase tracking-widest">MGM RPS</p>
                     </article>
 
-                    <article class="w-[280px] flex-shrink-0 bg-white p-6 rounded-[2rem] text-center border-t-[6px] border-blue-400 shadow-xl hover:scale-105 transition-transform duration-300">
-                        <div class="w-24 h-24 mx-auto rounded-full bg-gray-200 mb-4 overflow-hidden border-4 border-orange-100 shadow-lg">
-                            <img src="assests/jessy.jpg" class="w-full h-full object-cover" alt="Mrs. Jessy Vinu" onerror="this.src='https://placehold.co/150x150/orange/white?text=VP'">
+                    <article class="marquee-card group relative w-[320px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/80 shadow-lg"
+                             data-comment="Mrs. Jessy Vinu, leading the way! ✨">
+                        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-slate-200/80 to-transparent rounded-t-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="relative z-10 flex flex-col items-center text-center">
+                            <div class="relative w-32 h-32 mb-6">
+                                <div class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
+                                    <img src="assests/jessy.jpg" class="w-full h-full object-cover" alt="VP" onerror="this.src='https://placehold.co/150x150/orange/white?text=VP'">
+                                </div>
+                            </div>
+                            <span class="inline-block px-4 py-1.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-extrabold uppercase tracking-widest mb-4 border border-slate-200">Vice Principal</span>
+                            <h3 class="text-xl font-black text-slate-900 leading-tight mb-2">Mrs. JESSY VINU</h3>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">MGM RPS</p>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-1 leading-tight">Mrs. JESSY VINU</h3>
-                        <p class="text-blue-600 font-bold uppercase text-[10px] tracking-widest mt-2">Vice Principal</p>
-                        <p class="text-slate-400 text-[10px] font-semibold uppercase tracking-widest">MGM RPS</p>
                     </article>
 
-                    <article class="w-[280px] flex-shrink-0 bg-white p-6 rounded-[2rem] text-center border-t-[6px] border-blue-400 shadow-xl hover:scale-105 transition-transform duration-300">
-                        <div class="w-24 h-24 mx-auto rounded-full bg-gray-200 mb-4 overflow-hidden border-4 border-orange-100 shadow-lg">
-                            <img src="assests/sunil.jpg" class="w-full h-full object-cover" alt="Mr. Sunil Kumar" onerror="this.src='https://placehold.co/150x150/orange/white?text=Admin'">
+                    <article class="marquee-card group relative w-[320px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/80 shadow-lg"
+                             data-comment="Mr. Sunil Kumar, keeping things running! ⚙️">
+                        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-emerald-100/80 to-transparent rounded-t-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="relative z-10 flex flex-col items-center text-center">
+                            <div class="relative w-32 h-32 mb-6">
+                                <div class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
+                                    <img src="assests/sunil.jpg" class="w-full h-full object-cover" alt="Admin" onerror="this.src='https://placehold.co/150x150/orange/white?text=AM'">
+                                </div>
+                            </div>
+                            <span class="inline-block px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-extrabold uppercase tracking-widest mb-4 border border-emerald-100">Admin. Manager</span>
+                            <h3 class="text-xl font-black text-slate-900 leading-tight mb-2">Mr. SUNIL KUMAR</h3>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">MGM Group of Schools</p>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-1 leading-tight">Mr. SUNIL KUMAR</h3>
-                        <p class="text-blue-600 font-bold uppercase text-[10px] tracking-widest mt-2">Administrative Manager</p>
-                        <p class="text-slate-400 text-[10px] font-semibold uppercase tracking-widest">MGM Group of Schools</p>
                     </article>
 
                 </div>
             </div>
         </section>
-
     </div>
 
     <footer class="bg-slate-950 text-slate-400 pt-32 pb-12 -mt-20 relative z-10" style="border-top-left-radius: 3rem; border-top-right-radius: 3rem;">
@@ -521,6 +636,7 @@
             const botBubble = document.getElementById('bot-bubble');
             
             let isSleeping = false;
+            let isLeadershipMode = false; // NEW: Tracks if user is watching leadership
             let idleTimer;
             let lastScrollY = 0;
             let lastScrollCheckTime = Date.now();
@@ -565,14 +681,72 @@
                 }
             };
 
+            // --- CAROUSEL CENTER HIGHLIGHT & BOT LOGIC ---
+            function trackCarouselCenter() {
+                const cards = document.querySelectorAll('.marquee-card');
+                const centerScreen = window.innerWidth / 2;
+                const activeZone = 120; // Range in pixels to consider "Center"
+                let hasSpokenRecently = false; // Prevent bot spam
+
+                cards.forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    const cardCenter = rect.left + (rect.width / 2);
+                    const dist = Math.abs(centerScreen - cardCenter);
+
+                    if (dist < activeZone) {
+                        // Card is in center
+                        if (!card.classList.contains('active-center')) {
+                            // Just entered center
+                            card.classList.add('active-center');
+                            
+                            // Trigger Bot Comment if available AND in Leadership Mode
+                            const comment = card.getAttribute('data-comment');
+                            if (comment && isLeadershipMode && typeof showBubble === 'function') {
+                                showBubble(comment);
+                                if(window.savvySetMood) window.savvySetMood('proud');
+                            }
+                        }
+                    } else {
+                        // Card is leaving center
+                        card.classList.remove('active-center');
+                    }
+                });
+
+                requestAnimationFrame(trackCarouselCenter);
+            }
+            // Start tracking carousel immediately
+            trackCarouselCenter();
+
+
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting && !isSleeping) {
-                        const msg = tileMessages[entry.target.id];
+                        const sectionId = entry.target.id;
+                        const msg = tileMessages[sectionId];
                         if (msg) showBubble(msg);
 
-                        const mode = sectionModes[entry.target.id];
+                        const mode = sectionModes[sectionId];
                         if (mode) setBotMode(mode);
+
+                        // --- UPDATED LOGIC HERE ---
+                        if (sectionId === 'leadership-section') {
+                            isLeadershipMode = true;
+                            // Move bot to stable position (bottom-right-center)
+                            const botX = (window.innerWidth / 2) + 150; 
+                            const botY = window.innerHeight - 140;
+                            
+                            // Clamp to screen
+                            const finalX = Math.min(window.innerWidth - 80, Math.max(20, botX));
+                            const finalY = Math.min(window.innerHeight - 80, Math.max(20, botY));
+                            
+                            botContainer.style.transform = `translate(${finalX}px, ${finalY}px)`;
+                        } else {
+                            // If we were locked in leadership mode, break the lock immediately!
+                            if (isLeadershipMode) {
+                                isLeadershipMode = false;
+                                pickNewPosition(); 
+                            }
+                        }
                     }
                 });
             }, { threshold: 0.5 }); 
@@ -609,7 +783,9 @@
             });
 
             function pickNewPosition() {
-                if(isSleeping || botBody.classList.contains('scanning')) return;
+                // STOP random movement if sleeping, scanning, OR IN LEADERSHIP MODE
+                if(isSleeping || botBody.classList.contains('scanning') || isLeadershipMode) return;
+                
                 const w = window.innerWidth;
                 const h = window.innerHeight;
                 const pad = 60; 
@@ -617,9 +793,9 @@
                 const zones = [
                     {x: pad, y: pad + 80},              
                     {x: w - pad - botSize, y: pad + 80},
-                    {x: pad, y: h - 120},               
+                    {x: pad, y: h - 120},                
                     {x: w - pad - botSize, y: h - 120}, 
-                    {x: pad, y: h/2},                   
+                    {x: pad, y: h/2},                    
                     {x: w - pad - botSize, y: h/2}      
                 ];
                 const choice = zones[Math.floor(Math.random() * zones.length)];
@@ -662,6 +838,12 @@
                 idleTimer = setTimeout(goToSleep, 10000);
             }
             function goToSleep() {
+                // Don't sleep in leadership mode, stays attentive
+                if(isLeadershipMode) {
+                    clearTimeout(idleTimer);
+                    idleTimer = setTimeout(goToSleep, 10000);
+                    return;
+                }
                 isSleeping = true;
                 botEye.classList.add('sleeping');
                 botBody.classList.remove('awake');
@@ -691,8 +873,8 @@
                 const delta = Math.abs(st - lastScrollY);
                 const dt = now - lastScrollCheckTime;
 
-                // fast scroll detection -> playful comment
-                if (dt < 400 && delta > 250 && !isSleeping && Math.random() < 0.3) {
+                // fast scroll detection -> playful comment (Disabled in leadership mode)
+                if (dt < 400 && delta > 250 && !isSleeping && Math.random() < 0.3 && !isLeadershipMode) {
                     showBubble("Slow down, speedrunner! 🏃💨");
                 }
 
@@ -953,7 +1135,7 @@
                             <div class="w-full flex-grow flex flex-col justify-center overflow-y-auto custom-scrollbar">
                                 <h4 class="text-slate-800 font-black uppercase text-xs border-b-2 border-orange-100 pb-3 mb-4 tracking-wider text-left flex items-center gap-2 sticky top-0 bg-white/95 backdrop-blur z-10">
                                     <span class="text-lg">🏆</span> Winners Podium
-                                </h4>
+                                4</h4>
                                 <div class="space-y-1 pb-2">
                                     ${isResults ? winnersListHTML : waitingHTML}
                                 </div>
