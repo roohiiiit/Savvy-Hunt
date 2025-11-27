@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Welcome - Savvy Hunt</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* 1. RESET */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background-color: #050505;
+            overflow-x: hidden;
+            font-family: 'Montserrat', sans-serif;
+            width: 100%; min-height: 100vh;
+        }
+
+        /* Noise & Bars */
+        .noise-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 50;
+        }
+        .letterbox {
+            position: fixed; left: 0; width: 100%; height: 50vh; background: black; z-index: 60;
+            transition: height 1.5s cubic-bezier(0.19, 1, 0.22, 1); pointer-events: none;
+        }
+        .bar-top { top: 0; }
+        .bar-bottom { bottom: 0; }
+        body.loaded .letterbox { height: 10vh; }
+
+        /* 2. SCROLL & SCENE */
+        .scroll-dist { 
+            height: 350vh;
+            width: 100%; position: absolute; top: 0; left: 0; z-index: 10; pointer-events: auto; 
+        }
+
+        #scene-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; display: flex; justify-content: center; align-items: center;
+            pointer-events: none;
+            will-change: transform, filter;
+            transform-origin: center center;
+            perspective: 1000px;
+        }
+
+        video { 
+            width: 100%; height: 100%; object-fit: cover; 
+            opacity: 1; filter: brightness(0.8) contrast(1.1); 
+            transform: scale(1.1); 
+        }
+
+        /* 3. SAVVY BOT */
+        #savvy-bot-container {
+            position: absolute; top: 50%; left: 50%; z-index: 100;
+            width: 140px; height: 140px; 
+            perspective: 1200px;
+            pointer-events: none; will-change: transform;
+            transform: translate(-50%, -50%) scale(1); 
+        }
+        
+        #savvy-bot-container::before {
+            content: ''; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%;
+            border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.5); 
+            transform: translate(-50%, -50%) scale(0); opacity: 0; z-index: -1;
+        }
+        #savvy-bot-container.shockwave::before { animation: shockwave-anim 1s ease-out forwards; }
+        @keyframes shockwave-anim { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; border-width: 10px; } 100% { transform: translate(-50%, -50%) scale(3); opacity: 0; border-width: 0px; } }
+
+        .bot-body {
+            width: 100%; height: 100%; border-radius: 50%; position: relative;
+            background: radial-gradient(circle at 35% 35%, #ffffff 0%, #e0e0e0 10%, #fb923c 50%, #7c2d12 100%);
+            box-shadow: inset -20px -20px 50px rgba(0,0,0,0.8), inset 10px 10px 20px rgba(255,255,255,0.8), 0 0 40px rgba(249, 115, 22, 0.2);
+            transform-style: preserve-3d;
+        }
+        .bot-body::after {
+            content: ''; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%;
+            border-radius: 50%; background: radial-gradient(circle, #fff 0%, #f97316 40%, transparent 70%); 
+            filter: blur(20px); opacity: 0; transform: translate(-50%, -50%) scale(0.5); z-index: -2;
+            transition: opacity 0.3s; mix-blend-mode: hard-light;
+        }
+        #savvy-bot-container.diving .bot-body::after { opacity: 1; filter: blur(30px); transform: translate(-50%, -50%) scale(1.8); }
+
+        .bot-highlight {
+            position: absolute; top: 15%; left: 15%; width: 25%; height: 12%;
+            background: white; border-radius: 50%; transform: rotate(-45deg); 
+            z-index: 10; filter: blur(4px); opacity: 0.8;
+        }
+
+        .bot-face { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform-style: preserve-3d; }
+        .bot-eye {
+            width: 65%; height: 38%; background: #000; border-radius: 60px;
+            position: absolute; top: 32%; left: 17.5%; overflow: hidden; border: 4px solid #64748b;
+            box-shadow: inset 0 0 20px #000; z-index: 5; transform: translateZ(25px);
+        }
+        .bot-pupil {
+            width: 34px; height: 34px; background: #f97316; border-radius: 50%;
+            position: absolute; top: calc(50% - 17px); left: calc(50% - 17px); 
+            box-shadow: 0 0 20px #f97316, inset 0 0 5px white;
+        }
+        .bot-pupil::after { content: ''; position: absolute; top: 8px; left: 8px; width: 8px; height: 8px; background: white; border-radius: 50%; }
+        .bot-cheek { position: absolute; top: 65%; width: 15%; height: 8%; background: #fdba74; border-radius: 50%; opacity: 0.3; filter: blur(5px); z-index: 4; transform: translateZ(15px); }
+        .cheek-left { left: 15%; } .cheek-right { right: 15%; }
+        .bot-antenna {
+            position: absolute; top: -25%; left: 50%; width: 4px; height: 30%;
+            background: #94a3b8; z-index: -1; transform: translateX(-50%) translateZ(-10px);
+        }
+        .bot-antenna::after {
+            content: ''; position: absolute; top: -12px; left: -10px; width: 24px; height: 24px;
+            background: #f97316; border-radius: 50%; box-shadow: 0 0 25px #f97316;
+        }
+
+        /* 4. TEXT (BOTTOM SUBTITLE POSITION) */
+        .bot-text-dynamic {
+            position: fixed; 
+            bottom: 10%; /* Sits at the bottom */
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 100%; 
+            text-align: center; 
+            z-index: 200; 
+            pointer-events: none; 
+            white-space: nowrap;
+        }
+        
+        .char-span {
+            display: inline-block;
+            font-size: 48px; 
+            font-weight: 900; 
+            color: #fff;
+            text-transform: uppercase; 
+            letter-spacing: 8px;
+            text-shadow: 0 5px 20px rgba(0,0,0,1);
+            opacity: 0; 
+            transform-origin: center bottom; 
+            will-change: transform, opacity, filter;
+        }
+
+        @media (max-width: 768px) {
+            #savvy-bot-container { width: 140px; height: 140px; }
+            .bot-text-dynamic { bottom: 15%; /* Higher on mobile */ }
+            .char-span { font-size: 24px; letter-spacing: 3px; }
+            .letterbox { display: none; }
+        }
+
+        /* 5. LENS FLARE */
+        .lens-flare {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            width: 200vw; height: 200vw;
+            background: radial-gradient(circle, #fff 0%, #f97316 20%, transparent 60%);
+            z-index: 200; pointer-events: none; opacity: 0; mix-blend-mode: screen;
+        }
+
+        /* Loader */
+        .loader { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: 4px; pointer-events: none; transition: opacity 0.5s; z-index: 999; }
+
+    </style>
+</head>
+<body>
+
+    <div class="noise-overlay"></div>
+    <div class="letterbox bar-top"></div>
+    <div class="letterbox bar-bottom"></div>
+    
+    <div class="lens-flare" id="lens-flare"></div>
+
+    <div class="bot-text-dynamic" id="bot-text-container"></div>
+
+    <div class="scroll-dist"></div>
+
+    <div id="scene-container">
+        
+        <video id="heroVideo" playsinline webkit-playsinline muted preload="auto">
+            <source src="assests/video_laptop.mp4" type="video/mp4" media="(min-width: 768px)">
+            <source src="assests/video_phone.mp4" type="video/mp4">
+        </video>
+
+        <div id="savvy-bot-container">
+            <div class="bot-body" id="bot-body">
+                <div class="bot-highlight"></div>
+                <div class="bot-face" id="bot-face">
+                    <div class="bot-antenna"></div>
+                    <div class="bot-cheek cheek-left"></div>
+                    <div class="bot-cheek cheek-right"></div>
+                    <div class="bot-eye" id="bot-eye">
+                        <div class="bot-pupil" id="bot-pupil"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        const sceneContainer = document.getElementById('scene-container');
+        const botContainer = document.getElementById('savvy-bot-container');
+        const botBody = document.getElementById('bot-body');
+        const botFace = document.getElementById('bot-face');
+        const botEye = document.getElementById('bot-eye');
+        const botPupil = document.getElementById('bot-pupil');
+        const botTextContainer = document.getElementById('bot-text-container');
+        const lensFlare = document.getElementById('lens-flare');
+        const video = document.querySelector("#heroVideo");
+        const loader = document.querySelector("#loader");
+
+        // --- MOUSE PHYSICS ---
+        let physicsEnabled = true;
+        document.addEventListener('mousemove', (e) => {
+            if (!physicsEnabled) return;
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const mouseX = Math.max(-1, Math.min(1, (e.clientX - centerX) / (window.innerWidth / 2)));
+            const mouseY = Math.max(-1, Math.min(1, (e.clientY - centerY) / (window.innerHeight / 2)));
+
+            gsap.to(botBody, { rotationY: mouseX * 15, rotationX: -mouseY * 15, duration: 1.5, ease: "power2.out" });
+            gsap.to(botFace, { x: mouseX * 8, y: mouseY * 8, duration: 1.5, ease: "power2.out" });
+            
+            const rect = botEye.getBoundingClientRect();
+            const angle = Math.atan2(e.clientY - (rect.top + rect.height/2), e.clientX - (rect.left + rect.width/2));
+            const dist = Math.min(15, Math.hypot(e.clientX - (rect.left + rect.width/2), e.clientY - (rect.top + rect.height/2)));
+            gsap.to(botPupil, { x: Math.cos(angle) * dist, y: Math.sin(angle) * dist, duration: 0.3 });
+        });
+
+        // --- TEXT HELPER ---
+        function animateText(text) {
+            botTextContainer.innerHTML = ''; 
+            text.split('').forEach(char => {
+                const span = document.createElement('span');
+                span.textContent = char === ' ' ? '\u00A0' : char; span.classList.add('char-span');
+                botTextContainer.appendChild(span);
+            });
+            return gsap.fromTo('.char-span', 
+                { opacity: 0, y: 30, filter: "blur(10px)" },
+                { opacity: 1, y: 0, filter: "blur(0px)", duration: 1, stagger: 0.05, ease: "power4.out" }
+            );
+        }
+
+        // --- START ---
+        function startExperience() {
+            if(loader) loader.style.opacity = 0;
+            document.body.classList.add('loaded');
+
+            gsap.set(botContainer, { scale: 0, opacity: 0 });
+            
+            const introTl = gsap.timeline();
+            introTl.add(() => botContainer.classList.add('shockwave'), 0.2);
+            introTl.to(botContainer, { scale: 1, opacity: 1, duration: 1.2, ease: "expo.out" }, 0.2);
+            
+            introTl.add(animateText("I AM SAVVY"), 0.5);
+            
+            introTl.to('.char-span', { opacity: 0, y: 30, filter: "blur(10px)", duration: 0.5, stagger: 0.05 }, "+=1"); 
+            introTl.add(() => animateText("SCROLL TO ENTER"), "+=0");
+
+            const vidDuration = (video.duration && !isNaN(video.duration)) ? video.duration : 5;
+            
+            let scrollTl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: ".scroll-dist", start: "top top", end: "bottom bottom", scrub: 0.1, 
+                    onLeave: () => window.location.href = "index.html", 
+                    onUpdate: (self) => {
+                        if(self.progress > 0.85 && physicsEnabled) {
+                            physicsEnabled = false; 
+                            botContainer.classList.add('diving');
+                            gsap.to([botFace, botPupil], { x: 0, y: 0, duration: 0.2 });
+                        }
+                    }
+                }
+            });
+
+            // PHASE A: PAN
+            scrollTl.fromTo(video, 
+                { currentTime: 0 }, 
+                { currentTime: vidDuration, ease: "none" }, 
+            0);
+            
+            scrollTl.to('.char-span', { opacity: 0, scale: 1.2, filter: "blur(20px)", duration: 0.1 }, 0);
+
+            // PHASE B: PORTAL CLIMAX
+            scrollTl.to(sceneContainer, { 
+                scale: 6, opacity: 0, filter: "blur(10px)", ease: "expo.in", duration: 0.15 
+            }, 0.85);
+            
+            scrollTl.to(lensFlare, { 
+                scale: 1.5, opacity: 1, ease: "expo.in", duration: 0.15 
+            }, 0.85);
+        }
+
+        window.addEventListener('load', () => { setTimeout(startExperience, 100); });
+    </script>
+</body>
+</html>
