@@ -117,6 +117,273 @@
     </style>
 </head>
 <body class="min-h-screen">
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savvy Hunt Loading Screen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FFF7ED; /* Matches your site bg */
+            margin: 0;
+            overflow: hidden; /* Prevent scroll during load */
+        }
+
+        /* --- LOADER SPECIFIC STYLES --- */
+        #global-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background-color: #FFF7ED;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+        }
+
+        /* Loader Bot Container - slightly larger than normal bot */
+        .loader-bot {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 10;
+            animation: floatLoader 3s ease-in-out infinite;
+        }
+
+        /* Reuse your exact bot styles for consistency */
+        .l-bot-body {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #fff7ed);
+            border-radius: 50%;
+            box-shadow: 
+                inset -4px -4px 12px rgba(234, 88, 12, 0.15), 
+                0 15px 35px -5px rgba(234, 88, 12, 0.15), 
+                0 0 0 2px rgba(255,255,255,0.9);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .l-bot-eye {
+            width: 45px;
+            height: 26px;
+            background: #0f172a;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #ffb46b;
+            box-shadow: inset 0 0 6px #000;
+        }
+
+        .l-bot-pupil {
+            width: 14px;
+            height: 14px;
+            background: #f97316;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px #f97316;
+            animation: scanEye 1.5s ease-in-out infinite alternate;
+        }
+
+        .l-bot-antenna {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 16px;
+            background: #cbd5e1;
+            z-index: -1;
+        }
+        .l-bot-antenna::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -4px;
+            width: 12px;
+            height: 12px;
+            background: #f97316;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.6);
+            animation: blinkAntenna 2s infinite;
+        }
+
+        /* Pulse rings behind the bot */
+        .pulse-ring {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.1);
+            opacity: 0;
+            z-index: -1;
+        }
+        .ring-1 { width: 100%; height: 100%; animation: ripple 2s linear infinite; }
+        .ring-2 { width: 100%; height: 100%; animation: ripple 2s linear infinite 0.6s; }
+
+        /* Typography */
+        .loader-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease-out forwards 0.2s;
+        }
+
+        .loader-subtitle {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #f97316;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease-out forwards 0.4s;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 200px;
+            height: 4px;
+            background: #ffedd5; /* Orange-100 */
+            border-radius: 99px;
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards 0.6s;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #f97316, #ea580c);
+            width: 0%;
+            border-radius: 99px;
+            /* This animation simulates loading progress */
+            animation: loadProgress 2.5s ease-in-out forwards;
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.5);
+        }
+
+        /* Animations */
+        @keyframes floatLoader {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes scanEye {
+            0% { transform: translateX(-12px); }
+            100% { transform: translateX(12px); }
+        }
+        @keyframes blinkAntenna {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+        @keyframes ripple {
+            0% { width: 80px; height: 80px; opacity: 0.8; border-width: 2px; }
+            100% { width: 200px; height: 200px; opacity: 0; border-width: 0px; }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        @keyframes loadProgress {
+            0% { width: 0%; }
+            40% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        /* Reveal Content State */
+        .content-loaded #global-loader {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        
+        /* Dummy Content Styling (Just for preview) */
+        .dummy-content {
+            padding: 4rem;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease 0.5s;
+        }
+        .content-loaded .dummy-content {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 
+        STEP 1: PASTE THIS LOADER HTML AT THE VERY TOP OF YOUR <BODY> 
+    -->
+    <div id="global-loader">
+        
+        <!-- Bot Mascot -->
+        <div class="loader-bot">
+            <div class="pulse-ring ring-1"></div>
+            <div class="pulse-ring ring-2"></div>
+            <div class="l-bot-antenna"></div>
+            <div class="l-bot-body">
+                <div class="l-bot-eye">
+                    <div class="l-bot-pupil"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Text -->
+        <h1 class="loader-title">
+            Savvy<span class="text-orange-500">Hunt</span>
+        </h1>
+        <div class="loader-subtitle">Initializing System</div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+
+    </div>
+  
+
+
+    
+
+
+    
+    <script>
+        // Simulate loading time (Remove the setTimeout wrapper in production)
+        window.addEventListener('load', () => {
+            
+            // In your real site, 2500ms might be too long. 
+            // You can lower this or remove the setTimeout entirely 
+            // to let it fade out exactly when window.load fires.
+            setTimeout(() => {
+                document.body.classList.add('content-loaded');
+                document.body.style.overflow = 'auto'; // Restore scrolling
+            }, 2500); 
+
+        });
+    </script>
+
+</body>
+</html>
     <div class="bg-parallax-text">SNAPSHOTS</div>
 
     <div id="savvy-bot-container" style="transform: translate(80vw, 75vh);">
