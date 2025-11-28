@@ -5,38 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feedback - Savvy Hunt 2025</title>
     
-    <!-- Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
                     colors: {
-                        brand: {
-                            50: '#fff7ed',  
-                            100: '#ffedd5',
-                            400: '#fb923c',
-                            500: '#f97316', 
-                            600: '#ea580c', 
-                            900: '#7c2d12',
-                        }
+                        brand: { 50:'#fff7ed', 100:'#ffedd5', 400:'#fb923c', 500:'#f97316', 600:'#ea580c', 900:'#7c2d12' }
                     },
-                    animation: {
-                        'blob': 'blob 7s infinite',
-                    },
+                    animation: { 'blob': 'blob 7s infinite' },
                     keyframes: {
                         blob: {
                             '0%': { transform: 'translate(0px, 0px) scale(1)' },
@@ -50,157 +35,9 @@
         }
     </script>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            
-            // --- 1. UI LOGIC ---
-            const slider = document.getElementById('rating-slider');
-            const ratingInput = document.getElementById('rating-input');
-            const ratingText = document.getElementById('rating-text');
-            const ratingEmoji = document.getElementById('rating-emoji');
-            
-            const feedbackStates = [
-                { text: "Slide to rate", emoji: "👋" }, 
-                { text: "Not my vibe", emoji: "😔" },      // 1
-                { text: "Could be better", emoji: "😐" },  // 2
-                { text: "It was okay", emoji: "🙂" },      // 3
-                { text: "Pretty good!", emoji: "😃" },     // 4
-                { text: "Absolutely Legendary!", emoji: "🔥" } // 5
-            ];
-
-            let currentVal = parseFloat(slider.value); 
-            ratingInput.value = Math.round(currentVal);
-
-            function updateRatingUI(val) {
-                // Calculate discrete index (1-5) for text/emoji
-                const discreteIndex = Math.round(val);
-                
-                // Update Text & Emoji if changed
-                if (feedbackStates[discreteIndex]) {
-                    const newState = feedbackStates[discreteIndex];
-                    if (ratingText.textContent !== newState.text) {
-                        ratingText.textContent = newState.text;
-                        ratingEmoji.textContent = newState.emoji;
-                        
-                        // Pop Animation only on state change
-                        ratingEmoji.classList.remove('animate-pop');
-                        void ratingEmoji.offsetWidth; 
-                        ratingEmoji.classList.add('animate-pop');
-                    }
-                }
-
-                // Update Smooth Gradient Fill
-                // Map 1..5 to 0..100%
-                const percentage = ((val - 1) / 4) * 100;
-                
-                // Vibrant Liquid Gradient
-                slider.style.background = `
-                    linear-gradient(to right, 
-                        #f59e0b 0%, 
-                        #f97316 ${percentage / 2}%, 
-                        #e11d48 ${percentage}%, 
-                        rgba(255,255,255,0.5) ${percentage}%, 
-                        rgba(255,255,255,0.5) 100%)
-                `;
-            }
-
-            // Initial Call
-            updateRatingUI(currentVal);
-
-            // Listener
-            slider.addEventListener('input', (e) => {
-                const val = parseFloat(e.target.value);
-                currentVal = val;
-                ratingInput.value = Math.round(val); // Store integer for DB
-                updateRatingUI(val);
-            });
-
-            // --- 2. FIREBASE LOGIC ---
-            let db;
-            let appId = 'default';
-
-            try {
-                const firebaseConfig = JSON.parse(localStorage.getItem('firebase_config') || '{}');
-                const configToUse = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig;
-                appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-                if (configToUse && Object.keys(configToUse).length > 0) {
-                    const app = initializeApp(configToUse);
-                    const auth = getAuth(app);
-                    db = getFirestore(app);
-                    try { await signInAnonymously(auth); } catch (e) { console.warn("Auth failed:", e); }
-                } else {
-                    console.warn("No Firebase config found. Running in UI-only mode.");
-                }
-            } catch (error) {
-                console.error("Firebase Init Error:", error);
-            }
-
-            // --- 3. SUBMIT LOGIC ---
-            const form = document.getElementById('feedbackForm');
-            const submitBtn = document.getElementById('submitBtn');
-            const successModal = document.getElementById('successModal');
-
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                const originalContent = submitBtn.innerHTML;
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i><span class="ml-2">Sending...</span>';
-                submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
-
-                try {
-                    await new Promise(r => setTimeout(r, 800)); // UX Delay
-
-                    if (db) {
-                        const formData = new FormData(form);
-                        const data = {
-                            name: formData.get('name') || 'Anonymous',
-                            class: formData.get('class') || 'Guest',
-                            rating: parseInt(formData.get('rating')), // Ensure int
-                            liked: formData.get('liked'),
-                            improve: formData.get('improve'),
-                            tech: formData.get('tech'),
-                            extra: formData.get('extra'),
-                            timestamp: serverTimestamp()
-                        };
-                        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'feedbacks'), data);
-                    } else {
-                        console.log("Simulating success");
-                    }
-
-                    successModal.classList.remove('hidden');
-                    successModal.classList.add('flex');
-                    form.reset();
-                    slider.value = 3;
-                    updateRatingUI(3);
-                    ratingInput.value = 3;
-
-                } catch (error) {
-                    console.error("Submission Error:", error);
-                    alert("Something went wrong. Please try again.");
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalContent;
-                    submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
-                }
-            });
-        });
-    </script>
-
     <style>
         body {
             background-color: #fff7ed;
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(27,98%,65%,0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, hsla(35,100%,75%,0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, hsla(27,98%,65%,0.1) 0px, transparent 50%),
-                radial-gradient(at 0% 100%, hsla(35,100%,75%,0.1) 0px, transparent 50%);
             background-attachment: fixed;
             color: #1e293b;
         }
@@ -210,15 +47,13 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 
-                0 10px 40px -10px rgba(249, 115, 22, 0.1),
-                inset 0 0 20px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 40px -10px rgba(249, 115, 22, 0.1), inset 0 0 20px rgba(255, 255, 255, 0.5);
         }
 
         .input-glass {
             background: rgba(255, 255, 255, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s;
             color: #334155;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
         }
@@ -240,84 +75,51 @@
             filter: brightness(1.1);
         }
 
-        /* --- EXCITING SLIDER STYLES --- */
+        /* --- FIXED SLIDER STYLES (Rounded Pill) --- */
         input[type=range] {
-            -webkit-appearance: none;
+            -webkit-appearance: none; /* Removes default webkit styles */
+            appearance: none;
             width: 100%;
-            background: transparent; 
-            height: 48px;
+            height: 24px; /* Height of the pill */
+            border-radius: 9999px; /* Force fully rounded edges */
+            background: #e5e7eb; /* Fallback */
+            outline: none;
+            margin: 10px 0;
             cursor: pointer;
-            position: relative;
-            z-index: 10;
-        }
-        input[type=range]:focus { outline: none; }
-
-        /* Track (WebKit) */
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 14px;
-            cursor: pointer;
-            border-radius: 999px;
-            /* Inset shadow for depth */
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.15); 
-            border: 1px solid rgba(255,255,255,0.6);
-            background: transparent; /* Gradient handled via JS inline style */
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); /* Inner shadow for depth */
+            border: 2px solid white; /* Clean border */
         }
 
-        /* Thumb (WebKit) */
+        /* Thumb (The handle you drag) */
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 36px;
-            width: 36px;
+            appearance: none;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: #ffffff;
             cursor: grab;
-            margin-top: -12px; /* Center vert: (14px track - 36px thumb) / 2 */
-            
-            /* Exciting Glow */
-            box-shadow: 
-                0 4px 10px rgba(0,0,0,0.15), 
-                0 0 0 4px rgba(255, 255, 255, 0.5), /* Inner Halo */
-                0 0 15px rgba(249, 115, 22, 0.4); /* Outer Glow */
-            
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2), 0 0 0 4px rgba(249, 115, 22, 0.1);
             border: 3px solid #f97316;
-            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-top: -6px; /* Center the thumb vertically */
+            transition: transform 0.1s ease;
         }
 
-        /* Interaction States */
-        input[type=range]:hover::-webkit-slider-thumb {
-            transform: scale(1.1);
-            border-color: #ea580c;
-            box-shadow: 
-                0 6px 15px rgba(234, 88, 12, 0.3),
-                0 0 0 6px rgba(255, 255, 255, 0.4);
+        input[type=range]::-moz-range-thumb {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: grab;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border: 3px solid #f97316;
+            transition: transform 0.1s ease;
         }
+
         input[type=range]:active::-webkit-slider-thumb {
-            cursor: grabbing;
-            transform: scale(0.95);
+            transform: scale(1.1);
             background: #f97316;
             border-color: white;
-            box-shadow: 0 0 0 8px rgba(249, 115, 22, 0.3);
-        }
-
-        /* Mozilla Fixes */
-        input[type=range]::-moz-range-track {
-            width: 100%;
-            height: 14px;
-            cursor: pointer;
-            border-radius: 999px;
-            background: transparent;
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.15);
-            border: 1px solid rgba(255,255,255,0.6);
-        }
-        input[type=range]::-moz-range-thumb {
-            height: 36px;
-            width: 36px;
-            border: 3px solid #f97316;
-            border-radius: 50%;
-            background: #ffffff;
-            cursor: grab;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
 
         @keyframes pop {
@@ -330,13 +132,11 @@
 </head>
 <body class="antialiased min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
 
-    <!-- Decorative Blob -->
     <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-brand-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
         <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-orange-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
     </div>
 
-    <!-- Navbar -->
     <nav class="w-full max-w-3xl mx-auto px-6 py-8 flex justify-between items-center z-10">
         <div class="flex flex-col">
             <span class="text-[10px] font-extrabold text-brand-600 tracking-[0.2em] uppercase bg-white/50 px-2 py-0.5 rounded-full self-start mb-1 backdrop-blur-sm border border-brand-100">Savvy Hunt 2025</span>
@@ -349,10 +149,8 @@
         </a>
     </nav>
 
-    <!-- Main Content -->
     <main class="flex-grow w-full max-w-3xl mx-auto px-4 pb-24 z-10">
         
-        <!-- Header -->
         <div class="text-center mb-10 space-y-3">
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-50 to-white text-brand-500 mb-2 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white">
                 <i class="fa-regular fa-comments text-3xl"></i>
@@ -365,7 +163,6 @@
 
         <form id="feedbackForm" class="space-y-6">
             
-            <!-- Slider Rating Card -->
             <div class="glass-panel rounded-[2rem] p-8 text-center relative overflow-hidden group hover:shadow-lg transition-shadow duration-500">
                 <div class="flex flex-col items-center justify-center gap-2 mb-8 h-16">
                     <div id="rating-emoji" class="text-6xl filter drop-shadow-md transition-transform duration-300 transform hover:scale-110 cursor-default">👋</div>
@@ -374,9 +171,7 @@
                 
                 <input type="hidden" name="rating" id="rating-input" required>
                 
-                <!-- Enhanced Slider -->
                 <div class="px-2 sm:px-6 mb-4 relative">
-                    <!-- Smooth slider, no snapping (step=0.01) -->
                     <input type="range" id="rating-slider" min="1" max="5" value="3" step="0.01">
                     
                     <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-4 px-1 pointer-events-none">
@@ -389,7 +184,6 @@
                 </div>
             </div>
 
-            <!-- Identity Section -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="relative group">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-brand-400">
@@ -406,7 +200,6 @@
                 </div>
             </div>
 
-            <!-- Detailed Feedback -->
             <div class="glass-panel rounded-[2rem] p-6 sm:p-8 space-y-6">
                 
                 <div class="space-y-2">
@@ -439,7 +232,6 @@
 
             </div>
 
-            <!-- Submit Button -->
             <button id="submitBtn" type="submit" class="w-full btn-orange-lux text-white font-bold rounded-2xl py-4 flex justify-center items-center gap-3 text-lg tracking-tight group">
                 <span>Submit Feedback</span>
                 <i class="fa-solid fa-paper-plane text-sm group-hover:translate-x-1 transition-transform"></i>
@@ -457,10 +249,8 @@
 
     </main>
 
-    <!-- Success Modal -->
     <div id="successModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 backdrop-blur-md p-4 animate-in fade-in duration-300">
         <div class="bg-white/90 backdrop-blur-xl border border-white/60 rounded-[2.5rem] p-8 max-w-sm w-full text-center shadow-2xl relative overflow-hidden">
-            <!-- Decorative Gradient Line -->
             <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-orange-400 to-rose-400"></div>
 
             <div class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm animate-bounce">
@@ -480,6 +270,144 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- 1. TELEGRAM CONFIGURATION (PASTE KEYS HERE) ---
+            const BOT_TOKEN = "8458855833:AAEDZtijKPSV9hfD12UVFBp65ogaVyrqy8M"; 
+            const CHAT_ID = "7168988866";     
+
+            // --- 2. SLIDER LOGIC ---
+            const slider = document.getElementById('rating-slider');
+            const ratingInput = document.getElementById('rating-input');
+            const ratingText = document.getElementById('rating-text');
+            const ratingEmoji = document.getElementById('rating-emoji');
+            
+            const feedbackStates = [
+                { text: "Slide to rate", emoji: "👋" }, 
+                { text: "Not my vibe", emoji: "😔" },      
+                { text: "Could be better", emoji: "😐" },  
+                { text: "It was okay", emoji: "🙂" },      
+                { text: "Pretty good!", emoji: "😃" },     
+                { text: "Absolutely Legendary!", emoji: "🔥" } 
+            ];
+
+            let currentVal = parseFloat(slider.value); 
+            ratingInput.value = Math.round(currentVal);
+
+            function updateRatingUI(val) {
+                const discreteIndex = Math.round(val);
+                if (feedbackStates[discreteIndex]) {
+                    const newState = feedbackStates[discreteIndex];
+                    if (ratingText.textContent !== newState.text) {
+                        ratingText.textContent = newState.text;
+                        ratingEmoji.textContent = newState.emoji;
+                        ratingEmoji.classList.remove('animate-pop');
+                        void ratingEmoji.offsetWidth; 
+                        ratingEmoji.classList.add('animate-pop');
+                    }
+                }
+                
+                // GRADIENT PILL LOGIC
+                // This updates the background of the slider to look like a liquid bar
+                const percentage = ((val - 1) / 4) * 100;
+                slider.style.background = `
+                    linear-gradient(to right, 
+                        #f59e0b 0%, 
+                        #f97316 ${percentage / 2}%, 
+                        #e11d48 ${percentage}%, 
+                        #e5e7eb ${percentage}%, 
+                        #e5e7eb 100%)
+                `;
+            }
+
+            // Init
+            updateRatingUI(currentVal);
+
+            slider.addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                currentVal = val;
+                ratingInput.value = Math.round(val);
+                updateRatingUI(val);
+            });
+
+            // --- 3. SUBMIT LOGIC ---
+            const form = document.getElementById('feedbackForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const successModal = document.getElementById('successModal');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // UI Loading State
+                const originalContent = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i><span class="ml-2">Sending...</span>';
+                submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+
+                try {
+                    const formData = new FormData(form);
+                    const rating = parseInt(formData.get('rating'));
+                    const stars = "⭐".repeat(rating);
+                    
+                    // Formatting Message for Telegram
+                    const message = `
+<b>📝 NEW FEEDBACK</b>
+
+<b>👤 Identity:</b>
+Name: ${formData.get('name') || 'Anonymous'}
+Class: ${formData.get('class') || 'Not stated'}
+
+<b>📊 Rating:</b> ${rating}/5  ${stars}
+
+<b>❤️ Highlights:</b>
+${formData.get('liked') || '-'}
+
+<b>💡 Improvements:</b>
+${formData.get('improve') || '-'}
+
+<b>🔧 Tech Issues:</b>
+${formData.get('tech') || '-'}
+
+<b>📢 Extra:</b>
+${formData.get('extra') || '-'}
+`;
+
+                    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+                    
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: CHAT_ID,
+                            text: message,
+                            parse_mode: 'HTML'
+                        })
+                    });
+
+                    if (response.ok) {
+                        successModal.classList.remove('hidden');
+                        successModal.classList.add('flex');
+                        form.reset();
+                        slider.value = 3;
+                        updateRatingUI(3);
+                        ratingInput.value = 3;
+                    } else {
+                        throw new Error('Telegram API failed');
+                    }
+
+                } catch (error) {
+                    console.error("Submission Error:", error);
+                    alert("Could not send. Check internet or Bot Token.");
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalContent;
+                    submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>
