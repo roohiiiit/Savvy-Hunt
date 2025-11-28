@@ -10,18 +10,195 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-/* ===== SOFT ORANGISH BACKGROUND (not full orange) ===== */
+        /* ========================================= */
+        /* LOADER STYLES                */
+        /* ========================================= */
+        #global-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background-color: #FFF7ED;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+        }
+
+        .loader-bot {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 10;
+            animation: floatLoader 3s ease-in-out infinite;
+        }
+
+        .l-bot-body {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #fff7ed);
+            border-radius: 50%;
+            box-shadow: 
+                inset -4px -4px 12px rgba(234, 88, 12, 0.15), 
+                0 15px 35px -5px rgba(234, 88, 12, 0.15), 
+                0 0 0 2px rgba(255,255,255,0.9);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .l-bot-eye {
+            width: 45px;
+            height: 26px;
+            background: #0f172a;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #ffb46b;
+            box-shadow: inset 0 0 6px #000;
+        }
+
+        .l-bot-pupil {
+            width: 14px;
+            height: 14px;
+            background: #f97316;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px #f97316;
+            animation: scanEye 1.5s ease-in-out infinite alternate;
+        }
+
+        .l-bot-antenna {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 16px;
+            background: #cbd5e1;
+            z-index: -1;
+        }
+        .l-bot-antenna::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -4px;
+            width: 12px;
+            height: 12px;
+            background: #f97316;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.6);
+            animation: blinkAntenna 2s infinite;
+        }
+
+        .pulse-ring {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.1);
+            opacity: 0;
+            z-index: -1;
+        }
+        .ring-1 { width: 100%; height: 100%; animation: ripple 2s linear infinite; }
+        .ring-2 { width: 100%; height: 100%; animation: ripple 2s linear infinite 0.6s; }
+
+        .loader-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease-out forwards 0.2s;
+        }
+
+        .loader-subtitle {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #f97316;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease-out forwards 0.4s;
+        }
+
+        .progress-container {
+            width: 200px;
+            height: 4px;
+            background: #ffedd5;
+            border-radius: 99px;
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards 0.6s;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #f97316, #ea580c);
+            width: 0%;
+            border-radius: 99px;
+            animation: loadProgress 2.5s ease-in-out forwards;
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.5);
+        }
+
+        @keyframes floatLoader {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes scanEye {
+            0% { transform: translateX(-12px); }
+            100% { transform: translateX(12px); }
+        }
+        @keyframes blinkAntenna {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+        @keyframes ripple {
+            0% { width: 80px; height: 80px; opacity: 0.8; border-width: 2px; }
+            100% { width: 200px; height: 200px; opacity: 0; border-width: 0px; }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        @keyframes loadProgress {
+            0% { width: 0%; }
+            40% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        .content-loaded #global-loader {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* ========================================= */
+        /* MAIN PAGE STYLES             */
+        /* ========================================= */
         body {
             font-family: "Plus Jakarta Sans", system-ui;
             background: linear-gradient(145deg, #FFF7ED 0%, #FFEEDD 40%, #FFF4E5 70%);
             background-attachment: fixed;
+            margin: 0;
+            overflow: hidden; /* Lock scroll initially for loader */
         }
 
-
-        /* ===== CENTERED BIG BACKGROUND TEXT ===== */
         .bg-parallax-text {
             position: fixed;
             top: 50%;
@@ -29,21 +206,19 @@
             transform: translate(-50%, -50%);
             font-size: 22vh;
             font-weight: 900;
-            color: rgba(234, 88, 12, 0.06); /* Very subtle orange */
+            color: rgba(234, 88, 12, 0.06);
             white-space: nowrap;
             pointer-events: none;
             user-select: none;
             z-index: 0;
         }
 
-
-        /* ===== FULL-WIDTH HEADER ===== */
         header.schedule-hero {
             position: relative;
             width: 100%;
             overflow: hidden;
             padding-top: 2.5rem;
-            padding-bottom: 7rem; /* INCREASED: Extra space for the toggle */
+            padding-bottom: 7rem;
             background: linear-gradient(120deg,#ff7a1a,#ff5e00,#ea580c,#b63a00);
             background-size: 200% 200%;
             animation: heroGradient 8s ease infinite;
@@ -67,12 +242,12 @@
                 radial-gradient(circle at 20% -10%, rgba(255, 255, 255, 0.4) 0, transparent 55%),
                 radial-gradient(circle at 80% 0%, rgba(254, 243, 199, 0.45) 0, transparent 60%);
             pointer-events: none;
-            z-index: 1; /* Low z-index so content sits above */
+            z-index: 1;
         }
 
         .schedule-hero-inner {
             position: relative;
-            z-index: 10; /* High z-index to ensure visibility */
+            z-index: 10;
             max-width: 64rem;
             margin: 0 auto;
             padding: 0 1.5rem;
@@ -176,7 +351,7 @@
             display: flex;
             justify-content: center;
             position: relative;
-            z-index: 20; /* Force it on top */
+            z-index: 20;
         }
         
         .toggle-container {
@@ -212,13 +387,12 @@
 
         .toggle-btn.inactive {
             background-color: transparent;
-            color: rgba(255, 255, 255, 0.95); /* Made brighter */
+            color: rgba(255, 255, 255, 0.95);
         }
         .toggle-btn.inactive:hover {
             color: #ffffff;
             background-color: rgba(255, 255, 255, 0.15);
         }
-
 
         .container {
             max-width: 1200px;
@@ -250,7 +424,6 @@
         .flip-card:hover .flip-card-inner:not(.flipped) {
             transform: translateY(-5px);
         }
-
 
         .flipped {
             transform: rotateY(180deg);
@@ -310,21 +483,20 @@
             margin-bottom: 14px; 
             flex-shrink: 0;
         }
-        /* Force disable selection on EVERYTHING */
-            *, *::before, *::after {
-                -webkit-user-select: none !important;
-                -moz-user-select: none !important;
-                -ms-user-select: none !important;
-                user-select: none !important;
-            }
 
-            /* Allow selection ONLY on input fields (so people can contact you) */
-            input, textarea {
-                -webkit-user-select: text !important;
-                -moz-user-select: text !important;
-                -ms-user-select: text !important;
-                user-select: text !important;
-            }
+        /* Prevent selection */
+        *, *::before, *::after {
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+        }
+        input, textarea {
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
+        }
 
         .status-badge, .category-pill { 
             font-size: 0.7rem;
@@ -553,12 +725,11 @@
             header.schedule-hero {
                 border-bottom-left-radius: 2rem;
                 border-bottom-right-radius: 2rem;
-                padding-bottom: 5rem; /* INCREASED: Ensure mobile also has space */
+                padding-bottom: 5rem;
             }
             .flip-card {
                 height: 340px;
             }
-            /* Adjust toggle for mobile */
             .toggle-wrapper {
                 margin-top: 1.5rem;
             }
@@ -568,7 +739,7 @@
             }
         }
 
-        /* ===== SAVVY BOT STYLES (glow only when scanning) ===== */
+        /* ===== SAVVY BOT STYLES ===== */
         #savvy-bot-container {
             position: fixed;
             z-index: 110;
@@ -629,7 +800,7 @@
         .bot-pupil {
             width: 10px;
             height: 10px;
-            background: #ff7300; /* default dark, no glow */
+            background: #ff7300; 
             border-radius: 50%;
             position: absolute;
             top: 4px;
@@ -638,7 +809,6 @@
             transition: transform 0.1s, box-shadow 0.15s ease, background 0.15s ease;
         }
 
-        /* Glow only when scanning */
         .bot-body.scanning .bot-pupil {
             background: #ff5e00;
             box-shadow: 0 0 8px #ff5e00;
@@ -668,7 +838,6 @@
             filter: drop-shadow(0 0 6px rgba(255,98,0,1));
             mix-blend-mode: hard-light;
         }
-        
 
         .bot-antenna {
             position: absolute;
@@ -737,226 +906,9 @@
     </style>
 </head>
 <body>
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Savvy Hunt Loading Screen</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #FFF7ED; /* Matches your site bg */
-            margin: 0;
-            overflow: hidden; /* Prevent scroll during load */
-        }
-
-        /* --- LOADER SPECIFIC STYLES --- */
-        #global-loader {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background-color: #FFF7ED;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
-        }
-
-        /* Loader Bot Container - slightly larger than normal bot */
-        .loader-bot {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 2rem;
-            position: relative;
-            z-index: 10;
-            animation: floatLoader 3s ease-in-out infinite;
-        }
-
-        /* Reuse your exact bot styles for consistency */
-        .l-bot-body {
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 30% 30%, #ffffff, #fff7ed);
-            border-radius: 50%;
-            box-shadow: 
-                inset -4px -4px 12px rgba(234, 88, 12, 0.15), 
-                0 15px 35px -5px rgba(234, 88, 12, 0.15), 
-                0 0 0 2px rgba(255,255,255,0.9);
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .l-bot-eye {
-            width: 45px;
-            height: 26px;
-            background: #0f172a;
-            border-radius: 20px;
-            position: relative;
-            overflow: hidden;
-            border: 3px solid #ffb46b;
-            box-shadow: inset 0 0 6px #000;
-        }
-
-        .l-bot-pupil {
-            width: 14px;
-            height: 14px;
-            background: #f97316;
-            border-radius: 50%;
-            position: absolute;
-            top: 3px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 10px #f97316;
-            animation: scanEye 1.5s ease-in-out infinite alternate;
-        }
-
-        .l-bot-antenna {
-            position: absolute;
-            top: -14px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4px;
-            height: 16px;
-            background: #cbd5e1;
-            z-index: -1;
-        }
-        .l-bot-antenna::after {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: -4px;
-            width: 12px;
-            height: 12px;
-            background: #f97316;
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(249, 115, 22, 0.6);
-            animation: blinkAntenna 2s infinite;
-        }
-
-        /* Pulse rings behind the bot */
-        .pulse-ring {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            border: 1px solid rgba(249, 115, 22, 0.3);
-            box-shadow: 0 0 15px rgba(249, 115, 22, 0.1);
-            opacity: 0;
-            z-index: -1;
-        }
-        .ring-1 { width: 100%; height: 100%; animation: ripple 2s linear infinite; }
-        .ring-2 { width: 100%; height: 100%; animation: ripple 2s linear infinite 0.6s; }
-
-        /* Typography */
-        .loader-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            color: #1e293b;
-            margin-bottom: 0.5rem;
-            opacity: 0;
-            animation: fadeUp 0.8s ease-out forwards 0.2s;
-        }
-
-        .loader-subtitle {
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: #f97316;
-            margin-bottom: 2rem;
-            opacity: 0;
-            animation: fadeUp 0.8s ease-out forwards 0.4s;
-        }
-
-        /* Progress Bar */
-        .progress-container {
-            width: 200px;
-            height: 4px;
-            background: #ffedd5; /* Orange-100 */
-            border-radius: 99px;
-            overflow: hidden;
-            position: relative;
-            opacity: 0;
-            animation: fadeIn 0.8s ease-out forwards 0.6s;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #f97316, #ea580c);
-            width: 0%;
-            border-radius: 99px;
-            /* This animation simulates loading progress */
-            animation: loadProgress 2.5s ease-in-out forwards;
-            box-shadow: 0 0 10px rgba(249, 115, 22, 0.5);
-        }
-
-        /* Animations */
-        @keyframes floatLoader {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        @keyframes scanEye {
-            0% { transform: translateX(-12px); }
-            100% { transform: translateX(12px); }
-        }
-        @keyframes blinkAntenna {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.8); }
-        }
-        @keyframes ripple {
-            0% { width: 80px; height: 80px; opacity: 0.8; border-width: 2px; }
-            100% { width: 200px; height: 200px; opacity: 0; border-width: 0px; }
-        }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-        @keyframes loadProgress {
-            0% { width: 0%; }
-            40% { width: 70%; }
-            100% { width: 100%; }
-        }
-
-        /* Reveal Content State */
-        .content-loaded #global-loader {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-        
-        /* Dummy Content Styling (Just for preview) */
-        .dummy-content {
-            padding: 4rem;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 1s ease 0.5s;
-        }
-        .content-loaded .dummy-content {
-            opacity: 1;
-        }
-    </style>
-</head>
-<body>
-
-    <!-- 
-        STEP 1: PASTE THIS LOADER HTML AT THE VERY TOP OF YOUR <BODY> 
-    -->
+    <!-- LOADER -->
     <div id="global-loader">
-        
-        <!-- Bot Mascot -->
         <div class="loader-bot">
             <div class="pulse-ring ring-1"></div>
             <div class="pulse-ring ring-2"></div>
@@ -967,59 +919,43 @@
                 </div>
             </div>
         </div>
-
-        <!-- Text -->
         <h1 class="loader-title">
             Savvy<span class="text-orange-500">Hunt</span>
         </h1>
         <div class="loader-subtitle">Initializing System</div>
-
-        <!-- Progress Bar -->
         <div class="progress-container">
             <div class="progress-bar"></div>
         </div>
-
     </div>
-    <!-- END OF LOADER HTML -->
-
-
     
-
-    
+    <!-- LOADER SCRIPT -->
     <script>
-        // Simulate loading time (Remove the setTimeout wrapper in production)
         window.addEventListener('load', () => {
-            
-            // In your real site, 2500ms might be too long. 
-            // You can lower this or remove the setTimeout entirely 
-            // to let it fade out exactly when window.load fires.
             setTimeout(() => {
                 document.body.classList.add('content-loaded');
                 document.body.style.overflow = 'auto'; // Restore scrolling
             }, 2500); 
-
         });
     </script>
 
-</body>
-</html>
+    <!-- BACKGROUND TEXT -->
     <div class="bg-parallax-text">SCHEDULE</div>
 
-
-    <header class="schedule-hero">
-        <div id="savvy-bot-container" style="transform: translate(80vw, 75vh);">
-            <div class="bot-bubble" id="bot-bubble">Full schedule unlocked 🧾</div>
-            <div class="bot-body" id="bot-body">
-                <div class="laser-cone"></div>
-                <div class="bot-cheek cheek-left"></div>
-                <div class="bot-cheek cheek-right"></div>
-                <div class="bot-antenna"></div>
-                <div class="bot-eye" id="bot-eye">
-                    <div class="bot-pupil" id="bot-pupil"></div>
-                </div>
+    <!-- SAVVY BOT -->
+    <div id="savvy-bot-container" style="transform: translate(80vw, 75vh);">
+        <div class="bot-bubble" id="bot-bubble">Full schedule unlocked 🧾</div>
+        <div class="bot-body" id="bot-body">
+            <div class="laser-cone"></div>
+            <div class="bot-cheek cheek-left"></div>
+            <div class="bot-cheek cheek-right"></div>
+            <div class="bot-antenna"></div>
+            <div class="bot-eye" id="bot-eye">
+                <div class="bot-pupil" id="bot-pupil"></div>
             </div>
         </div>
+    </div>
 
+    <header class="schedule-hero">
         <div class="schedule-hero-inner">
             <a href="index.html" class="back-pill">
                 ⟵ Back to Live Page
@@ -1063,7 +999,8 @@
         </div>
 
         <div id="schedule-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
-            </div>
+            <!-- Items injected by JS -->
+        </div>
         
         <div id="no-results" style="display: none;">
             <div class="text-6xl mb-4">🔍</div>
@@ -1166,28 +1103,43 @@
 
         // New consolidated Filter Function
         function filterAndRender() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            const hasSearch = searchTerm.length > 0;
             
             const filteredEvents = allEvents.filter(event => {
-                // 1. Check Tab Logic
-                let matchesTab = false;
-                if (currentTab === 'upcoming') {
-                    // Show everything NOT published. 
-                    // Assuming 'Live', 'Soon', 'Done' (waiting for results) are all here.
-                    matchesTab = (event.status !== 'Results Published');
-                } else {
-                    // Only show published results
-                    matchesTab = (event.status === 'Results Published');
+                // 1. Calculate Search Match
+                // We convert values to strings to be safe against nulls
+                const nameMatch = (event.name || '').toLowerCase().includes(searchTerm);
+                const locMatch = (event.location || '').toLowerCase().includes(searchTerm);
+                const catMatch = (event.category || '').toLowerCase().includes(searchTerm);
+
+                // Check specific winner columns (for simple results)
+                const winner1Match = (event.student_1 || '').toLowerCase().includes(searchTerm) || (event.winner_1 || '').toLowerCase().includes(searchTerm);
+                const winner2Match = (event.student_2 || '').toLowerCase().includes(searchTerm) || (event.winner_2 || '').toLowerCase().includes(searchTerm);
+                const winner3Match = (event.student_3 || '').toLowerCase().includes(searchTerm) || (event.winner_3 || '').toLowerCase().includes(searchTerm);
+
+                // Check JSON results (for multi-winner events)
+                const jsonMatch = event.result_json 
+                    ? JSON.stringify(event.result_json).toLowerCase().includes(searchTerm) 
+                    : false;
+
+                const matchesSearch = nameMatch || locMatch || catMatch || winner1Match || winner2Match || winner3Match || jsonMatch;
+
+                // LOGIC CHANGE: 
+                // If the user is searching (hasSearch is true), we RETURN matchesSearch immediately.
+                // This effectively ignores the tab selection while searching.
+                if (hasSearch) {
+                    return matchesSearch;
                 }
 
-                // 2. Check Search Logic
-                const matchesSearch = (
-                    event.name.toLowerCase().includes(searchTerm) ||
-                    (event.location && event.location.toLowerCase().includes(searchTerm)) ||
-                    (event.category && event.category.toLowerCase().includes(searchTerm))
-                );
-
-                return matchesTab && matchesSearch;
+                // If NOT searching, we strictly obey the tab logic.
+                if (currentTab === 'upcoming') {
+                    // Show everything NOT published (Live, Soon, Done-pending)
+                    return event.status !== 'Results Published';
+                } else {
+                    // Only show published results
+                    return event.status === 'Results Published';
+                }
             });
 
             renderEvents(filteredEvents);
