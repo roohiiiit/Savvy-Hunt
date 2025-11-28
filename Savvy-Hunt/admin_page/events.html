@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <script>
+        // Basic Session Check
         if (!sessionStorage.getItem('savvy_admin_auth')) {
             window.location.href = 'login.html';
         }
@@ -125,6 +126,12 @@
                         <p class="text-[10px] text-slate-400 mt-1 text-right">* Required for scoreboard logic</p>
                     </div>
 
+                    <div class="pt-4 border-t border-slate-100 mt-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Confirm Identity</label>
+                        <input type="password" id="creation-password" placeholder="Enter Admin Passcode" 
+                               class="w-full bg-orange-50 border border-orange-200 rounded-lg px-4 py-2.5 text-sm font-bold text-center placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none transition-all" required>
+                    </div>
+
                     <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-3 rounded-xl shadow-md hover:shadow-lg hover:scale-[1.02] transition-all active:scale-95 flex justify-center items-center gap-2">
                         Publish Event
                     </button>
@@ -213,7 +220,19 @@
         const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
 
+        const CORRECT_HASH = "dd3d199c0c29d76c55aa1a73b100c7cb87294c3df24c4444b9c8d74c6119dd6e";
+
+        // Helper function (SHA-256)
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // --- GLOBAL VARS ---
         const list = document.getElementById('event-list');
         let schoolList = [];
         let schoolOptionsHTML = '<option value="">Select School</option>';
@@ -262,7 +281,6 @@
                 let previewHTML = '';
                 if (ev.status === 'Results Published') {
                     let r = ev.result_json;
-                    // Backward compatibility
                     if (!r) {
                         r = {
                             p1: [{ name: ev.student_1, school: ev.winner_1 }],
@@ -464,10 +482,23 @@
             }).eq('id', data.id);
         }
 
-        // --- EVENT HANDLERS ---
+        // --- EVENT HANDLERS (UPDATED WITH PASSWORD CHECK) ---
         document.getElementById('add-event-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button');
+
+            // 1. GET THE PASSWORD
+            const passwordInput = document.getElementById('creation-password').value;
+            const hashedPass = await sha256(passwordInput);
+
+            // 2. CHECK SECURITY
+            if (hashedPass !== CORRECT_HASH) {
+                alert("⛔ INCORRECT PASSCODE! \nYou must enter the correct admin password to create an event.");
+                document.getElementById('creation-password').value = '';
+                return;
+            }
+
+            // 3. IF CORRECT, PROCEED
+            const btn = e.target.querySelector('button[type="submit"]');
             const originalText = btn.innerHTML;
             btn.innerHTML = 'Publishing...'; btn.disabled = true;
 
