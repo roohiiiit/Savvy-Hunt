@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Savvy Hunt - Live Event</title>
     
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -373,7 +372,6 @@
 <body class="text-slate-800 antialiased">
     
 
-    <!-- AESTHETIC LOADER: This covers everything initially -->
     <div id="global-loader">
         <div class="loader-bot">
             <div class="l-bot-antenna"></div>
@@ -390,7 +388,6 @@
         </div>
     </div>
 
-    <!-- MAIN WRAPPER: Starts invisible to prevent FOUC -->
     <div id="main-site-wrapper">
 
         <div class="scroll-line-track"><div class="scroll-line-fill" id="scroll-fill"></div></div>
@@ -454,8 +451,7 @@
                     <p class="text-slate-500 font-medium">Top 3 contenders fighting for glory.</p>
                 </div>
                 <div id="top-3-container" class="max-w-3xl mx-auto space-y-4 relative z-10">
-                    <!-- Skeleton inserted via JS -->
-                </div>
+                    </div>
                 <div class="text-center mt-16 relative z-10">
                     <a href="scoreboard.html" class="btn-alive px-12 sm:w-auto">View Full Scoreboard</a>
                 </div>
@@ -628,27 +624,47 @@
                 <a href="admin_page/admin_index.html" class="opacity-20 hover:opacity-80 transition-opacity text-lg p-2 grayscale hover:grayscale-0">🔐</a>
             </div>
         </footer>
-    </div> <!-- END MAIN SITE WRAPPER -->
-
-    <script>
-        // --- PRELOADER & FOUC FIX ---
-        window.addEventListener('load', () => {
-            const preloader = document.getElementById('global-loader');
-            
-            // Wait slightly for Tailwind to parse
-            setTimeout(() => {
-                // Reveal site content
-                document.body.classList.add('loaded');
-                
-                // Fade out loader
-                if(preloader) {
-                    preloader.style.opacity = '0';
-                    setTimeout(() => {
-                        preloader.style.display = 'none';
-                    }, 600); // Wait for transition
+    </div> <script>
+        // --- PRELOADER & STRICT MODE FIX ---
+        function revealSite() {
+            // 1. Strict Check: Is Tailwind loaded?
+            if (typeof tailwind === 'undefined') {
+                console.error("Critical Error: Tailwind CSS failed to load.");
+                const loaderText = document.querySelector('#global-loader p'); 
+                if(loaderText) {
+                    loaderText.innerText = "Connection Error: Styles Blocked";
+                    loaderText.style.color = "#ef4444"; 
                 }
-            }, 800); // 0.8s minimum view time
+                return; // Stop here. Site remains hidden.
+            }
+
+            // 2. Reveal Content
+            const preloader = document.getElementById('global-loader');
+            if (document.body.classList.contains('loaded')) return;
+            
+            document.body.classList.add('loaded');
+            
+            if(preloader) {
+                preloader.style.opacity = '0';
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                }, 600);
+            }
+        }
+
+        window.addEventListener('load', () => {
+            // Give Tailwind 2.5s to paint
+            setTimeout(revealSite, 2500);
         });
+
+        // 3. Fallback for slow networks (8s)
+        setTimeout(() => {
+            if (!document.body.classList.contains('loaded')) {
+                const loaderText = document.querySelector('#global-loader p');
+                if(loaderText) loaderText.innerText = "Network Slow... Trying to load";
+                revealSite();
+            }
+        }, 8000);
 
         // --- SAVVY BOT INTELLIGENCE ---
         document.addEventListener('DOMContentLoaded', () => {
