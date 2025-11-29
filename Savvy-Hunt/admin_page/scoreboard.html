@@ -134,8 +134,13 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function loadScores() {
-            const { data, error } = await db.from('scoreboard').select('*').order('total', { ascending: false });
+async function loadScores() {
+            // 1. Fetch data sorted by total first
+            let { data, error } = await db
+                .from('scoreboard')
+                .select('*')
+                .order('total', { ascending: false });
+            
             const table = document.getElementById('score-table');
             
             if (error) {
@@ -143,16 +148,34 @@
                 return;
             }
             
-            table.innerHTML = '';
-            
             if(!data || data.length === 0) {
                 table.innerHTML = '<tr><td colspan="6" style="text-align:center;">No teams found in database.</td></tr>';
                 return;
             }
 
+            // --- CUSTOM SORT LOGIC STARTS HERE ---
+            // Replace "MGM RPS" with the EXACT name inside your database
+            const pinnedSchool = "MGM RPS,KOTTARAKARA"; 
+
+            data.sort((a, b) => {
+                // If school A is the pinned one, move it to the top (-1)
+                if (a.name === pinnedSchool) return -1;
+                // If school B is the pinned one, move it to the top (1)
+                if (b.name === pinnedSchool) return 1;
+                // Otherwise, keep the order based on Total (which Supabase already did)
+                return 0;
+            });
+            // --- CUSTOM SORT LOGIC ENDS HERE ---
+
+            table.innerHTML = '';
+
+            // 2. Render the sorted data
             data.forEach(row => {
+                // Optional: Add a visual highlight if it is the pinned school
+                const highlightStyle = row.name === pinnedSchool ? 'background-color: #e0f2fe;' : '';
+
                 table.innerHTML += `
-                    <tr>
+                    <tr style="${highlightStyle}">
                         <td style="font-weight:bold;">${row.name}</td>
                         <td><input type="number" value="${row.cat1 || 0}" onchange="updateScore(${row.id}, 'cat1', this.value)"></td>
                         <td><input type="number" value="${row.cat2 || 0}" onchange="updateScore(${row.id}, 'cat2', this.value)"></td>
@@ -163,19 +186,6 @@
                 `;
             });
         }
-
-        window.updateScore = async (id, col, val) => {
-            const { error } = await db.from('scoreboard').update({ [col]: Number(val) }).eq('id', id);
-            if(error) alert("Save failed: " + error.message);
-        };
-
-        window.recalc = async (id) => {
-            const { data } = await db.from('scoreboard').select('*').eq('id', id).single();
-            const total = (data.cat1 || 0) + (data.cat2 || 0) + (data.cat3 || 0);
-            await db.from('scoreboard').update({ total }).eq('id', id);
-            document.getElementById(`total-${id}`).innerText = total;
-        };
-
         loadScores();
     </script>
 </body>
