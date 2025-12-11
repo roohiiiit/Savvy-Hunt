@@ -58,6 +58,95 @@
             overflow: hidden; 
         }
 
+        /* --- FINISHED MODAL STYLES --- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999; /* Ensure it's above everything */
+            background-color: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .modal-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .modal-content {
+            background: #FFF7ED; /* Your body background color */
+            padding: 2rem;
+            border-radius: 3rem;
+            max-width: 90%;
+            width: 500px;
+            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.4), 0 0 0 6px #fef3c7;
+            position: relative;
+            text-align: center;
+            transform: scale(1);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-overlay.hidden .modal-content {
+            transform: scale(0.8);
+        }
+
+        .modal-inner {
+            position: relative;
+            z-index: 10;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: color 0.3s;
+            padding: 8px;
+            border-radius: 50%;
+        }
+        .close-btn:hover {
+            color: #ea580c;
+            background-color: #fef3c7;
+        }
+
+        /* --- FULL-SCREEN CONFETTI EFFECT STYLES --- */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 99998; /* Below the modal (99999) but above everything else */
+            opacity: 0; /* Start hidden */
+            transition: opacity 1s ease;
+        }
+        .confetti-container.active {
+            opacity: 1;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: fall 5s infinite; 
+        }
+        .confetti.square { border-radius: 0; }
+        .confetti.circle { border-radius: 50%; }
+
+        @keyframes fall {
+            0% { transform: translate(var(--x), -10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--x), 110vh) rotate(720deg); opacity: 0.5; }
+        }
+        
         /* --- LOADER STYLES --- */
         #global-loader {
             position: fixed;
@@ -371,6 +460,7 @@
 </head>
 <body class="text-slate-800 antialiased">
     
+    <div id="full-screen-confetti-holder" class="confetti-container full-screen-confetti"></div>
 
     <div id="global-loader">
         <div class="loader-bot">
@@ -385,6 +475,30 @@
         <p class="text-xs font-bold text-orange-500 uppercase tracking-widest mb-6">Initializing System</p>
         <div class="progress-container">
             <div class="progress-bar"></div>
+        </div>
+    </div>
+
+    <div id="finished-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-inner">
+                <div class="text-6xl mb-4 animate-float-organic" style="animation-duration: 4s;">🎉</div>
+                <h2 class="text-4xl font-extrabold text-slate-900 mb-3 tracking-tight">Savvy Hunt 2025 has <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700">Concluded!</span></h2>
+                <p class="text-lg text-slate-600 mb-8 font-medium">Thank you for your enthusiastic participation and support. We hope you enjoyed the ultimate showdown!</p>
+                <div class="border-t border-orange-100 pt-4">
+                    <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Want to see the final results?</p>
+                    <a href="scoreboard.html" class="btn-flow group inline-flex items-center justify-center px-10 py-4 font-black text-white rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-orange-500/40">
+                        View Final Scoreboard
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 ml-2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.5 17L21 7m0 0H14m7 0v7" />
+                        </svg>
+                    </a>
+                </div>
+                <button onclick="closeFinishedModal()" class="close-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -637,7 +751,9 @@
             </div>
 
         </footer>
-    </div> <script>
+    </div> 
+    
+    <script>
         // --- PRELOADER & STRICT MODE FIX ---
         function revealSite() {
             // 1. Strict Check: Is Tailwind loaded?
@@ -1046,6 +1162,93 @@
                 cardInner.classList.toggle('flipped');
             }
         }
+        
+        // --- CONFETTI EFFECT (Revised for full screen) ---
+        function createConfetti() {
+            const holder = document.getElementById('full-screen-confetti-holder');
+            
+            // Clear any existing confetti
+            holder.innerHTML = ''; 
+
+            const colors = ['#f97316', '#fb923c', '#fed7aa', '#fee2e2', '#fcd34d'];
+            const shapes = ['square', 'circle'];
+            const count = 100; // Increased count for full-screen impact
+
+            for (let i = 0; i < count; i++) {
+                const c = document.createElement('div');
+                c.className = `confetti ${shapes[Math.floor(Math.random() * shapes.length)]}`;
+                c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                c.style.left = `${Math.random() * 100}%`;
+                c.style.width = `${Math.random() * 8 + 4}px`;
+                c.style.height = c.style.width;
+                c.style.animationDelay = `${Math.random() * 2}s`; // Increased delay variation
+                c.style.animationDuration = `${Math.random() * 5 + 6}s`; // Longer fall time
+                c.style.setProperty('--x', `${(Math.random() - 0.5) * 60}vw`); // Wider side movement
+                holder.appendChild(c);
+            }
+            
+            // Make the confetti container visible
+            holder.classList.add('active'); 
+        }
+
+        function hideFinishedModal() {
+            const modal = document.getElementById('finished-modal');
+            const confettiHolder = document.getElementById('full-screen-confetti-holder');
+            
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+            // Stop the confetti effect after a short delay
+            if (confettiHolder) {
+                setTimeout(() => {
+                    confettiHolder.classList.remove('active');
+                    // Optional: clear confetti elements after opacity fades
+                    setTimeout(() => confettiHolder.innerHTML = '', 500); 
+                }, 500); // Wait for modal fade-out
+            }
+        }
+
+        // Add the new global function for closing (used by the button onclick)
+        window.closeFinishedModal = hideFinishedModal;
+
+
+        // --- FINISHED MODAL INITIATOR ---
+        function showFinishedModal() {
+            const modal = document.getElementById('finished-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                createConfetti(); // This now targets the full-screen holder
+                
+                // Optional: Make the bot announce the end
+                if (typeof showBubble === 'function') {
+                    // Use a slight delay to ensure the preloader is gone
+                    setTimeout(() => {
+                        showBubble("The event is officially over! 🥳");
+                        if(window.savvySetMood) window.savvySetMood('proud');
+                    }, 1000); 
+                }
+            }
+        }
+        
+        // --- MODAL TRIGGER LOGIC ---
+        window.addEventListener('load', () => {
+            // Check if the site is visible (to avoid popping up during preloading)
+            // Use setTimeout to ensure the revealSite logic has run (min 2.5s delay)
+            setTimeout(() => {
+                if (document.body.classList.contains('loaded')) {
+                    showFinishedModal();
+                } else {
+                    // Fallback check, though revealSite should eventually run
+                    const interval = setInterval(() => {
+                        if (document.body.classList.contains('loaded')) {
+                            clearInterval(interval);
+                            showFinishedModal();
+                        }
+                    }, 100);
+                }
+            }, 2600); 
+        });
+
 
         async function fetchEvents() {
             const { data } = await supabase
