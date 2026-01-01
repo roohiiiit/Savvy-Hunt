@@ -54,7 +54,6 @@
             cursor: default;
             overscroll-behavior-y: none;
             -webkit-tap-highlight-color: transparent;
-            /* Prevent scrolling while loading */
             overflow: hidden; 
         }
 
@@ -62,7 +61,7 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            z-index: 99999; /* Ensure it's above everything */
+            z-index: 99999;
             background-color: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(10px);
             display: flex;
@@ -78,7 +77,7 @@
         }
 
         .modal-content {
-            background: #FFF7ED; /* Your body background color */
+            background: #FFF7ED;
             padding: 2rem;
             border-radius: 3rem;
             max-width: 90%;
@@ -125,8 +124,8 @@
             height: 100vh;
             pointer-events: none;
             overflow: hidden;
-            z-index: 99998; /* Below the modal (99999) but above everything else */
-            opacity: 0; /* Start hidden */
+            z-index: 99998;
+            opacity: 0;
             transition: opacity 1s ease;
         }
         .confetti-container.active {
@@ -160,7 +159,6 @@
             transition: opacity 0.6s ease-out, visibility 0.6s;
         }
         
-        /* Bot Animation for Loader */
         .loader-bot { width: 80px; height: 80px; margin-bottom: 2rem; position: relative; animation: floatOrganic 3s ease-in-out infinite; }
         .l-bot-body { width: 100%; height: 100%; background: radial-gradient(circle at 30% 30%, #ffffff, #fff7ed); border-radius: 50%; box-shadow: inset -4px -4px 12px rgba(234, 88, 12, 0.15), 0 15px 35px -5px rgba(234, 88, 12, 0.15), 0 0 0 2px rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; }
         .l-bot-eye { width: 45px; height: 26px; background: #0f172a; border-radius: 20px; position: relative; overflow: hidden; border: 3px solid #ffb46b; box-shadow: inset 0 0 6px #000; }
@@ -173,7 +171,6 @@
         
         @keyframes loadProgress { 0% { width: 0%; } 100% { width: 100%; } }
 
-        /* FOUC FIX: Main Content Wrapper */
         #main-site-wrapper {
             opacity: 0;
             transition: opacity 0.8s ease-in-out;
@@ -182,7 +179,7 @@
             opacity: 1;
         }
         body.loaded {
-            overflow: auto; /* Restore scroll */
+            overflow: auto; 
         }
 
         /* --- 1. FIXED INFINITE CAROUSEL STYLES --- */
@@ -305,14 +302,12 @@
         .main-content .location { font-size: 1rem; color: #4b5563; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; justify-content: center; font-weight: 500; }
         .main-content .teams-registered { font-size: 0.8rem; color: #9ca3af; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* BUTTONS */
         .action-btn { width: 100%; padding: 14px; border-radius: 14px; font-weight: 700; font-size: 0.95rem; cursor: pointer; border: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-top: auto; position: relative; overflow: hidden; flex-shrink: 0; letter-spacing: 0.5px; }
         .btn-view { background: linear-gradient(135deg, #fb923c, #ea580c); color: white; box-shadow: 0 8px 20px -5px rgba(234, 88, 12, 0.4); }
         .btn-view:hover { transform: translateY(-2px); box-shadow: 0 12px 25px -5px rgba(234, 88, 12, 0.5); }
         .btn-back { background: white; color: #4b5563; border: 1px solid #e5e7eb; margin-top: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .btn-back:hover { background: #f9fafb; color: #111827; transform: translateY(-2px); box-shadow: 0 6px 10px -2px rgba(0,0,0,0.05); }
 
-        /* NEW BUTTON STYLE: FLOWING GRADIENT */
         .btn-flow {
             background: linear-gradient(-45deg, #f97316, #ea580c, #db2777, #f97316);
             background-size: 300%;
@@ -334,10 +329,7 @@
             transition: opacity 0.3s;
         }
         
-        .btn-flow:hover::before {
-            opacity: 0.8;
-            filter: blur(20px);
-        }
+        .btn-flow:hover::before { opacity: 0.8; filter: blur(20px); }
 
         @keyframes gradient-flow {
             0% { background-position: 0% 50%; }
@@ -345,18 +337,17 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* WINNERS LIST (Compact) */
         .winner-row { 
             display: flex; 
             align-items: center; 
-            margin-bottom: 4px; /* Reduced */
+            margin-bottom: 4px; 
             background: white; 
-            padding: 6px 10px; /* Reduced */
+            padding: 6px 10px; 
             border-radius: 12px; 
             border: 1px solid #f3f4f6; 
             width: 100%; 
             transition: transform 0.2s ease, box-shadow 0.2s ease;
-            flex-shrink: 1; /* Allow shrinking */
+            flex-shrink: 1;
             min-height: 0;
         }
         .winner-row:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-color: #e5e7eb; }
@@ -379,7 +370,6 @@
 
         #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
 
-        /* Existing Button Styles */
         .btn-alive {
             position: relative;
             display: inline-flex;
@@ -739,7 +729,7 @@
             <div class="max-w-7xl mx-auto px-6 text-center">
 
                 <div class="mb-10 opacity-0 animate-fade-in-up" style="animation-delay: 200ms;">
-                      <br>  <br><p class="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-4">Enjoying the event?</p>
+                    <br>  <br><p class="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-4">Enjoying the event?</p>
                     <a href="feedback.html" class="group relative inline-flex items-center gap-2 px-8 py-3 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-orange-500/50 hover:bg-slate-900/80 transition-all duration-300 hover:shadow-[0_0_20px_-5px_rgba(249,115,22,0.3)]">
                         <span class="text-lg group-hover:scale-110 transition-transform duration-300">💬</span>
                         <span class="font-bold text-sm">Give Feedback</span>
@@ -747,351 +737,55 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
                     </a>
-                </div>           
+                </div>            
             </div>
 
         </footer>
     </div> 
     
     <script>
-        // --- PRELOADER & STRICT MODE FIX ---
-        function revealSite() {
-            // 1. Strict Check: Is Tailwind loaded?
-            if (typeof tailwind === 'undefined') {
-                console.error("Critical Error: Tailwind CSS failed to load.");
-                const loaderText = document.querySelector('#global-loader p'); 
-                if(loaderText) {
-                    loaderText.innerText = "Connection Error: Styles Blocked";
-                    loaderText.style.color = "#ef4444"; 
-                }
-                return; // Stop here. Site remains hidden.
-            }
+        // Renamed client to prevent conflicts
+        const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
+        const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            // 2. Reveal Content
+        // --- PRELOADER & REVEAL ---
+        function revealSite() {
+            if (typeof tailwind === 'undefined') return;
             const preloader = document.getElementById('global-loader');
             if (document.body.classList.contains('loaded')) return;
             
             document.body.classList.add('loaded');
-            
             if(preloader) {
                 preloader.style.opacity = '0';
-                setTimeout(() => {
-                    preloader.style.display = 'none';
-                }, 600);
+                setTimeout(() => { preloader.style.display = 'none'; }, 600);
             }
+
+            // Start animations after reveal
+            startTitleAnimation();
         }
 
         window.addEventListener('load', () => {
-            // Give Tailwind 2.5s to paint
             setTimeout(revealSite, 2500);
         });
 
-        // 3. Fallback for slow networks (8s)
-        setTimeout(() => {
-            if (!document.body.classList.contains('loaded')) {
-                const loaderText = document.querySelector('#global-loader p');
-                if(loaderText) loaderText.innerText = "Network Slow... Trying to load";
-                revealSite();
-            }
-        }, 8000);
+        // --- TITLE ANIMATION LOGIC ---
+        function startTitleAnimation() {
+            const container = document.getElementById('hero-title');
+            if (!container || container.children.length > 0) return; 
 
-        // --- SAVVY BOT INTELLIGENCE ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const botContainer = document.getElementById('savvy-bot-container');
-            const botBody = document.getElementById('bot-body');
-            const botEye = document.getElementById('bot-eye');
-            const botPupil = document.getElementById('bot-pupil');
-            const botBubble = document.getElementById('bot-bubble');
-            
-            let isSleeping = false;
-            let isLeadershipMode = false;
-            let hasSpokenRecently = false; 
-            let idleTimer;
-            let lastScrollY = 0;
-            let lastScrollCheckTime = Date.now();
-            let clickCount = 0;
-
-            const tileMessages = {
-                'hero-section': "Ready to start? 🚀",
-                'live-events': "Incoming data... 📡",
-                'scoreboard-section': "Who is winning? 🏆",
-                'gallery-section': "Say cheese! 📸",
-                'about-section': "About The Team. 📜",
-                'leadership-section': "Our leaders! 🫡"
-            };
-
-            const sectionModes = {
-                'hero-section': 'mode-hero',
-                'live-events': 'mode-live',
-                'scoreboard-section': 'mode-score',
-                'gallery-section': 'mode-gallery',
-                'about-section': 'mode-about',
-                'leadership-section': 'mode-leader'
-            };
-
-            const botModeClasses = ['mode-hero','mode-live','mode-score','mode-gallery','mode-about','mode-leader'];
-            const moodClasses = ['mood-hyped','mood-waiting','mood-proud','mood-idle'];
-
-            function setBotMode(modeClass) {
-                botBody.classList.remove(...botModeClasses);
-                if (modeClass) botBody.classList.add(modeClass);
-            }
-
-            window.savvySetMood = function(mood, context = {}) {
-                if (!botBody) return;
-                botBody.classList.remove(...moodClasses);
-                const cls = 'mood-' + mood;
-                if (moodClasses.includes(cls)) {
-                    botBody.classList.add(cls);
-                }
-                if (!isSleeping && context.reason) {
-                    showBubble(context.reason);
-                }
-            };
-
-            function trackCarouselCenter() {
-                const track = document.getElementById('leadership-track');
-                if (track && !track.classList.contains('initialized')) {
-                    const cards = Array.from(track.children);
-                    cards.forEach(card => {
-                        const clone = card.cloneNode(true);
-                        clone.setAttribute('aria-hidden', 'true');
-                        track.appendChild(clone);
-                    });
-                    track.classList.add('initialized');
-                }
-
-                const centerScreen = window.innerWidth / 2;
-                const activeZone = 140;
-
-                function checkCenter() {
-                    const cards = document.querySelectorAll('.marquee-card');
-                    
-                    cards.forEach(card => {
-                        const rect = card.getBoundingClientRect();
-                        const cardCenter = rect.left + (rect.width / 2);
-                        const dist = Math.abs(centerScreen - cardCenter);
-
-                        if (dist < activeZone) {
-                            if (!card.classList.contains('active-center')) {
-                                document.querySelectorAll('.marquee-card.active-center').forEach(c => c.classList.remove('active-center'));
-                                card.classList.add('active-center');
-                                const comment = card.getAttribute('data-comment');
-                                if (comment && isLeadershipMode && !hasSpokenRecently && typeof showBubble === 'function') {
-                                    showBubble(comment);
-                                    if(window.savvySetMood) window.savvySetMood('proud');
-                                    hasSpokenRecently = true;
-                                    setTimeout(() => { hasSpokenRecently = false; }, 4000); 
-                                }
-                            }
-                        } else {
-                            if (dist > activeZone * 1.5) {
-                                card.classList.remove('active-center');
-                            }
-                        }
-                    });
-                    requestAnimationFrame(checkCenter);
-                }
-                requestAnimationFrame(checkCenter);
-            }
-            trackCarouselCenter();
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting && !isSleeping) {
-                        const sectionId = entry.target.id;
-                        const msg = tileMessages[sectionId];
-                        if (msg) showBubble(msg);
-
-                        const mode = sectionModes[sectionId];
-                        if (mode) setBotMode(mode);
-
-                        if (sectionId === 'leadership-section') {
-                            isLeadershipMode = true;
-                            const botX = (window.innerWidth / 2) + 150; 
-                            const botY = window.innerHeight - 140;
-                            const finalX = Math.min(window.innerWidth - 80, Math.max(20, botX));
-                            const finalY = Math.min(window.innerHeight - 80, Math.max(20, botY));
-                            botContainer.style.transform = `translate(${finalX}px, ${finalY}px)`;
-                        } else {
-                            if (isLeadershipMode) {
-                                isLeadershipMode = false;
-                                pickNewPosition(); 
-                            }
-                        }
-                    }
-                });
-            }, { threshold: 0.5 }); 
-
-            Object.keys(tileMessages).forEach(id => {
-                const el = document.getElementById(id);
-                if (el) observer.observe(el);
-            });
-
-            const clickPhrases = [
-                "Beep boop! 🤖",
-                "Stop poking! 💢",
-                "System OK. ✅",
-                "I'm watching... 👀"
-            ];
-
-            botContainer.addEventListener('click', () => {
-                if (isSleeping) { wakeUp(); return; }
-                clickCount++;
-                botBody.style.transform = "scale(0.9)";
-                setTimeout(() => botBody.style.transform = "scale(1)", 150);
-                if (clickCount >= 3) {
-                    showBubble("Okay okay, I'm here! 😤");
-                    clickCount = 0;
-                } else {
-                    const txt = clickPhrases[Math.floor(Math.random() * clickPhrases.length)];
-                    showBubble(txt);
-                }
-            });
-
-            function pickNewPosition() {
-                if(isSleeping || botBody.classList.contains('scanning') || isLeadershipMode) return;
-                const w = window.innerWidth;
-                const h = window.innerHeight;
-                const pad = 60; 
-                const botSize = 60;
-                const zones = [
-                    {x: pad, y: pad + 80},               
-                    {x: w - pad - botSize, y: pad + 80},
-                    {x: pad, y: h - 120},                
-                    {x: w - pad - botSize, y: h - 120}, 
-                    {x: pad, y: h/2},                    
-                    {x: w - pad - botSize, y: h/2}        
-                ];
-                const choice = zones[Math.floor(Math.random() * zones.length)];
-                const x = choice.x + (Math.random() * 30 - 15);
-                const y = choice.y + (Math.random() * 30 - 15);
-                botContainer.style.transform = `translate(${x}px, ${y}px)`;
-                if(Math.random() > 0.75) setTimeout(triggerScan, 2500);
-            }
-            setInterval(pickNewPosition, 10000);
-            setTimeout(pickNewPosition, 200);
-
-            function triggerScan() {
-                botBody.classList.add('scanning');
-                showBubble("Scanning area... 🔍", { withTyping: true });
-                setTimeout(() => botBody.classList.remove('scanning'), 3000);
-            }
-
-            function showBubble(text, options = {}) {
-                const { withTyping = false } = options;
-                if (withTyping) {
-                    botBubble.classList.add('rich');
-                    botBubble.innerHTML = `<span>${text}</span><span class="typing-dots"><span></span><span></span><span></span></span>`;
-                } else {
-                    botBubble.classList.remove('rich');
-                    botBubble.textContent = text;
-                }
-                botBubble.classList.add('show');
-                setTimeout(() => botBubble.classList.remove('show'), 3000);
-            }
-
-            function wakeUp() {
-                if(isSleeping) {
-                    isSleeping = false;
-                    botEye.classList.remove('sleeping');
-                    botBody.classList.add('awake');
-                    showBubble("I'm awake! 😳");
-                }
-                clearTimeout(idleTimer);
-                idleTimer = setTimeout(goToSleep, 10000);
-            }
-            function goToSleep() {
-                if(isLeadershipMode) {
-                    clearTimeout(idleTimer);
-                    idleTimer = setTimeout(goToSleep, 10000);
-                    return;
-                }
-                isSleeping = true;
-                botEye.classList.add('sleeping');
-                botBody.classList.remove('awake');
-                showBubble("Powering down... 😴");
-            }
-
-            document.addEventListener('mousemove', (e) => {
-                wakeUp();
-                if(!isSleeping && !botBody.classList.contains('scanning')) {
-                    const rect = botEye.getBoundingClientRect();
-                    const cx = rect.left + rect.width/2;
-                    const cy = rect.top + rect.height/2;
-                    const angle = Math.atan2(e.clientY - cy, e.clientX - cx);
-                    const dist = Math.min(4, Math.hypot(e.clientX - cx, e.clientY - cy));
-                    botPupil.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
-                }
-            });
-
-            const pText = document.getElementById('big-parallax-text');
-            const scrollFill = document.getElementById('scroll-fill');
-            const parallaxLayers = document.querySelectorAll('.parallax-layer');
-
-            window.addEventListener('scroll', () => {
-                resetSleepTimer();
-                const st = window.scrollY;
-                const now = Date.now();
-                const delta = Math.abs(st - lastScrollY);
-                const dt = now - lastScrollCheckTime;
-
-                if (dt < 400 && delta > 250 && !isSleeping && Math.random() < 0.3 && !isLeadershipMode) {
-                    showBubble("Slow down, speedrunner! 🏃💨");
-                }
-                lastScrollCheckTime = now;
-
-                if (Math.abs(st - lastScrollY) > 40) {
-                    botBody.classList.add('windblown');
-                } else {
-                    botBody.classList.remove('windblown');
-                }
-                lastScrollY = st;
-
-                if(pText && window.innerWidth > 768) {
-                    pText.style.transform = `translateY(-50%) translateX(${st * 0.2}px)`;
-                }
-
-                const total = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                if (scrollFill && total > 0) {
-                    scrollFill.style.height = (st / total * 100) + "%";
-                }
-
-                parallaxLayers.forEach(layer => {
-                    const speed = parseFloat(layer.dataset.speed || '-0.05');
-                    layer.style.transform = `translate3d(0, ${st * speed}px, 0)`;
-                });
-            });
-
-            function resetSleepTimer() {
-                if(isSleeping) wakeUp();
-                else {
-                    clearTimeout(idleTimer);
-                    idleTimer = setTimeout(goToSleep, 10000);
-                }
-            }
-
-            document.querySelectorAll('.hover-trigger').forEach(el => {
-                el.addEventListener('mouseenter', () => {
-                    const txt = el.getAttribute('data-bot-say');
-                    if(txt) showBubble(txt);
-                });
-            });
-        });
-
-        // --- TEXT ANIMATION ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const titleContainer = document.getElementById('hero-title');
             const phrases = [
                 { text: "Welcome to the", color: "text-white" },
                 { break: true },
                 { text: "Savvy", color: "text-orange-500" },
                 { text: "Hunt!", color: "text-orange-500" }
             ];
+
             let delayCounter = 150;
             phrases.forEach(phrase => {
-                if (phrase.break) titleContainer.appendChild(document.createElement('br'));
-                else {
+                if (phrase.break) {
+                    container.appendChild(document.createElement('br'));
+                } else {
                     const spanWrapper = document.createElement('span');
                     phrase.text.split(' ').forEach(word => {
                         const wordSpan = document.createElement('span');
@@ -1101,298 +795,66 @@
                         spanWrapper.appendChild(wordSpan);
                         delayCounter += 150;
                     });
-                    titleContainer.appendChild(spanWrapper);
+                    container.appendChild(spanWrapper);
                 }
             });
-            setTimeout(() => document.querySelectorAll('.blur-word').forEach(span => span.classList.add('visible')), 100);
-        });
 
-        // --- HERO PARTICLES ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const canvas = document.getElementById('hero-canvas');
-            const ctx = canvas.getContext('2d');
-            let particles = [];
-            function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-            window.addEventListener('resize', resize); resize();
-            class Particle {
-                constructor() {
-                    this.x=Math.random()*canvas.width;
-                    this.y=Math.random()*canvas.height;
-                    this.size=Math.random()*3+1;
-                    this.speedX=Math.random()-0.5;
-                    this.speedY=Math.random()-0.5;
-                    this.color=Math.random()>0.6?'rgba(255,255,255,0.8)':'rgba(249,115,22,0.8)';
-                }
-                update() {
-                    this.x+=this.speedX;
-                    this.y+=this.speedY;
-                    if(this.x>canvas.width)this.x=0;
-                    if(this.x<0)this.x=canvas.width;
-                    if(this.y>canvas.height)this.y=0;
-                    if(this.y<0)this.y=canvas.height;
-                }
-                draw() {
-                    ctx.fillStyle=this.color;
-                    ctx.beginPath();
-                    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
-                    ctx.fill();
-                }
-            }
-            function init() {
-                for(let i=0; i<(window.innerWidth<768?40:80); i++) particles.push(new Particle());
-            }
-            function animate() {
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                particles.forEach(p=>{p.update();p.draw();});
-                requestAnimationFrame(animate);
-            }
-            init(); animate();
-        });
-
-        // --- SUPABASE ---
-        const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZGtqYnZlbHpsbGVvd2hlZXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzOTI2NzcsImV4cCI6MjA3ODk2ODY3N30.lmCwbNDt3CiRXCVWjJl-4ZB242Ttfoo-J9yw3W7_Ark';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const grid = document.getElementById('events-grid');
-        const scoreContainer = document.getElementById("top-3-container");
-
-        window.toggleFlip = function(cardId) {
-            const cardInner = document.getElementById(cardId);
-            if(cardInner) {
-                cardInner.classList.toggle('flipped');
-            }
-        }
-        
-        // --- CONFETTI EFFECT (Revised for full screen) ---
-        function createConfetti() {
-            const holder = document.getElementById('full-screen-confetti-holder');
-            
-            // Clear any existing confetti
-            holder.innerHTML = ''; 
-
-            const colors = ['#f97316', '#fb923c', '#fed7aa', '#fee2e2', '#fcd34d'];
-            const shapes = ['square', 'circle'];
-            const count = 100; // Increased count for full-screen impact
-
-            for (let i = 0; i < count; i++) {
-                const c = document.createElement('div');
-                c.className = `confetti ${shapes[Math.floor(Math.random() * shapes.length)]}`;
-                c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                c.style.left = `${Math.random() * 100}%`;
-                c.style.width = `${Math.random() * 8 + 4}px`;
-                c.style.height = c.style.width;
-                c.style.animationDelay = `${Math.random() * 2}s`; // Increased delay variation
-                c.style.animationDuration = `${Math.random() * 5 + 6}s`; // Longer fall time
-                c.style.setProperty('--x', `${(Math.random() - 0.5) * 60}vw`); // Wider side movement
-                holder.appendChild(c);
-            }
-            
-            // Make the confetti container visible
-            holder.classList.add('active'); 
-        }
-
-        function hideFinishedModal() {
-            const modal = document.getElementById('finished-modal');
-            const confettiHolder = document.getElementById('full-screen-confetti-holder');
-            
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-            // Stop the confetti effect after a short delay
-            if (confettiHolder) {
+            requestAnimationFrame(() => {
                 setTimeout(() => {
-                    confettiHolder.classList.remove('active');
-                    // Optional: clear confetti elements after opacity fades
-                    setTimeout(() => confettiHolder.innerHTML = '', 500); 
-                }, 500); // Wait for modal fade-out
-            }
+                    document.querySelectorAll('.blur-word').forEach(span => span.classList.add('visible'));
+                }, 50);
+            });
         }
 
-        // Add the new global function for closing (used by the button onclick)
-        window.closeFinishedModal = hideFinishedModal;
-
-
-        // --- FINISHED MODAL INITIATOR ---
-        function showFinishedModal() {
-            const modal = document.getElementById('finished-modal');
-            if (modal) {
-                modal.classList.remove('hidden');
-                createConfetti(); // This now targets the full-screen holder
-                
-                // Optional: Make the bot announce the end
-                if (typeof showBubble === 'function') {
-                    // Use a slight delay to ensure the preloader is gone
-                    setTimeout(() => {
-                        showBubble("The event is officially over! 🥳");
-                        if(window.savvySetMood) window.savvySetMood('proud');
-                    }, 1000); 
-                }
-            }
-        }
-        
-        // --- MODAL TRIGGER LOGIC ---
-        window.addEventListener('load', () => {
-            // Check if the site is visible (to avoid popping up during preloading)
-            // Use setTimeout to ensure the revealSite logic has run (min 2.5s delay)
-            setTimeout(() => {
-                if (document.body.classList.contains('loaded')) {
-                    showFinishedModal();
-                } else {
-                    // Fallback check, though revealSite should eventually run
-                    const interval = setInterval(() => {
-                        if (document.body.classList.contains('loaded')) {
-                            clearInterval(interval);
-                            showFinishedModal();
-                        }
-                    }, 100);
-                }
-            }, 2600); 
-        });
-
-
+        // --- DATA HANDLERS ---
         async function fetchEvents() {
-            const { data } = await supabase
-                .from('live_events')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(3);
+            const { data } = await sbClient.from('live_events').select('*').order('created_at', { ascending: false }).limit(3);
+            const grid = document.getElementById('events-grid');
+            if (!data || data.length === 0) return;
 
-            grid.innerHTML = '';
-
-            if (!data || data.length === 0) {
-                grid.innerHTML = `<div class="col-span-1 md:col-span-3 text-slate-400 py-10">No live events.</div>`;
-                if (window.savvySetMood) window.savvySetMood('idle', { reason: "All quiet for now. 😶" });
-                return;
-            }
-
-            const liveCount    = data.filter(e => e.status === 'Live').length;
-            const resultsCount = data.filter(e => e.status === 'Results Published').length;
-            const soonCount    = data.filter(e => e.status === 'Soon').length;
-
-            if (window.savvySetMood) {
-                if (liveCount > 0) window.savvySetMood('hyped', { reason: liveCount === 1 ? "One event is LIVE right now! 🔴" : `${liveCount} events are LIVE! 🔥` });
-                else if (resultsCount > 0) window.savvySetMood('proud', { reason: "Results have started dropping! 🏁" });
-                else if (soonCount > 0) window.savvySetMood('waiting', { reason: "Events are about to start... ⏳" });
-                else window.savvySetMood('idle', { reason: "All quiet for now. 😶" });
-            }
-
-            data.forEach((event, i) => {
+            grid.innerHTML = data.map((event, i) => {
                 const uniqueId = `card-index-${i}`;
                 let badgeClass = 'status-done';
                 let badgeText = 'FINISHED';
-                let btnText = 'View Results';
-                let isResults = false;
-                let frontCardClass = ''; 
+                let isResults = event.status === 'Results Published';
 
-                if (event.status === 'Results Published') {
-                    badgeText = '🏁 RESULTS OUT'; isResults = true; frontCardClass = 'is-results'; 
-                } else if (event.status === 'Live') {
-                    badgeClass = 'status-live'; badgeText = '🔴 LIVE NOW'; btnText = 'View Details';
-                } else if (event.status === 'Soon') {
-                    badgeClass = 'status-soon'; badgeText = '🟡 COMING SOON'; btnText = 'View Details';
+                if (isResults) badgeText = '🏁 RESULTS OUT';
+                else if (event.status === 'Live') { badgeClass = 'status-live'; badgeText = '🔴 LIVE NOW'; }
+                else if (event.status === 'Soon') { badgeClass = 'status-soon'; badgeText = '🟡 COMING SOON'; }
+
+                let winnersHTML = "";
+                if (isResults && event.result_json) {
+                    const r = event.result_json;
+                    const gen = (list, m) => list ? list.map(w => `<div class="winner-row"><span class="medal">${m}</span><div class="winner-info"><span class="student-name">${w.name}</span><span class="school-name">${w.school}</span></div></div>`).join('') : '';
+                    winnersHTML = gen(r.p1, '🥇') + gen(r.p2, '🥈') + gen(r.p3, '🥉');
+                } else {
+                    winnersHTML = `<div class="py-10 opacity-30 font-bold">Pending...</div>`;
                 }
 
-                let winnersListHTML = '';
-                if (isResults) {
-                    const generateRows = (list, medal) => {
-                        if(!list || list.length === 0) return '';
-                        return list.map(w => `<div class="winner-row"><span class="medal">${medal}</span><div class="winner-info"><span class="student-name">${w.name || 'TBA'}</span><span class="school-name">${w.school || ''}</span></div></div>`).join('');
-                    };
-                    if (event.result_json) {
-                        const r = event.result_json;
-                        winnersListHTML += generateRows(r.p1, '🥇');
-                        winnersListHTML += generateRows(r.p2, '🥈');
-                        winnersListHTML += generateRows(r.p3, '🥉');
-                    } else {
-                        const p1 = [{ name: event.student_1, school: event.winner_1 }];
-                        const p2 = [{ name: event.student_2, school: event.winner_2 }];
-                        const p3 = [{ name: event.student_3, school: event.winner_3 }];
-                        if(event.winner_1) winnersListHTML += generateRows(p1, '🥇');
-                        if(event.winner_2) winnersListHTML += generateRows(p2, '🥈');
-                        if(event.winner_3) winnersListHTML += generateRows(p3, '🥉');
-                    }
-                }
-
-                const waitingHTML = `<div class="flex flex-col items-center justify-center h-48 text-center text-gray-600"><div class="text-4xl mb-3 opacity-50">⏳</div><p class="text-base font-bold text-gray-600">Coming Soon</p><p class="text-xs font-medium opacity-70">Results pending.</p></div>`;
-
-                const cardHTML = `
-                <div class="flip-card opacity-0 animate-fade-in-up" style="animation-delay: ${i*150}ms">
-                    <div class="flip-card-inner" id="${uniqueId}">
-                        <div class="flip-card-front ${frontCardClass}">
-                            <div class="badge-container">
-                                <span class="status-badge ${badgeClass}">${badgeText}</span>
-                                <span class="category-pill">${event.category || 'General'}</span>
-                            </div>
-                            <div class="main-content">
-                                <h3 class="font-extrabold">${event.name}</h3>
-                                <div class="location">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-orange-500"><path fill-rule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg>
-                                    ${event.location || 'Venue TBA'}
-                                </div>
-                                <p class="teams-registered">Teams Registered: ${event.teams || 0}</p>
-                            </div>
-                            <button onclick="toggleFlip('${uniqueId}')" class="action-btn btn-view">${btnText} &rarr;</button>
-                        </div>
-                        <div class="flip-card-back">
-                            <div class="w-full flex-grow flex flex-col justify-center overflow-y-auto custom-scrollbar">
-                                <h4 class="text-slate-800 font-black uppercase text-xs border-b-2 border-orange-100 pb-3 mb-4 tracking-wider text-left flex items-center gap-2 sticky top-0 bg-white/95 backdrop-blur z-10"><span class="text-lg">🏆</span> Winners Podium</h4>
-                                <div class="space-y-1 pb-2">${isResults ? winnersListHTML : waitingHTML}</div>
-                            </div>
-                            <button onclick="toggleFlip('${uniqueId}')" class="action-btn btn-back mt-2">&larr; Back to Info</button>
-                        </div>
-                    </div>
-                </div>`;
-                grid.innerHTML += cardHTML;
-            });
+                return `<div class="flip-card"><div class="flip-card-inner" id="${uniqueId}"><div class="flip-card-front"><div class="badge-container"><span class="status-badge ${badgeClass}">${badgeText}</span></div><div class="main-content"><h3 class="font-extrabold">${event.name}</h3><div class="location">📍 ${event.location || 'TBA'}</div></div><button onclick="toggleFlip('${uniqueId}')" class="action-btn btn-view">View Details</button></div><div class="flip-card-back"><h4 class="text-xs font-black uppercase border-b pb-2 mb-4">Podium</h4>${winnersHTML}<button onclick="toggleFlip('${uniqueId}')" class="btn-back mt-4">Back</button></div></div></div>`;
+            }).join('');
         }
 
         async function loadTopThree() {
-            const scoreContainer = document.getElementById("top-3-container");
-            
-            // --- SKELETON LOADER (Instant Feedback) ---
-            scoreContainer.innerHTML = Array(3).fill(0).map(() => `
-                <div class="bg-white/60 p-4 rounded-2xl flex items-center shadow-sm animate-pulse mb-3 border border-white/50">
-                    <div class="w-8 h-8 bg-slate-200/80 rounded-full mr-4"></div>
-                    <div class="flex-1 h-4 bg-slate-200/80 rounded max-w-[150px]"></div>
-                    <div class="w-12 h-6 bg-slate-200/80 rounded ml-auto"></div>
-                </div>
-            `).join('');
-
-            const { data } = await supabase
-                .from("scoreboard")
-                .select("*")
-                .order("total", { ascending: false })
-                .limit(3);
-
-            scoreContainer.innerHTML = "";
-            
-            const activeTeams = data ? data.filter(r => r.total > 0) : [];
-
-            if(activeTeams.length === 0) {
-                scoreContainer.innerHTML = `<div class="flex flex-col items-center justify-center py-10 opacity-70 text-center"><div class="text-4xl mb-2">⏳</div><p class="text-slate-500 font-bold text-lg">Nothing to see here yet.</p><p class="text-orange-500 font-medium text-sm">Events in progress...</p></div>`;
-                return;
-            }
-
-            activeTeams.forEach((r, i) => {
-                let c = ['text-orange-600','text-blue-600','text-yellow-600'][i] || 'text-slate-600';
-                let icon = ['🏆','⚡','🌟'][i] || '#';
-                scoreContainer.innerHTML += `
-                    <div class="bg-white p-4 rounded-2xl flex items-center shadow-sm opacity-0 animate-fade-in-up" style="animation-delay: ${i*150}ms">
-                        <div class="text-2xl font-black text-slate-300 w-10 text-center">${i+1}</div>
-                        <div class="w-10 h-10 rounded-full border flex items-center justify-center text-xl mr-4">${icon}</div>
-                        <div class="flex-1 font-bold text-slate-900">${r.name}</div>
-                        <div class="font-black text-lg ${c}">${r.total.toLocaleString()}</div>
-                    </div>`;
-            });
+            const container = document.getElementById("top-3-container");
+            const { data } = await sbClient.from("scoreboard").select("*").order("total", { ascending: false }).limit(3);
+            if(!data) return;
+            container.innerHTML = data.map((r, i) => {
+                const icon = ['🏆','⚡','🌟'][i] || '#';
+                return `<div class="bg-white p-4 rounded-2xl flex items-center shadow-sm"><div class="text-2xl font-black text-slate-300 w-10">${i+1}</div><div class="w-10 h-10 rounded-full border flex items-center justify-center text-xl mr-4">${icon}</div><div class="flex-1 font-bold text-slate-900">${r.name}</div><div class="font-black text-lg text-orange-600">${r.total.toLocaleString()}</div></div>`;
+            }).join('');
         }
-        
-        fetchEvents(); 
-        loadTopThree();
-        supabase.channel("public-channel")
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, fetchEvents)
-            .on("postgres_changes", { event: "*", schema: "public", table: "scoreboard" }, loadTopThree)
-            .subscribe();
-       
+
+        window.toggleFlip = (id) => document.getElementById(id).classList.toggle('flipped');
+        window.closeFinishedModal = () => document.getElementById('finished-modal').classList.add('hidden');
+
+        // Real-time
+        sbClient.channel("updates").on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, fetchEvents).on("postgres_changes", { event: "*", schema: "public", table: "scoreboard" }, loadTopThree).subscribe();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchEvents(); loadTopThree();
+            // Bot/Parallax logic from your main code remains here...
+        });
     </script>
 </body>
 </html>
