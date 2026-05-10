@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Savvy Hunt - Live Event</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -54,7 +56,7 @@
             cursor: default;
             overscroll-behavior-y: none;
             -webkit-tap-highlight-color: transparent;
-            overflow: hidden; 
+            overflow: hidden;
         }
 
         /* --- FINISHED MODAL STYLES --- */
@@ -110,6 +112,7 @@
             padding: 8px;
             border-radius: 50%;
         }
+
         .close-btn:hover {
             color: #ea580c;
             background-color: #fef3c7;
@@ -128,6 +131,7 @@
             opacity: 0;
             transition: opacity 1s ease;
         }
+
         .confetti-container.active {
             opacity: 1;
         }
@@ -136,16 +140,29 @@
             position: absolute;
             width: 10px;
             height: 10px;
-            animation: fall 5s infinite; 
+            animation: fall 5s infinite;
         }
-        .confetti.square { border-radius: 0; }
-        .confetti.circle { border-radius: 50%; }
+
+        .confetti.square {
+            border-radius: 0;
+        }
+
+        .confetti.circle {
+            border-radius: 50%;
+        }
 
         @keyframes fall {
-            0% { transform: translate(var(--x), -10vh) rotate(0deg); opacity: 1; }
-            100% { transform: translate(var(--x), 110vh) rotate(720deg); opacity: 0.5; }
+            0% {
+                transform: translate(var(--x), -10vh) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(var(--x), 110vh) rotate(720deg);
+                opacity: 0.5;
+            }
         }
-        
+
         /* --- LOADER STYLES --- */
         #global-loader {
             position: fixed;
@@ -158,28 +175,111 @@
             justify-content: center;
             transition: opacity 0.6s ease-out, visibility 0.6s;
         }
-        
-        .loader-bot { width: 80px; height: 80px; margin-bottom: 2rem; position: relative; animation: floatOrganic 3s ease-in-out infinite; }
-        .l-bot-body { width: 100%; height: 100%; background: radial-gradient(circle at 30% 30%, #ffffff, #fff7ed); border-radius: 50%; box-shadow: inset -4px -4px 12px rgba(234, 88, 12, 0.15), 0 15px 35px -5px rgba(234, 88, 12, 0.15), 0 0 0 2px rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; }
-        .l-bot-eye { width: 45px; height: 26px; background: #0f172a; border-radius: 20px; position: relative; overflow: hidden; border: 3px solid #ffb46b; box-shadow: inset 0 0 6px #000; }
-        .l-bot-pupil { width: 14px; height: 14px; background: #f97316; border-radius: 50%; position: absolute; top: 3px; left: 50%; transform: translateX(-50%); box-shadow: 0 0 10px #f97316; animation: scanPulse 1.5s ease-in-out infinite alternate; }
-        .l-bot-antenna { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); width: 4px; height: 16px; background: #cbd5e1; z-index: -1; }
-        .l-bot-antenna::after { content: ''; position: absolute; top: -6px; left: -4px; width: 12px; height: 12px; background: #f97316; border-radius: 50%; box-shadow: 0 0 10px rgba(249, 115, 22, 0.6); }
-        
-        .progress-container { width: 180px; height: 4px; background: #ffedd5; border-radius: 99px; overflow: hidden; margin-top: 20px; }
-        .progress-bar { height: 100%; background: linear-gradient(90deg, #f97316, #ea580c); width: 0%; border-radius: 99px; animation: loadProgress 2s ease-in-out forwards; }
-        
-        @keyframes loadProgress { 0% { width: 0%; } 100% { width: 100%; } }
+
+        .loader-bot {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 2rem;
+            position: relative;
+            animation: floatOrganic 3s ease-in-out infinite;
+        }
+
+        .l-bot-body {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #fff7ed);
+            border-radius: 50%;
+            box-shadow: inset -4px -4px 12px rgba(234, 88, 12, 0.15), 0 15px 35px -5px rgba(234, 88, 12, 0.15), 0 0 0 2px rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .l-bot-eye {
+            width: 45px;
+            height: 26px;
+            background: #0f172a;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #ffb46b;
+            box-shadow: inset 0 0 6px #000;
+        }
+
+        .l-bot-pupil {
+            width: 14px;
+            height: 14px;
+            background: #f97316;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px #f97316;
+            animation: scanPulse 1.5s ease-in-out infinite alternate;
+        }
+
+        .l-bot-antenna {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 16px;
+            background: #cbd5e1;
+            z-index: -1;
+        }
+
+        .l-bot-antenna::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -4px;
+            width: 12px;
+            height: 12px;
+            background: #f97316;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.6);
+        }
+
+        .progress-container {
+            width: 180px;
+            height: 4px;
+            background: #ffedd5;
+            border-radius: 99px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #f97316, #ea580c);
+            width: 0%;
+            border-radius: 99px;
+            animation: loadProgress 2s ease-in-out forwards;
+        }
+
+        @keyframes loadProgress {
+            0% {
+                width: 0%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
 
         #main-site-wrapper {
             opacity: 0;
             transition: opacity 0.8s ease-in-out;
         }
+
         body.loaded #main-site-wrapper {
             opacity: 1;
         }
+
         body.loaded {
-            overflow: auto; 
+            overflow: auto;
         }
 
         /* --- 1. FIXED INFINITE CAROUSEL STYLES --- */
@@ -198,19 +298,24 @@
             width: max-content;
             animation: marquee 40s linear infinite;
         }
-        
+
         .marquee-track:hover {
             animation-play-state: paused;
         }
 
         @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(calc(-50% - 1rem)); } 
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(calc(-50% - 1rem));
+            }
         }
 
         .marquee-card {
             transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-            opacity: 0.5; 
+            opacity: 0.5;
             filter: grayscale(80%) blur(1px);
             transform: scale(0.9);
             flex-shrink: 0;
@@ -221,15 +326,15 @@
             filter: grayscale(0%) blur(0px);
             transform: scale(1.1);
             z-index: 20;
-            box-shadow: 0 30px 60px -15px rgba(249, 115, 22, 0.3); 
-            border-color: rgba(251, 191, 36, 0.5); 
+            box-shadow: 0 30px 60px -15px rgba(249, 115, 22, 0.3);
+            border-color: rgba(251, 191, 36, 0.5);
         }
 
         /* --- 2. FLIP CARD STYLES --- */
         .flip-card {
             background-color: transparent;
             width: 100%;
-            height: 360px; 
+            height: 360px;
             perspective: 1000px;
         }
 
@@ -238,17 +343,18 @@
             width: 100%;
             height: 100%;
             text-align: center;
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transform-style: preserve-3d;
-            border-radius: 24px; 
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1); 
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
         }
 
         .flipped {
             transform: rotateY(180deg);
         }
 
-        .flip-card-front, .flip-card-back {
+        .flip-card-front,
+        .flip-card-back {
             position: absolute;
             width: 100%;
             height: 100%;
@@ -270,17 +376,17 @@
             -webkit-backdrop-filter: blur(20px);
             z-index: 2;
             transform: rotateY(0deg);
-            box-shadow: inset 0 0 40px rgba(255,255,255,0.5); 
+            box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.5);
         }
 
         .flip-card-front.is-results {
             border: 1px solid rgba(251, 191, 36, 0.5);
-            background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(254, 243, 199, 0.6));
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(254, 243, 199, 0.6));
             box-shadow: inset 0 0 20px rgba(251, 191, 36, 0.15), 0 10px 30px -10px rgba(251, 191, 36, 0.3);
         }
 
         .flip-card-back {
-            background: rgba(255, 255, 255, 0.98); 
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             transform: rotateY(180deg);
@@ -289,24 +395,135 @@
         }
 
         /* FLIP CONTENT STYLES */
-        .badge-container { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-shrink: 0; }
-        .status-badge, .category-pill { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; padding: 6px 14px; border-radius: 100px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .is-results .status-badge { background: linear-gradient(135deg, #fcd34d, #fbbf24); color: #78350f; border: none; box-shadow: 0 4px 10px rgba(251, 191, 36, 0.3); }
-        .status-live { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
-        .status-soon { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
-        .status-done { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
-        .category-pill { background: white; border: 1px solid #e5e7eb; color: #6b7280; }
+        .badge-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
 
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .main-content h3 { font-size: 1.6rem; font-weight: 800; color: #1a202c; line-height: 1.1; margin-bottom: 12px; letter-spacing: -0.5px; }
-        .main-content .location { font-size: 1rem; color: #4b5563; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; justify-content: center; font-weight: 500; }
-        .main-content .teams-registered { font-size: 0.8rem; color: #9ca3af; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .status-badge,
+        .category-pill {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 6px 14px;
+            border-radius: 100px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
 
-        .action-btn { width: 100%; padding: 14px; border-radius: 14px; font-weight: 700; font-size: 0.95rem; cursor: pointer; border: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-top: auto; position: relative; overflow: hidden; flex-shrink: 0; letter-spacing: 0.5px; }
-        .btn-view { background: linear-gradient(135deg, #fb923c, #ea580c); color: white; box-shadow: 0 8px 20px -5px rgba(234, 88, 12, 0.4); }
-        .btn-view:hover { transform: translateY(-2px); box-shadow: 0 12px 25px -5px rgba(234, 88, 12, 0.5); }
-        .btn-back { background: white; color: #4b5563; border: 1px solid #e5e7eb; margin-top: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .btn-back:hover { background: #f9fafb; color: #111827; transform: translateY(-2px); box-shadow: 0 6px 10px -2px rgba(0,0,0,0.05); }
+        .is-results .status-badge {
+            background: linear-gradient(135deg, #fcd34d, #fbbf24);
+            color: #78350f;
+            border: none;
+            box-shadow: 0 4px 10px rgba(251, 191, 36, 0.3);
+        }
+
+        .status-live {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .status-soon {
+            background: #fef3c7;
+            color: #d97706;
+            border: 1px solid #fde68a;
+        }
+
+        .status-done {
+            background: #f3f4f6;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+        }
+
+        .category-pill {
+            background: white;
+            border: 1px solid #e5e7eb;
+            color: #6b7280;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .main-content h3 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #1a202c;
+            line-height: 1.1;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .main-content .location {
+            font-size: 1rem;
+            color: #4b5563;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .main-content .teams-registered {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: auto;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, #fb923c, #ea580c);
+            color: white;
+            box-shadow: 0 8px 20px -5px rgba(234, 88, 12, 0.4);
+        }
+
+        .btn-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px -5px rgba(234, 88, 12, 0.5);
+        }
+
+        .btn-back {
+            background: white;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-back:hover {
+            background: #f9fafb;
+            color: #111827;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.05);
+        }
 
         .btn-flow {
             background: linear-gradient(-45deg, #f97316, #ea580c, #db2777, #f97316);
@@ -314,13 +531,16 @@
             animation: gradient-flow 4s ease infinite;
             position: relative;
             z-index: 1;
-            border: 2px solid rgba(255,255,255,0.4);
+            border: 2px solid rgba(255, 255, 255, 0.4);
         }
-        
+
         .btn-flow::before {
             content: '';
             position: absolute;
-            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
             background: inherit;
             border-radius: 9999px;
             z-index: -1;
@@ -328,47 +548,152 @@
             opacity: 0.6;
             transition: opacity 0.3s;
         }
-        
-        .btn-flow:hover::before { opacity: 0.8; filter: blur(20px); }
 
-        @keyframes gradient-flow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        .btn-flow:hover::before {
+            opacity: 0.8;
+            filter: blur(20px);
         }
 
-        .winner-row { 
-            display: flex; 
-            align-items: center; 
-            margin-bottom: 4px; 
-            background: white; 
-            padding: 6px 10px; 
-            border-radius: 12px; 
-            border: 1px solid #f3f4f6; 
-            width: 100%; 
+        @keyframes gradient-flow {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .winner-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+            background: white;
+            padding: 6px 10px;
+            border-radius: 12px;
+            border: 1px solid #f3f4f6;
+            width: 100%;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             flex-shrink: 1;
             min-height: 0;
         }
-        .winner-row:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-color: #e5e7eb; }
-        .winner-row:last-child { margin-bottom: 0; }
-        
-        .medal { font-size: 1.1em; margin-right: 8px; flex-shrink: 0; }
-        .winner-info { display: flex; flex-direction: column; text-align: left; overflow: hidden; }
-        .student-name { font-weight: 700; color: #1f2937; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .school-name { font-size: 0.6rem; color: #6b7280; font-weight: 600; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .winner-row:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-color: #e5e7eb;
+        }
+
+        .winner-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .medal {
+            font-size: 1.1em;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .winner-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            overflow: hidden;
+        }
+
+        .student-name {
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .school-name {
+            font-size: 0.6rem;
+            color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
         /* --- UI BASICS --- */
-        .bg-parallax-text { position: fixed; top: 50%; left: -10%; font-size: 20vh; font-weight: 900; color: rgba(234, 88, 12, 0.03); white-space: nowrap; pointer-events: none; z-index: 0; transform: translateY(-50%); will-change: transform; }
-        .scroll-line-track { position: fixed; left: 0; top: 0; width: 4px; height: 100vh; background: rgba(0,0,0,0.05); z-index: 50; }
-        .scroll-line-fill { width: 100%; height: 0%; background: linear-gradient(to bottom, #fb923c, #ea580c); box-shadow: 2px 0 10px rgba(234, 88, 12, 0.5); }
-        .blur-word { display: inline-block; opacity: 0; filter: blur(12px); transform: translateY(20px); transition: all 0.8s ease; margin-right: 0.2em; }
-        .blur-word.visible { opacity: 1; filter: blur(0); transform: translateY(0); }
-        
-        .card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-radius: 2rem; border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.05); transition: transform 0.4s ease; }
-        .card:hover { transform: scale(1.02); box-shadow: 0 30px 60px -10px rgba(234, 88, 12, 0.15); }
+        .bg-parallax-text {
+            position: fixed;
+            top: 50%;
+            left: -10%;
+            font-size: 20vh;
+            font-weight: 900;
+            color: rgba(234, 88, 12, 0.03);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 0;
+            transform: translateY(-50%);
+            will-change: transform;
+        }
 
-        #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+        .scroll-line-track {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.05);
+            z-index: 50;
+        }
+
+        .scroll-line-fill {
+            width: 100%;
+            height: 0%;
+            background: linear-gradient(to bottom, #fb923c, #ea580c);
+            box-shadow: 2px 0 10px rgba(234, 88, 12, 0.5);
+        }
+
+        .blur-word {
+            display: inline-block;
+            opacity: 0;
+            filter: blur(12px);
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+            margin-right: 0.2em;
+        }
+
+        .blur-word.visible {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateY(0);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px -10px rgba(234, 88, 12, 0.15);
+        }
+
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
 
         .btn-alive {
             position: relative;
@@ -382,53 +707,235 @@
             transition: transform 0.1s ease-out, box-shadow 0.2s ease;
             z-index: 10;
             cursor: pointer;
-            background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%); 
+            background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
             color: white !important;
             box-shadow: 0 8px 25px -5px rgba(234, 88, 12, 0.5);
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             padding: 16px 24px;
             font-size: 1.125rem;
-            width: 100%; 
+            width: 100%;
         }
-        @media (min-width: 640px) { .btn-alive { width: auto; } }
-        .btn-alive:active { transform: scale(0.96); box-shadow: 0 4px 15px -5px rgba(234, 88, 12, 0.6); }
+
+        @media (min-width: 640px) {
+            .btn-alive {
+                width: auto;
+            }
+        }
+
+        .btn-alive:active {
+            transform: scale(0.96);
+            box-shadow: 0 4px 15px -5px rgba(234, 88, 12, 0.6);
+        }
 
         .btn-alive-secondary {
             background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);
             box-shadow: 0 8px 25px -5px rgba(59, 130, 246, 0.6);
-            border-color: rgba(255,255,255,0.2);
+            border-color: rgba(255, 255, 255, 0.2);
         }
-        .btn-alive-secondary:active { box-shadow: 0 4px 15px -5px rgba(59, 130, 246, 0.7); }
+
+        .btn-alive-secondary:active {
+            box-shadow: 0 4px 15px -5px rgba(59, 130, 246, 0.7);
+        }
 
         /* Bot CSS */
-        #savvy-bot-container { position: fixed; z-index: 100; top: 0; left: 0; width: 60px; height: 60px; transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: auto; cursor: pointer; perspective: 800px; }
-        .bot-body { width: 48px; height: 48px; margin: 6px; background: radial-gradient(circle at 30% 20%, #ffffff, #ffe4cc 55%, #fdba74 100%); border-radius: 50%; box-shadow: inset -4px -6px 10px rgba(124, 45, 18, 0.25), inset 5px 6px 10px rgba(255, 255, 255, 0.9), 0 10px 22px rgba(0,0,0,0.25), 0 0 0 2px rgba(255,255,255,0.9); position: relative; display: flex; align-items: center; justify-content: center; animation: float-organic 6s ease-in-out infinite; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; transform-style: preserve-3d; }
-        .bot-body:active { transform: scale(0.9); } 
-        .bot-body.windblown { transform: rotate(-15deg) translateX(-5px); }
-        .bot-body::before { content: ''; position: absolute; inset: -6px; border-radius: 9999px; background: radial-gradient(circle at 50% 50%, rgba(249,115,22,0.25), transparent 70%); opacity: 0; transform: scale(0.9); transition: opacity 0.4s ease, transform 0.4s ease; z-index: -1; }
-        .bot-body.awake::before { opacity: 1; transform: scale(1); }
-        .bot-body::after { content: ''; position: absolute; width: 70px; height: 18px; border-radius: 999px; background: radial-gradient(circle, rgba(15,23,42,0.35), transparent 70%); bottom: -12px; left: 50%; transform: translateX(-50%) translateZ(-20px); opacity: 0.8; pointer-events: none; filter: blur(2px); }
-        .bot-cheek { position: absolute; top: 28px; width: 6px; height: 4px; background: #fdba74; border-radius: 50%; opacity: 0.8; filter: blur(1px); z-index: 2; transform: translateZ(10px); } 
-        .cheek-left { left: 8px; } .cheek-right { right: 8px; }
-        .bot-eye { width: 32px; height: 18px; background: #0f172a; border-radius: 14px; position: relative; overflow: hidden; border: 2px solid #cbd5e1; box-shadow: inset 0 0 4px #000; z-index: 3; transition: all 0.2s ease; transform: translateZ(14px); }
-        .bot-pupil { width: 10px; height: 10px; background: #f97316; border-radius: 50%; position: absolute; top: 4px; left: 11px; box-shadow: 0 0 6px #f97316; transition: transform 0.1s; }
-        .bot-eye.sleeping { height: 3px; margin-top: 6px; background: #334155; border-color: #475569; } 
-        .bot-eye.sleeping .bot-pupil, .bot-eye.sleeping .bot-cheek { opacity: 0; }
-        .bot-antenna { position: absolute; top: -10px; left: 22px; width: 3px; height: 10px; background: #94a3b8; z-index: -1; transform: translateZ(6px); } 
-        .bot-antenna::after { content: ''; position: absolute; top: -5px; left: -2.5px; width: 8px; height: 8px; background: #f97316; border-radius: 50%; box-shadow: 0 0 8px #f97316; }
-        .bot-bubble { position: absolute; top: -45px; left: 50%; transform: translateX(-50%) scale(0) translateY(10px); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); padding: 8px 14px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); font-size: 11px; font-weight: 700; color: #c2410c; white-space: nowrap; opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; border: 1px solid white; } 
-        .bot-bubble.show { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); } 
-        .bot-bubble::after { content: ''; position: absolute; bottom: -5px; left: 50%; margin-left: -5px; border-width: 5px 5px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
+        #savvy-bot-container {
+            position: fixed;
+            z-index: 100;
+            top: 0;
+            left: 0;
+            width: 60px;
+            height: 60px;
+            transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: auto;
+            cursor: pointer;
+            perspective: 800px;
+        }
+
+        .bot-body {
+            width: 48px;
+            height: 48px;
+            margin: 6px;
+            background: radial-gradient(circle at 30% 20%, #ffffff, #ffe4cc 55%, #fdba74 100%);
+            border-radius: 50%;
+            box-shadow: inset -4px -6px 10px rgba(124, 45, 18, 0.25), inset 5px 6px 10px rgba(255, 255, 255, 0.9), 0 10px 22px rgba(0, 0, 0, 0.25), 0 0 0 2px rgba(255, 255, 255, 0.9);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: float-organic 6s ease-in-out infinite;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+        }
+
+        .bot-body:active {
+            transform: scale(0.9);
+        }
+
+        .bot-body.windblown {
+            transform: rotate(-15deg) translateX(-5px);
+        }
+
+        .bot-body::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 9999px;
+            background: radial-gradient(circle at 50% 50%, rgba(249, 115, 22, 0.25), transparent 70%);
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            z-index: -1;
+        }
+
+        .bot-body.awake::before {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .bot-body::after {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 18px;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(15, 23, 42, 0.35), transparent 70%);
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%) translateZ(-20px);
+            opacity: 0.8;
+            pointer-events: none;
+            filter: blur(2px);
+        }
+
+        .bot-cheek {
+            position: absolute;
+            top: 28px;
+            width: 6px;
+            height: 4px;
+            background: #fdba74;
+            border-radius: 50%;
+            opacity: 0.8;
+            filter: blur(1px);
+            z-index: 2;
+            transform: translateZ(10px);
+        }
+
+        .cheek-left {
+            left: 8px;
+        }
+
+        .cheek-right {
+            right: 8px;
+        }
+
+        .bot-eye {
+            width: 32px;
+            height: 18px;
+            background: #0f172a;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #cbd5e1;
+            box-shadow: inset 0 0 4px #000;
+            z-index: 3;
+            transition: all 0.2s ease;
+            transform: translateZ(14px);
+        }
+
+        .bot-pupil {
+            width: 10px;
+            height: 10px;
+            background: #f97316;
+            border-radius: 50%;
+            position: absolute;
+            top: 4px;
+            left: 11px;
+            box-shadow: 0 0 6px #f97316;
+            transition: transform 0.1s;
+        }
+
+        .bot-eye.sleeping {
+            height: 3px;
+            margin-top: 6px;
+            background: #334155;
+            border-color: #475569;
+        }
+
+        .bot-eye.sleeping .bot-pupil,
+        .bot-eye.sleeping .bot-cheek {
+            opacity: 0;
+        }
+
+        .bot-antenna {
+            position: absolute;
+            top: -10px;
+            left: 22px;
+            width: 3px;
+            height: 10px;
+            background: #94a3b8;
+            z-index: -1;
+            transform: translateZ(6px);
+        }
+
+        .bot-antenna::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -2.5px;
+            width: 8px;
+            height: 8px;
+            background: #f97316;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #f97316;
+        }
+
+        .bot-bubble {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%) scale(0) translateY(10px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            padding: 8px 14px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            font-size: 11px;
+            font-weight: 700;
+            color: #c2410c;
+            white-space: nowrap;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+            border: 1px solid white;
+        }
+
+        .bot-bubble.show {
+            opacity: 1;
+            transform: translateX(-50%) scale(1) translateY(0);
+        }
+
+        .bot-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px 5px 0;
+            border-style: solid;
+            border-color: #fff transparent transparent transparent;
+        }
 
         .bot-bubble.rich {
             display: inline-flex;
             align-items: center;
             gap: 6px;
         }
+
         .typing-dots {
             display: inline-flex;
             gap: 3px;
         }
+
         .typing-dots span {
             width: 4px;
             height: 4px;
@@ -436,20 +943,48 @@
             background: #fed7aa;
             animation: dotBounce 1s infinite ease-in-out;
         }
-        .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
-        .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
         @keyframes dotBounce {
-            0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
-            40% { transform: translateY(-3px); opacity: 1; }
+
+            0%,
+            80%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+
+            40% {
+                transform: translateY(-3px);
+                opacity: 1;
+            }
         }
 
         /* Force disable selection */
-        *, *::before, *::after { -webkit-user-select: none !important; user-select: none !important; }
-        input, textarea { -webkit-user-select: text !important; user-select: text !important; }
+        *,
+        *::before,
+        *::after {
+            -webkit-user-select: none !important;
+            user-select: none !important;
+        }
+
+        input,
+        textarea {
+            -webkit-user-select: text !important;
+            user-select: text !important;
+        }
     </style>
 </head>
+
 <body class="text-slate-800 antialiased">
-    
+
     <div id="full-screen-confetti-holder" class="confetti-container full-screen-confetti"></div>
 
     <div id="global-loader">
@@ -461,7 +996,8 @@
                 </div>
             </div>
         </div>
-        <h1 class="text-2xl font-black text-slate-800 tracking-tight mb-2">Savvy<span class="text-orange-500">Hunt</span></h1>
+        <h1 class="text-2xl font-black text-slate-800 tracking-tight mb-2">Savvy<span
+                class="text-orange-500">Hunt</span></h1>
         <p class="text-xs font-bold text-orange-500 uppercase tracking-widest mb-6">Initializing System</p>
         <div class="progress-container">
             <div class="progress-bar"></div>
@@ -472,19 +1008,26 @@
         <div class="modal-content">
             <div class="modal-inner">
                 <div class="text-6xl mb-4 animate-float-organic" style="animation-duration: 4s;">🎉</div>
-                <h2 class="text-4xl font-extrabold text-slate-900 mb-3 tracking-tight">Savvy Hunt 2025 has <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700">Concluded!</span></h2>
-                <p class="text-lg text-slate-600 mb-8 font-medium">Thank you for your enthusiastic participation and support. We hope you enjoyed the ultimate showdown!</p>
+                <h2 class="text-4xl font-extrabold text-slate-900 mb-3 tracking-tight">Savvy Hunt 2025 has <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700">Concluded!</span>
+                </h2>
+                <p class="text-lg text-slate-600 mb-8 font-medium">Thank you for your enthusiastic participation and
+                    support. We hope you enjoyed the ultimate showdown!</p>
                 <div class="border-t border-orange-100 pt-4">
-                    <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Want to see the final results?</p>
-                    <a href="scoreboard.html" class="btn-flow group inline-flex items-center justify-center px-10 py-4 font-black text-white rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-orange-500/40">
+                    <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Want to see the final
+                        results?</p>
+                    <a href="scoreboard.html"
+                        class="btn-flow group inline-flex items-center justify-center px-10 py-4 font-black text-white rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-orange-500/40">
                         View Final Scoreboard
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 ml-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                            stroke="currentColor" class="w-5 h-5 ml-2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M11.5 17L21 7m0 0H14m7 0v7" />
                         </svg>
                     </a>
                 </div>
                 <button onclick="closeFinishedModal()" class="close-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                        stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
@@ -494,7 +1037,9 @@
 
     <div id="main-site-wrapper">
 
-        <div class="scroll-line-track"><div class="scroll-line-fill" id="scroll-fill"></div></div>
+        <div class="scroll-line-track">
+            <div class="scroll-line-fill" id="scroll-fill"></div>
+        </div>
         <div class="bg-parallax-text" id="big-parallax-text">SAVVY HUNT 2025</div>
 
         <div id="savvy-bot-container" style="transform: translate(80vw, 80vh);">
@@ -504,23 +1049,34 @@
                 <div class="bot-cheek cheek-left"></div>
                 <div class="bot-cheek cheek-right"></div>
                 <div class="bot-antenna"></div>
-                <div class="bot-eye" id="bot-eye"><div class="bot-pupil" id="bot-pupil"></div></div>
+                <div class="bot-eye" id="bot-eye">
+                    <div class="bot-pupil" id="bot-pupil"></div>
+                </div>
             </div>
         </div>
 
-        <section id="hero-section" class="relative min-h-[65vh] md:min-h-[90vh] flex flex-col justify-center items-center text-white text-center rounded-b-[3rem] overflow-hidden shadow-2xl z-10 pt-16 pb-8 md:py-0">
-            <div class="absolute inset-0 bg-[#0f172a] bg-top bg-no-repeat bg-cover" style="background-image: url('assests/bg.png');"></div>
+        <section id="hero-section"
+            class="relative min-h-[65vh] md:min-h-[90vh] flex flex-col justify-center items-center text-white text-center rounded-b-[3rem] overflow-hidden shadow-2xl z-10 pt-16 pb-8 md:py-0">
+            <div class="absolute inset-0 bg-[#0f172a] bg-top bg-no-repeat bg-cover"
+                style="background-image: url('assests/bg.png');"></div>
             <div class="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/50 to-slate-900/95"></div>
             <canvas id="hero-canvas"></canvas>
             <div class="relative z-20 px-4 max-w-5xl w-full parallax-layer" data-speed="-0.1">
-                <h1 id="hero-title" class="text-4xl md:text-8xl font-black mb-4 drop-shadow-2xl tracking-tighter leading-none min-h-[90px] md:min-h-[160px]"></h1>
-                <p class="text-base md:text-3xl font-bold mb-8 drop-shadow-lg opacity-0 animate-fade-in-up [animation-delay:600ms] text-orange-50">The ultimate showdown is <span class="text-orange-500">NOW!</span></p>
-                
-                <div class="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-2xl mx-auto opacity-0 animate-fade-in-up [animation-delay:800ms]">
-                    <a href="#live-events" class="btn-alive hover-trigger w-full sm:flex-1" data-bot-say="Check the live feed! ⚡">
+                <h1 id="hero-title"
+                    class="text-4xl md:text-8xl font-black mb-4 drop-shadow-2xl tracking-tighter leading-none min-h-[90px] md:min-h-[160px]">
+                </h1>
+                <p
+                    class="text-base md:text-3xl font-bold mb-8 drop-shadow-lg opacity-0 animate-fade-in-up [animation-delay:600ms] text-orange-50">
+                    The ultimate showdown is <span class="text-orange-500">NOW!</span></p>
+
+                <div
+                    class="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-2xl mx-auto opacity-0 animate-fade-in-up [animation-delay:800ms]">
+                    <a href="#live-events" class="btn-alive hover-trigger w-full sm:flex-1"
+                        data-bot-say="Check the live feed! ⚡">
                         See What's Happening LIVE
                     </a>
-                    <a href="scoreboard.html" class="btn-alive btn-alive-secondary hover-trigger w-full sm:flex-1" data-bot-say="Let's see the ranks! 🏆">
+                    <a href="scoreboard.html" class="btn-alive btn-alive-secondary hover-trigger w-full sm:flex-1"
+                        data-bot-say="Let's see the ranks! 🏆">
                         View Scoreboard
                     </a>
                 </div>
@@ -528,61 +1084,88 @@
         </section>
 
         <div class="max-w-7xl mx-auto p-4 md:p-12 relative -mt-12 z-20">
-            
+
             <section id="live-events" class="text-center mb-40 pt-24">
-                <span class="inline-block py-1 px-3 rounded-full bg-orange-50 text-orange-600 text-xs font-bold tracking-widest mb-4 border border-orange-200 opacity-0 animate-fade-in-up [animation-delay:1000ms]">LIVE FEED</span>
-                <h2 class="text-4xl md:text-8xl font-extrabold mb-6 text-slate-900 opacity-0 animate-fade-in-up [animation-delay:1100ms] tracking-tighter">Real-Time <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 pb-2 pr-1">Updates</span></h2>
-                
+                <span
+                    class="inline-block py-1 px-3 rounded-full bg-orange-50 text-orange-600 text-xs font-bold tracking-widest mb-4 border border-orange-200 opacity-0 animate-fade-in-up [animation-delay:1000ms]">LIVE
+                    FEED</span>
+                <h2
+                    class="text-4xl md:text-8xl font-extrabold mb-6 text-slate-900 opacity-0 animate-fade-in-up [animation-delay:1100ms] tracking-tighter">
+                    Real-Time <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 pb-2 pr-1">Updates</span>
+                </h2>
+
                 <div id="events-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10 mb-12">
-                    <div class="col-span-1 md:col-span-3 py-24 bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-xl">
+                    <div
+                        class="col-span-1 md:col-span-3 py-24 bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-xl">
                         <div class="flex flex-col items-center animate-pulse">
-                            <div class="w-12 h-12 border-[5px] border-orange-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                            <div
+                                class="w-12 h-12 border-[5px] border-orange-500 border-t-transparent rounded-full animate-spin mb-4">
+                            </div>
                             <p class="text-slate-400 font-bold text-lg">Syncing satellite feed...</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="text-center">
-                    <a href="schedule.html" class="btn-alive hover-trigger px-12 sm:w-auto" data-bot-say="Full Schedule!">Go to Full Event</a>
+                    <a href="schedule.html" class="btn-alive hover-trigger px-12 sm:w-auto"
+                        data-bot-say="Full Schedule!">Go to Full Event</a>
                 </div>
             </section>
 
-            <section id="scoreboard-section" class="hover-trigger card bg-white/90 p-8 md:p-20 mb-40 opacity-0 animate-fade-in-up [animation-delay:200ms] relative overflow-hidden" data-bot-say="Calculating stats... 🧮">
-                <div class="absolute top-0 right-0 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse parallax-layer" data-speed="-0.08"></div>
-                <div class="absolute bottom-0 left-0 w-80 h-80 bg-orange-100/40 rounded-full blur-3xl -ml-20 -mb-20 animate-pulse parallax-layer" data-speed="0.06" style="animation-delay: 1.5s"></div>
+            <section id="scoreboard-section"
+                class="hover-trigger card bg-white/90 p-8 md:p-20 mb-40 opacity-0 animate-fade-in-up [animation-delay:200ms] relative overflow-hidden"
+                data-bot-say="Calculating stats... 🧮">
+                <div class="absolute top-0 right-0 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse parallax-layer"
+                    data-speed="-0.08"></div>
+                <div class="absolute bottom-0 left-0 w-80 h-80 bg-orange-100/40 rounded-full blur-3xl -ml-20 -mb-20 animate-pulse parallax-layer"
+                    data-speed="0.06" style="animation-delay: 1.5s"></div>
                 <div class="text-center max-w-4xl mx-auto mb-12 relative z-10">
-                    <h2 class="text-4xl md:text-7xl font-black mb-4 tracking-tighter text-slate-900">Who's <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 pb-2 pr-1">Leading?</span></h2>
+                    <h2 class="text-4xl md:text-7xl font-black mb-4 tracking-tighter text-slate-900">Who's <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 pb-2 pr-1">Leading?</span>
+                    </h2>
                     <p class="text-slate-500 font-medium">Top 3 contenders fighting for glory.</p>
                 </div>
                 <div id="top-3-container" class="max-w-3xl mx-auto space-y-4 relative z-10">
-                    </div>
+                </div>
                 <div class="text-center mt-16 relative z-10">
                     <a href="scoreboard.html" class="btn-alive px-12 sm:w-auto">View Full Scoreboard</a>
                 </div>
             </section>
 
             <section id="about-section" class="mb-40 px-2 md:px-4 relative z-20 opacity-0 animate-fade-in-up">
-                <div class="bg-white/80 backdrop-blur-xl rounded-[3rem] p-8 md:p-20 lg:flex lg:items-center lg:gap-20 shadow-2xl border border-white">
+                <div
+                    class="bg-white/80 backdrop-blur-xl rounded-[3rem] p-8 md:p-20 lg:flex lg:items-center lg:gap-20 shadow-2xl border border-white">
                     <div class="lg:w-1/2">
-                        <h2 class="text-3xl md:text-5xl font-black mb-6 text-slate-900 tracking-tight">What is <span class="text-orange-500">Savvy Hunt?</span></h2>
-                        <p class="text-lg text-slate-600 mb-10 leading-relaxed">More than a competition—it's a pursuit of excellence. Watch as schools compete for glory in real-time.</p>
-                        
-                        <a href="about.html" class="btn-flow group hover-trigger inline-flex items-center justify-center px-10 py-5 font-black text-white rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-orange-500/40" data-bot-say="Meet the squad! ✨">
+                        <h2 class="text-3xl md:text-5xl font-black mb-6 text-slate-900 tracking-tight">What is <span
+                                class="text-orange-500">Savvy Hunt?</span></h2>
+                        <p class="text-lg text-slate-600 mb-10 leading-relaxed">More than a competition—it's a pursuit
+                            of excellence. Watch as schools compete for glory in real-time.</p>
+
+                        <a href="about.html"
+                            class="btn-flow group hover-trigger inline-flex items-center justify-center px-10 py-5 font-black text-white rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-orange-500/40"
+                            data-bot-say="Meet the squad! ✨">
                             <span class="text-lg tracking-wide uppercase">Meet The Creators</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6 ml-3 transition-transform duration-300 group-hover:translate-x-2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                                stroke="currentColor"
+                                class="w-6 h-6 ml-3 transition-transform duration-300 group-hover:translate-x-2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
                         </a>
 
                     </div>
                     <div class="lg:w-1/2 mt-12 lg:mt-0">
-                        <div class="bg-gradient-to-br from-orange-50 to-white rounded-[2.5rem] p-10 border border-orange-100 shadow-lg transform rotate-2 hover:rotate-0 transition duration-500">
+                        <div
+                            class="bg-gradient-to-br from-orange-50 to-white rounded-[2.5rem] p-10 border border-orange-100 shadow-lg transform rotate-2 hover:rotate-0 transition duration-500">
                             <h3 class="text-2xl font-bold mb-4 text-slate-900">Student Organized</h3>
                             <p class="text-base text-slate-600 mb-6">Proudly run by the School Media Club.</p>
                             <div class="flex gap-2">
                                 <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce"></div>
-                                <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce" style="animation-delay: 0.2s"></div>
-                                <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce" style="animation-delay: 0.4s"></div>
+                                <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce"
+                                    style="animation-delay: 0.2s"></div>
+                                <div class="h-3 w-3 rounded-full bg-orange-400 animate-bounce"
+                                    style="animation-delay: 0.4s"></div>
                             </div>
                         </div>
                     </div>
@@ -591,19 +1174,26 @@
 
             <section id="gallery-section" class="mb-40 px-2">
                 <div class="text-center max-w-3xl mx-auto mb-12">
-                    <h2 class="text-4xl md:text-7xl font-black mb-4 tracking-tighter text-slate-900"><span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 pb-2 pr-1">Snapshots</span></h2>
+                    <h2 class="text-4xl md:text-7xl font-black mb-4 tracking-tighter text-slate-900"><span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 pb-2 pr-1">Snapshots</span>
+                    </h2>
                     <p class="text-slate-600 text-lg">Moments captured in time.</p>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 px-2 mb-12">
-                    <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[-3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group" data-bot-say="Nice pic! 📸">
+                    <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[-3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group"
+                        data-bot-say="Nice pic! 📸">
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10"></div>
-                        <img src="assests/group2.jpg" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x800/orange/white?text=Snapshot'">
+                        <img src="assests/group2.jpg" class="w-full h-full object-cover"
+                            onerror="this.src='https://placehold.co/600x800/orange/white?text=Snapshot'">
                     </div>
-                    <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform translate-y-[-40px] z-20 bg-gray-200 relative hover:translate-y-[-50px] hover:scale-105 transition duration-500 group" data-bot-say="Look at that! 👀">
+                    <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform translate-y-[-40px] z-20 bg-gray-200 relative hover:translate-y-[-50px] hover:scale-105 transition duration-500 group"
+                        data-bot-say="Look at that! 👀">
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10"></div>
-                        <img src="assests/group1.jpg" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x800/orange/white?text=Snapshot'">
+                        <img src="assests/group1.jpg" class="w-full h-full object-cover"
+                            onerror="this.src='https://placehold.co/600x800/orange/white?text=Snapshot'">
                     </div>
-                    <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group" data-bot-say="So cool! ✨">
+                    <div class="hover-trigger rounded-[2.5rem] overflow-hidden h-80 shadow-2xl border-[6px] border-white transform rotate-[3deg] bg-gray-200 relative hover:rotate-0 hover:scale-105 transition duration-500 group"
+                        data-bot-say="So cool! ✨">
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10"></div>
                         <img src="assests/companny222.jpg" class="w-full h-full object-cover">
                     </div>
@@ -613,105 +1203,157 @@
                 </div>
             </section>
 
-            <section id="leadership-section" class="mb-40 relative z-20 opacity-0 animate-fade-in-up" style="animation-delay: 0.2s;">
-                
-                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-full bg-gradient-to-r from-transparent via-orange-200/20 to-transparent blur-3xl pointer-events-none -z-10"></div>
+            <section id="leadership-section" class="mb-40 relative z-20 opacity-0 animate-fade-in-up"
+                style="animation-delay: 0.2s;">
+
+                <div
+                    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-full bg-gradient-to-r from-transparent via-orange-200/20 to-transparent blur-3xl pointer-events-none -z-10">
+                </div>
 
                 <div class="text-center max-w-3xl mx-auto mb-16 px-4">
-                    <h2 class="text-4xl md:text-6xl font-black mb-4 text-slate-900 tracking-tight">Team <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600">MGM RPS</span></h2>
+                    <h2 class="text-4xl md:text-6xl font-black mb-4 text-slate-900 tracking-tight">Team <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600">MGM
+                            RPS</span></h2>
                     <p class="text-lg text-slate-500 font-medium">United by vision, driven by excellence.</p>
                 </div>
 
-                <div class="marquee-container overflow-hidden w-full max-w-[100vw] py-14"> 
+                <div class="marquee-container overflow-hidden w-full max-w-[100vw] py-14">
                     <div class="marquee-track gap-8 px-4" id="leadership-track">
-                        
-                        <article class="marquee-card group relative w-[260px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] border border-white/80 shadow-lg" 
-                                data-comment="A visionary leader! 🫡 Hon. Chairman Sir.">
-                            <div class="absolute top-0 left-0 w-full h-28 bg-gradient-to-b from-orange-100/80 to-transparent rounded-t-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                        <article
+                            class="marquee-card group relative w-[260px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] border border-white/80 shadow-lg"
+                            data-comment="A visionary leader! 🫡 Hon. Chairman Sir.">
+                            <div
+                                class="absolute top-0 left-0 w-full h-28 bg-gradient-to-b from-orange-100/80 to-transparent rounded-t-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            </div>
                             <div class="relative z-10 flex flex-col items-center text-center">
                                 <div class="relative w-28 h-28 mb-5">
-                                    <div class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
-                                        <img src="assests/chairman.jpg" class="w-full h-full object-cover" alt="Chairman" onerror="this.src='https://placehold.co/150x150/orange/white?text=CH'">
+                                    <div
+                                        class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
+                                        <img src="assests/chairman.jpg" class="w-full h-full object-cover"
+                                            alt="Chairman"
+                                            onerror="this.src='https://placehold.co/150x150/orange/white?text=CH'">
                                     </div>
                                 </div>
-                                <span class="inline-block px-3 py-1 rounded-full bg-orange-50 text-orange-700 text-[9px] font-extrabold uppercase tracking-widest mb-3 border border-orange-100">Hon. Chairman</span>
-                                <h3 class="text-lg font-black text-slate-900 leading-tight mb-2">Sir Dr. GEEVARGHESE YOHANNAN</h3>
-                                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">MGM Group of Institutions</p>
+                                <span
+                                    class="inline-block px-3 py-1 rounded-full bg-orange-50 text-orange-700 text-[9px] font-extrabold uppercase tracking-widest mb-3 border border-orange-100">Hon.
+                                    Chairman</span>
+                                <h3 class="text-lg font-black text-slate-900 leading-tight mb-2">Sir Dr. GEEVARGHESE
+                                    YOHANNAN</h3>
+                                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">MGM Group of
+                                    Institutions</p>
                             </div>
                         </article>
 
-                        <article class="marquee-card group relative w-[260px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] border border-white/80 shadow-lg"
-                                data-comment="Respects to Mrs. Alfa Mary, our COO! 🌟">
-                            <div class="absolute top-0 left-0 w-full h-28 bg-gradient-to-b from-blue-100/80 to-transparent rounded-t-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <article
+                            class="marquee-card group relative w-[260px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] border border-white/80 shadow-lg"
+                            data-comment="Respects to Mrs. Alfa Mary, our COO! 🌟">
+                            <div
+                                class="absolute top-0 left-0 w-full h-28 bg-gradient-to-b from-blue-100/80 to-transparent rounded-t-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            </div>
                             <div class="relative z-10 flex flex-col items-center text-center">
                                 <div class="relative w-28 h-28 mb-5">
-                                    <div class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
-                                        <img src="assests/alfa.jpg" class="w-full h-full object-cover" alt="COO" onerror="this.src='https://placehold.co/150x150/orange/white?text=COO'">
+                                    <div
+                                        class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
+                                        <img src="assests/alfa.jpg" class="w-full h-full object-cover" alt="COO"
+                                            onerror="this.src='https://placehold.co/150x150/orange/white?text=COO'">
                                     </div>
                                 </div>
-                                <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[9px] font-extrabold uppercase tracking-widest mb-3 border border-blue-100">COO</span>
+                                <span
+                                    class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[9px] font-extrabold uppercase tracking-widest mb-3 border border-blue-100">COO</span>
                                 <h3 class="text-lg font-black text-slate-900 leading-tight mb-2">Mrs. ALFA MARY</h3>
-                                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">MGM Group of Schools</p>
+                                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">MGM Group of
+                                    Schools</p>
                             </div>
                         </article>
 
-                        <article class="marquee-card group relative w-[260px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] border border-white/80 shadow-lg"
-                                data-comment="Mr. Sunil Kumar, keeping things running! ⚙️">
-                            <div class="absolute top-0 left-0 w-full h-28 bg-gradient-to-b from-emerald-100/80 to-transparent rounded-t-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <article
+                            class="marquee-card group relative w-[260px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] border border-white/80 shadow-lg"
+                            data-comment="Mr. Sunil Kumar, keeping things running! ⚙️">
+                            <div
+                                class="absolute top-0 left-0 w-full h-28 bg-gradient-to-b from-emerald-100/80 to-transparent rounded-t-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            </div>
                             <div class="relative z-10 flex flex-col items-center text-center">
                                 <div class="relative w-28 h-28 mb-5">
-                                    <div class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
-                                        <img src="assests/sunil.jpg" class="w-full h-full object-cover" alt="Admin" onerror="this.src='https://placehold.co/150x150/orange/white?text=AM'">
+                                    <div
+                                        class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
+                                        <img src="assests/sunil.jpg" class="w-full h-full object-cover" alt="Admin"
+                                            onerror="this.src='https://placehold.co/150x150/orange/white?text=AM'">
                                     </div>
                                 </div>
-                                <span class="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[9px] font-extrabold uppercase tracking-widest mb-3 border border-emerald-100">Admin. Manager</span>
+                                <span
+                                    class="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[9px] font-extrabold uppercase tracking-widest mb-3 border border-emerald-100">Admin.
+                                    Manager</span>
                                 <h3 class="text-lg font-black text-slate-900 leading-tight mb-2">Mr. SUNIL KUMAR</h3>
-                                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">MGM Group of Schools</p>
+                                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">MGM Group of
+                                    Schools</p>
                             </div>
                         </article>
 
-                        <article class="marquee-card group relative w-[260px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] border border-white/80 shadow-lg"
-                                data-comment="Our guiding light, Principal Mrs. Julie Koshy! 🎓">
-                            <div class="absolute top-0 left-0 w-full h-28 bg-gradient-to-b from-rose-100/80 to-transparent rounded-t-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <article
+                            class="marquee-card group relative w-[260px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] border border-white/80 shadow-lg"
+                            data-comment="Our guiding light, Principal Mrs. Julie Koshy! 🎓">
+                            <div
+                                class="absolute top-0 left-0 w-full h-28 bg-gradient-to-b from-rose-100/80 to-transparent rounded-t-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            </div>
                             <div class="relative z-10 flex flex-col items-center text-center">
                                 <div class="relative w-28 h-28 mb-5">
-                                    <div class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
-                                        <img src="assests/julie.jpg" class="w-full h-full object-cover" alt="Principal" onerror="this.src='https://placehold.co/150x150/orange/white?text=PR'">
+                                    <div
+                                        class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
+                                        <img src="assests/julie.jpg" class="w-full h-full object-cover" alt="Principal"
+                                            onerror="this.src='https://placehold.co/150x150/orange/white?text=PR'">
                                     </div>
                                 </div>
-                                <span class="inline-block px-3 py-1 rounded-full bg-rose-50 text-rose-700 text-[9px] font-extrabold uppercase tracking-widest mb-3 border border-rose-100">Principal</span>
+                                <span
+                                    class="inline-block px-3 py-1 rounded-full bg-rose-50 text-rose-700 text-[9px] font-extrabold uppercase tracking-widest mb-3 border border-rose-100">Principal</span>
                                 <h3 class="text-lg font-black text-slate-900 leading-tight mb-2">Mrs. JULIE KOSHY</h3>
                                 <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">MGM RPS</p>
                             </div>
                         </article>
 
-                        <article class="marquee-card group relative w-[260px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] border border-white/80 shadow-lg"
-                                data-comment="Mrs. Jessy Vinu, leading the way! ✨">
-                            <div class="absolute top-0 left-0 w-full h-28 bg-gradient-to-b from-slate-200/80 to-transparent rounded-t-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <article
+                            class="marquee-card group relative w-[260px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] border border-white/80 shadow-lg"
+                            data-comment="Mrs. Jessy Vinu, leading the way! ✨">
+                            <div
+                                class="absolute top-0 left-0 w-full h-28 bg-gradient-to-b from-slate-200/80 to-transparent rounded-t-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            </div>
                             <div class="relative z-10 flex flex-col items-center text-center">
                                 <div class="relative w-28 h-28 mb-5">
-                                    <div class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
-                                        <img src="assests/jessy.jpg" class="w-full h-full object-cover" alt="VP" onerror="this.src='https://placehold.co/150x150/orange/white?text=VP'">
+                                    <div
+                                        class="relative w-full h-full rounded-full overflow-hidden border-[4px] border-white shadow-lg">
+                                        <img src="assests/jessy.jpg" class="w-full h-full object-cover" alt="VP"
+                                            onerror="this.src='https://placehold.co/150x150/orange/white?text=VP'">
                                     </div>
                                 </div>
-                                <span class="inline-block px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[9px] font-extrabold uppercase tracking-widest mb-3 border border-slate-200">Vice Principal</span>
+                                <span
+                                    class="inline-block px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[9px] font-extrabold uppercase tracking-widest mb-3 border border-slate-200">Vice
+                                    Principal</span>
                                 <h3 class="text-lg font-black text-slate-900 leading-tight mb-2">Mrs. JESSY VINU</h3>
                                 <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">MGM RPS</p>
                             </div>
                         </article>
 
-                        <article class="marquee-card group relative w-[260px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] border border-white/80 shadow-lg"
-                                data-comment="The squad behind it all! 🔥">
-                            <div class="absolute top-0 left-0 w-full h-28 bg-gradient-to-b from-indigo-100/80 to-transparent rounded-t-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <article
+                            class="marquee-card group relative w-[260px] flex-shrink-0 bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] border border-white/80 shadow-lg"
+                            data-comment="The squad behind it all! 🔥">
+                            <div
+                                class="absolute top-0 left-0 w-full h-28 bg-gradient-to-b from-indigo-100/80 to-transparent rounded-t-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            </div>
                             <div class="relative z-10 flex flex-col items-center text-center">
                                 <div class="relative w-48 h-28 mb-5">
-                                    <div class="relative w-full h-full rounded-[1.5rem] overflow-hidden border-[4px] border-white shadow-lg">
-                                        <img src="assests/companykkar.jpeg" class="w-full h-full object-cover" alt="Class of XII" onerror="this.src='https://placehold.co/400x250/orange/white?text=Class+XII'">
+                                    <div
+                                        class="relative w-full h-full rounded-[1.5rem] overflow-hidden border-[4px] border-white shadow-lg">
+                                        <img src="assests/companykkar.jpeg" class="w-full h-full object-cover"
+                                            alt="Class of XII"
+                                            onerror="this.src='https://placehold.co/400x250/orange/white?text=Class+XII'">
                                     </div>
                                 </div>
-                                <span class="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-[9px] font-extrabold uppercase tracking-widest mb-3 border border-indigo-100">Organizing Committee</span>
+                                <span
+                                    class="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-[9px] font-extrabold uppercase tracking-widest mb-3 border border-indigo-100">Organizing
+                                    Committee</span>
                                 <h3 class="text-lg font-black text-slate-900 leading-tight mb-2">Class of XII</h3>
-                                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Savvy Hunt Team</p>
+                                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Savvy Hunt Team
+                                </p>
                             </div>
                         </article>
 
@@ -721,28 +1363,38 @@
 
         </div>
 
-        <footer class="bg-slate-950 text-slate-400 pt-32 pb-12 -mt-20 relative z-10" style="border-top-left-radius: 3rem; border-top-right-radius: 3rem;">
+        <footer class="bg-slate-950 text-slate-400 pt-32 pb-12 -mt-20 relative z-10"
+            style="border-top-left-radius: 3rem; border-top-right-radius: 3rem;">
             <div class="max-w-7xl mx-auto px-6 text-center">
-                <h3 class="text-3xl font-bold text-white mb-2 tracking-tight">Savvy Hunt <span class="text-orange-500">2025</span></h3>
+                <h3 class="text-3xl font-bold text-white mb-2 tracking-tight">Savvy Hunt <span
+                        class="text-orange-500">2025</span></h3>
                 <p class="text-sm text-slate-500 mb-8">&copy; 2025 Savvy Hunt.</p>
-                <a href="admin_page/admin_index.html" class="opacity-20 hover:opacity-80 transition-opacity text-lg p-2 grayscale hover:grayscale-0" title="Admin Access">🔐</a>
-            <div class="max-w-7xl mx-auto px-6 text-center">
+                <a href="admin_page/admin_index.html"
+                    class="opacity-20 hover:opacity-80 transition-opacity text-lg p-2 grayscale hover:grayscale-0"
+                    title="Admin Access">🔐</a>
+                <div class="max-w-7xl mx-auto px-6 text-center">
 
-                <div class="mb-10 opacity-0 animate-fade-in-up" style="animation-delay: 200ms;">
-                    <br>  <br><p class="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-4">Enjoying the event?</p>
-                    <a href="feedback.html" class="group relative inline-flex items-center gap-2 px-8 py-3 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-orange-500/50 hover:bg-slate-900/80 transition-all duration-300 hover:shadow-[0_0_20px_-5px_rgba(249,115,22,0.3)]">
-                        <span class="text-lg group-hover:scale-110 transition-transform duration-300">💬</span>
-                        <span class="font-bold text-sm">Give Feedback</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-500 group-hover:text-orange-500 group-hover:translate-x-1 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                    </a>
-                </div>            
-            </div>
+                    <div class="mb-10 opacity-0 animate-fade-in-up" style="animation-delay: 200ms;">
+                        <br> <br>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-4">Enjoying the
+                            event?</p>
+                        <a href="feedback.html"
+                            class="group relative inline-flex items-center gap-2 px-8 py-3 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-orange-500/50 hover:bg-slate-900/80 transition-all duration-300 hover:shadow-[0_0_20px_-5px_rgba(249,115,22,0.3)]">
+                            <span class="text-lg group-hover:scale-110 transition-transform duration-300">💬</span>
+                            <span class="font-bold text-sm">Give Feedback</span>
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4 text-slate-500 group-hover:text-orange-500 group-hover:translate-x-1 transition-all duration-300"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
 
         </footer>
-    </div> 
-    
+    </div>
+
     <script>
         // Renamed client to prevent conflicts
         const SUPABASE_URL = 'https://updkjbvelzlleowheeyq.supabase.co';
@@ -757,9 +1409,9 @@
             // Remove tailwind check as it may block indefinitely if CDN is slow
             const preloader = document.getElementById('global-loader');
             if (document.body.classList.contains('loaded')) return;
-            
+
             document.body.classList.add('loaded');
-            if(preloader) {
+            if (preloader) {
                 preloader.style.opacity = '0';
                 setTimeout(() => { preloader.style.display = 'none'; }, 600);
             }
@@ -771,7 +1423,7 @@
         // --- TITLE ANIMATION LOGIC ---
         function startTitleAnimation() {
             const container = document.getElementById('hero-title');
-            if (!container || container.children.length > 0) return; 
+            if (!container || container.children.length > 0) return;
 
             const phrases = [
                 { text: "Welcome to the", color: "text-white" },
@@ -837,10 +1489,10 @@
         async function loadTopThree() {
             const container = document.getElementById("top-3-container");
             const { data } = await sbClient.from("scoreboard").select("*").order("total", { ascending: false }).limit(3);
-            if(!data) return;
+            if (!data) return;
             container.innerHTML = data.map((r, i) => {
-                const icon = ['🏆','⚡','🌟'][i] || '#';
-                return `<div class="bg-white p-4 rounded-2xl flex items-center shadow-sm"><div class="text-2xl font-black text-slate-300 w-10">${i+1}</div><div class="w-10 h-10 rounded-full border flex items-center justify-center text-xl mr-4">${icon}</div><div class="flex-1 font-bold text-slate-900">${r.name}</div><div class="font-black text-lg text-orange-600">${r.total.toLocaleString()}</div></div>`;
+                const icon = ['🏆', '⚡', '🌟'][i] || '#';
+                return `<div class="bg-white p-4 rounded-2xl flex items-center shadow-sm"><div class="text-2xl font-black text-slate-300 w-10">${i + 1}</div><div class="w-10 h-10 rounded-full border flex items-center justify-center text-xl mr-4">${icon}</div><div class="flex-1 font-bold text-slate-900">${r.name}</div><div class="font-black text-lg text-orange-600">${r.total.toLocaleString()}</div></div>`;
             }).join('');
         }
 
@@ -874,4 +1526,5 @@
         });
     </script>
 </body>
+
 </html>

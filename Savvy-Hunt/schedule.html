@@ -475,6 +475,29 @@
                 inset 0 0 24px rgba(255, 251, 235, 0.95);
         }
 
+        /* ===== CUSTOM SCROLLBAR FOR RESULTS ===== */
+        .results-scroll-area {
+            overflow-y: auto;
+            padding-right: 4px; /* Space for scrollbar */
+            /* Firefox */
+            scrollbar-width: thin;
+            scrollbar-color: #fb923c rgba(255, 237, 213, 0.3);
+        }
+        
+        /* Webkit (Chrome, Safari, Edge) */
+        .results-scroll-area::-webkit-scrollbar {
+            width: 5px;
+        }
+        .results-scroll-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .results-scroll-area::-webkit-scrollbar-thumb {
+            background-color: #fb923c;
+            border-radius: 20px;
+            border: 1px solid transparent;
+            background-clip: content-box;
+        }
+
         .badge-container {
             width: 100%;
             display: flex;
@@ -646,7 +669,7 @@
             border: 1px solid #f3f4f6;
             width: 100%;
             transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-            flex-shrink: 1;
+            flex-shrink: 0;
             min-height: 0;
         }
         .winner-row:hover {
@@ -907,7 +930,6 @@
 </head>
 <body>
 
-    <!-- LOADER -->
     <div id="global-loader">
         <div class="loader-bot">
             <div class="pulse-ring ring-1"></div>
@@ -928,7 +950,6 @@
         </div>
     </div>
     
-    <!-- LOADER SCRIPT -->
     <script>
         window.addEventListener('load', () => {
             setTimeout(() => {
@@ -938,10 +959,8 @@
         });
     </script>
 
-    <!-- BACKGROUND TEXT -->
     <div class="bg-parallax-text">SCHEDULE</div>
 
-    <!-- SAVVY BOT -->
     <div id="savvy-bot-container" style="transform: translate(80vw, 75vh);">
         <div class="bot-bubble" id="bot-bubble">Full schedule unlocked 🧾</div>
         <div class="bot-body" id="bot-body">
@@ -977,7 +996,6 @@
                 </div>
             </div>
 
-            <!-- TOGGLE SWITCH CONTAINER -->
             <div class="toggle-wrapper">
                 <div class="toggle-container">
                     <button onclick="setTab('upcoming')" id="tab-upcoming" class="toggle-btn active">
@@ -999,8 +1017,7 @@
         </div>
 
         <div id="schedule-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
-            <!-- Items injected by JS -->
-        </div>
+            </div>
         
         <div id="no-results" style="display: none;">
             <div class="text-6xl mb-4">🔍</div>
@@ -1244,11 +1261,11 @@
                             </button>
                         </div>
                         <div class="flip-card-back">
-                            <div class="w-full flex-grow flex flex-col justify-center" style="overflow: hidden;">
+                            <div class="w-full flex-grow flex flex-col" style="min-height: 0; overflow: hidden;">
                                 <h4 class="text-slate-800 font-black uppercase text-xs border-b-2 border-orange-100 pb-3 mb-2 tracking-wider text-left flex items-center gap-2 shrink-0">
                                     <span class="text-lg">🏆</span> Winners Podium
                                 </h4>
-                                <div style="display:flex; flex-direction:column; gap:4px; flex-grow:1; justify-content:center;">
+                                <div class="results-scroll-area" style="display:flex; flex-direction:column; gap:4px; flex-grow:1;">
                                     ${isResults ? winnersListHTML : waitingHTML}
                                 </div>
                             </div>
